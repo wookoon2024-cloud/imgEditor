@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>이미지 편집기 v@@VERSION@@</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ImgEditor @@VERSION@@ (built @@BUILD_DATE@@)">
+<meta name="description" content="오프라인 환경용 템플릿 기반 이미지 편집기">
+<style>
+/*@@STYLES@@*/
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">IE</span>
+    <span class="brand-text">이미지 편집기</span>
+  </div>
+
+  <div class="menu" id="file-menu-wrap">
+    <button class="tb-btn" id="btn-file-menu">파일 <span class="caret">&#9662;</span></button>
+    <div class="menu-pop" id="file-menu" hidden>
+      <button type="button" data-file="new"><span>새 문서</span><kbd>-</kbd></button>
+      <button type="button" data-file="open"><span>작업 열기</span><kbd>Ctrl+O</kbd></button>
+      <button type="button" data-file="save"><span>작업 저장</span><kbd>Ctrl+S</kbd></button>
+      <div class="menu-sep"></div>
+      <button type="button" data-file="save-template"><span>현재 페이지를 템플릿으로 저장</span></button>
+      <button type="button" data-file="page-settings"><span>페이지 설정</span></button>
+      <div class="menu-sep"></div>
+      <button type="button" data-file="shortcuts"><span>단축키</span><kbd>?</kbd></button>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-group">
+    <button id="btn-undo" class="tb-btn tb-icon" title="되돌리기 (Ctrl+Z)">
+      <svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>
+    </button>
+    <button id="btn-redo" class="tb-btn tb-icon" title="다시하기 (Ctrl+Y)">
+      <svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg>
+    </button>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-group zoom-group">
+    <button id="btn-zoom-out" class="tb-btn tb-icon" title="축소">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+    </button>
+    <button id="zoom-label" class="zoom-label" title="100% 로 보기">100%</button>
+    <button id="btn-zoom-in" class="tb-btn tb-icon" title="확대">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+    <button id="btn-zoom-fit" class="tb-btn tb-icon" title="화면에 맞춤 (0)">
+      <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    </button>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-group">
+    <button id="btn-guides" class="tb-btn" title="가이드 선 표시 / 숨김">
+      <svg viewBox="0 0 24 24"><path d="M3 8h18M3 16h18M8 3v18M16 3v18" stroke-dasharray="3 3"/></svg>
+      <span>가이드</span>
+    </button>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="tb-group">
+    <button id="btn-pages" class="tb-btn" title="페이지 바 열기 / 닫기">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+      <span>페이지</span>
+    </button>
+    <div class="menu" id="export-wrap">
+      <button id="btn-export" class="tb-btn tb-primary">내보내기 <span class="caret">&#9662;</span></button>
+      <div class="menu-pop menu-right" id="export-menu" hidden>
+        <div class="menu-label">현재 페이지</div>
+        <button type="button" data-format="png" data-scale="1"><span>PNG · 원본 크기</span></button>
+        <button type="button" data-format="png" data-scale="2"><span>PNG · 고해상도 (2x)</span></button>
+        <button type="button" data-format="png" data-scale="3"><span>PNG · 인쇄용 (3x)</span></button>
+        <div class="menu-sep"></div>
+        <button type="button" data-format="jpeg" data-scale="1"><span>JPG · 원본 크기</span></button>
+        <button type="button" data-format="jpeg" data-scale="2"><span>JPG · 고해상도 (2x)</span></button>
+        <div class="menu-sep"></div>
+        <button type="button" data-export-all="1"><span>모든 페이지 내보내기</span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="workspace">
+
+  <nav class="rail" id="rail">
+    <button class="rail-item" data-panel="templates" title="템플릿">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/></svg>
+      <span>템플릿</span>
+    </button>
+    <button class="rail-item" data-panel="elements" title="요소">
+      <svg viewBox="0 0 24 24"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13h8v8h-8z" rx="2"/></svg>
+      <span>요소</span>
+    </button>
+    <button class="rail-item" data-panel="text" title="텍스트">
+      <svg viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg>
+      <span>텍스트</span>
+    </button>
+    <button class="rail-item" data-panel="photo" title="사진">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.6" cy="10.2" r="1.9"/><path d="M3.4 17.8 9 12l3.8 3.8L16 13l4.6 4.6"/></svg>
+      <span>사진</span>
+    </button>
+    <button class="rail-item" data-panel="table" title="표">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 10h18M9.5 10v9.5M15 10v9.5"/></svg>
+      <span>표</span>
+    </button>
+    <button class="rail-item" data-panel="background" title="배경">
+      <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 14.5h17v3a3 3 0 0 1-3 3h-11a3 3 0 0 1-3-3z" fill="currentColor" stroke="none"/></svg>
+      <span>배경</span>
+    </button>
+  </nav>
+
+  <aside class="flyout" id="flyout" hidden>
+    <header class="flyout-head">
+      <h2 id="flyout-title">템플릿</h2>
+      <button class="flyout-close" id="flyout-close" title="닫기">&#10005;</button>
+    </header>
+    <div class="flyout-body" id="flyout-body"></div>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="canvas-host" id="canvas-host">
+      <canvas id="c"></canvas>
+    </div>
+
+    <div class="stage-hint" id="stage-hint">
+      왼쪽에서 템플릿을 고르거나 요소를 추가해 보세요.
+    </div>
+
+    <div class="crop-badge" id="crop-badge" hidden>
+      <span class="crop-dot"></span>
+      <b>사진 구도 조절</b>
+      <span class="crop-sep">&middot;</span>
+      <span>드래그로 위치 · 휠로 확대/축소</span>
+      <span class="crop-sep">&middot;</span>
+      <span id="crop-zoom">100%</span>
+      <span class="crop-spacer"></span>
+      <button type="button" class="btn-mini" id="crop-reset">가운데로</button>
+      <button type="button" class="btn-mini btn-mini-solid" id="crop-exit">완료</button>
+    </div>
+  </main>
+
+  <aside class="inspector">
+    <div class="tabs">
+      <button class="tab is-active" data-tab="props">속성</button>
+      <button class="tab" data-tab="layers">레이어</button>
+    </div>
+
+    <div class="tab-panel" id="panel-props">
+      <div class="empty-state" id="props-empty">
+        <div class="empty-art">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 15l4.5-4.5L12 14l3.5-3.5L20 15"/></svg>
+        </div>
+        <p>객체를 선택하면<br>속성이 여기에 표시됩니다</p>
+      </div>
+      <div id="props-body" hidden></div>
+    </div>
+
+    <div class="tab-panel" id="panel-layers" hidden>
+      <div class="empty-state" id="layers-empty">
+        <div class="empty-art">
+          <svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>
+        </div>
+        <p>아직 객체가 없습니다</p>
+      </div>
+      <div class="layer-list" id="layer-list"></div>
+      <div class="layer-actions">
+        <button id="btn-layer-up" class="btn-mini" title="앞으로">앞으로</button>
+        <button id="btn-layer-down" class="btn-mini" title="뒤로">뒤로</button>
+        <button id="btn-layer-front" class="btn-mini" title="맨앞">맨앞</button>
+        <button id="btn-layer-back" class="btn-mini" title="맨뒤">맨뒤</button>
+        <button id="btn-layer-dup" class="btn-mini" title="복제 (Ctrl+D)">복제</button>
+        <button id="btn-layer-del" class="btn-mini btn-mini-danger" title="삭제 (Delete)">삭제</button>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<section class="pagesbar" id="pagesbar" hidden>
+  <div class="pages-head">
+    <span class="pages-title">
+      페이지 <b id="pages-count">1</b>
+    </span>
+    <div class="pages-tools">
+      <button id="btn-page-add" class="btn-mini btn-mini-solid">+ 페이지 추가</button>
+      <button id="btn-page-settings" class="btn-mini">페이지 설정</button>
+      <span class="pages-sep"></span>
+      <button id="btn-page-left" class="btn-mini btn-mini-icon" title="이전 페이지">&#8592;</button>
+      <button id="btn-page-right" class="btn-mini btn-mini-icon" title="다음 페이지">&#8594;</button>
+      <span class="pages-sep"></span>
+      <button id="btn-page-export" class="btn-mini">전체 내보내기</button>
+      <button id="btn-pages-close" class="btn-mini btn-mini-icon" title="페이지 바 닫기">&#10005;</button>
+    </div>
+  </div>
+  <div class="pages-strip" id="pages-strip"></div>
+</section>
+
+<footer class="statusbar">
+  <span class="status-chip" id="status-size">문서: -</span>
+  <span class="status-chip" id="status-count">객체: 0</span>
+  <span class="status-chip" id="status-sel">선택 없음</span>
+  <span class="spacer"></span>
+  <button type="button" class="status-link" id="btn-shortcuts">단축키</button>
+  <span class="status-note" id="status-note">오프라인 모드 · 모든 처리는 이 PC 안에서만</span>
+</footer>
+
+<!-- 페이지 설정 -->
+<div class="modal-backdrop" id="modal-page" hidden>
+  <div class="modal modal-medium">
+    <header class="modal-head">
+      <h2>페이지 설정</h2>
+      <button class="modal-close" id="modal-page-close" title="닫기">&#10005;</button>
+    </header>
+    <div class="modal-body">
+      <div class="settings-row">
+        <label class="settings-label">크기</label>
+        <div class="preset-grid" id="page-presets"></div>
+      </div>
+
+      <div class="settings-row">
+        <label class="settings-label">직접 입력</label>
+        <div class="settings-inline">
+          <span class="unit-field"><input type="number" id="page-w" min="40" max="8000"><em>W</em></span>
+          <span class="times">&times;</span>
+          <span class="unit-field"><input type="number" id="page-h" min="40" max="8000"><em>H</em></span>
+          <span class="unit-hint">px</span>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <label class="settings-label">방향</label>
+        <div class="seg" id="page-orient">
+          <button type="button" data-orient="portrait" class="is-active">세로</button>
+          <button type="button" data-orient="landscape">가로</button>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <label class="settings-label">배경</label>
+        <div class="swatch-row" id="page-bg-swatches"></div>
+      </div>
+
+      <div class="settings-row">
+        <label class="settings-label">적용</label>
+        <label class="check-row">
+          <input type="checkbox" id="page-apply-all">
+          <span>모든 페이지에 적용</span>
+        </label>
+      </div>
+    </div>
+    <footer class="modal-foot">
+      <button type="button" class="btn-solid ghost" id="modal-page-cancel">취소</button>
+      <button type="button" class="btn-solid" id="modal-page-apply">적용</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 표 내용 편집 -->
+<div class="modal-backdrop" id="modal-table" hidden>
+  <div class="modal modal-large">
+    <header class="modal-head">
+      <h2>표 내용 편집</h2>
+      <span class="modal-note">각 칸을 입력하세요. Enter 로 줄바꿈할 수 있습니다. 합쳐진 칸은 하나로 보입니다.</span>
+      <button class="modal-close" id="modal-table-close" title="닫기">&#10005;</button>
+    </header>
+    <div class="modal-body">
+      <div class="cell-editor" id="table-editor"></div>
+    </div>
+    <footer class="modal-foot">
+      <button type="button" class="btn-solid ghost" id="table-editor-cancel">취소</button>
+      <button type="button" class="btn-solid" id="table-editor-apply">적용</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 이미지 편집 — 누끼 + 인물 보정 통합 -->
+<div class="modal-backdrop" id="modal-image" hidden>
+  <div class="modal modal-large">
+    <header class="modal-head">
+      <h2>이미지 편집</h2>
+      <span class="modal-note">누끼와 인물 보정을 한 창에서 — 적용은 마지막에 한 번만</span>
+      <button class="modal-close" id="image-close" title="닫기">&#10005;</button>
+    </header>
+
+    <div class="image-tabs" id="image-tabs">
+      <button type="button" data-image-tab="cutout" class="is-active">누끼 · 배경 제거</button>
+      <button type="button" data-image-tab="retouch">인물 보정 · 얼굴 성형</button>
+      <button type="button" data-image-tab="crop">사진 자르기 · 회전</button>
+
+      <!-- 되돌리기는 어느 탭에서든 늘 같은 자리에 있어야 한다 -->
+      <div class="image-undo-bar">
+        <button type="button" class="btn-mini" id="image-original" title="누르고 있는 동안 원본과 비교">
+          <svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span class="btn-label">원본 비교</span>
+        </button>
+        <button type="button" class="btn-mini" id="image-undo" title="한 단계 취소 (Ctrl+Z)">
+          <svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>
+          <span class="btn-label">한 단계 취소</span>
+        </button>
+        <button type="button" class="btn-mini" id="image-reset" title="처음 사진으로 되돌리기">
+          <svg viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v5h5"/></svg>
+          <span class="btn-label">원본으로</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-body image-body">
+      <div class="image-stage" id="image-stage">
+        <div class="image-canvas-wrap" id="image-canvas-wrap">
+          <canvas id="image-canvas"></canvas>
+          <div class="image-brush" id="image-brush" hidden></div>
+          <div class="image-crop" id="image-crop" hidden>
+            <div class="ic-shade" id="ic-shade-t"></div>
+            <div class="ic-shade" id="ic-shade-b"></div>
+            <div class="ic-shade" id="ic-shade-l"></div>
+            <div class="ic-shade" id="ic-shade-r"></div>
+            <div class="ic-box" id="image-crop-box">
+              <div class="ic-grid"></div>
+              <span class="ic-h" data-ic="nw"></span>
+              <span class="ic-h" data-ic="n"></span>
+              <span class="ic-h" data-ic="ne"></span>
+              <span class="ic-h" data-ic="e"></span>
+              <span class="ic-h" data-ic="se"></span>
+              <span class="ic-h" data-ic="s"></span>
+              <span class="ic-h" data-ic="sw"></span>
+              <span class="ic-h" data-ic="w"></span>
+            </div>
+          </div>
+        </div>
+        <div class="image-info" id="image-info"></div>
+      </div>
+
+      <aside class="image-side">
+        <div class="image-pane" id="image-pane-cutout">
+          <div class="co-now" id="co-now-cutout">지금 도구 <b>매직툴</b></div>
+          <div class="co-block">
+            <div class="co-label">도구</div>
+            <div class="seg wrap" id="image-modes">
+              <button type="button" data-image-mode="magic" class="is-active">
+                <svg viewBox="0 0 24 24"><path d="M15 4V2M15 22v-2M8.5 8.5 7 7M21.5 15.5 20 14M22 8.5 20.5 10M7 20.5 8.5 19"/><path d="M14 6 6 14l4 4 8-8z"/></svg>매직툴
+              </button>
+              <button type="button" data-image-mode="brush">
+                <svg viewBox="0 0 24 24"><path d="M4 20c3 0 5-1.6 5-4 0-1.6-1.2-2.6-2.6-2.6C4.9 13.4 4 14.6 4 16.4"/><path d="M10.5 15.5 19 7a1.8 1.8 0 0 0-2.6-2.6l-8.5 8.5"/></svg>선택 브러시
+              </button>
+              <button type="button" data-image-mode="erase">
+                <svg viewBox="0 0 24 24"><path d="M8 20h11"/><path d="m5 15 6.5-6.5a2 2 0 0 1 2.8 0l3.2 3.2a2 2 0 0 1 0 2.8L14 18H8z"/></svg>지우개
+              </button>
+              <button type="button" data-image-mode="restore">
+                <svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>복원
+              </button>
+            </div>
+
+            <div id="image-magic-options">
+              <div class="co-row">
+                <span class="co-tag">감도</span>
+                <input type="range" id="image-magic-tolerance" min="4" max="90" value="24">
+                <b class="co-value" id="image-magic-tolerance-label">24</b>
+              </div>
+              <label class="co-check">
+                <input type="checkbox" id="image-magic-contiguous" checked>
+                <span>연결된 영역만<em>끄면 사진 전체에서 비슷한 색을 모두 고릅니다</em></span>
+              </label>
+            </div>
+
+            <div id="image-brush-options" hidden>
+              <div class="co-row">
+                <span class="co-tag">굵기</span>
+                <input type="range" id="image-brush-size" min="6" max="400" value="40">
+                <b class="co-value" id="image-brush-size-label">40px</b>
+              </div>
+            </div>
+
+            <p class="co-hint">
+              <b>매직툴</b> 클릭 · <kbd>Shift</kbd>+클릭 추가 · <b>브러시</b> 문지르기(<kbd>Alt</kbd> 빼기)<br>
+              고른 뒤 <b>[선택 삭제]</b> 또는 <kbd>Delete</kbd>
+            </p>
+          </div>
+
+          <div class="co-block" id="image-refine">
+            <div class="co-label">선택 다듬기</div>
+            <div class="co-count" id="image-refine-count">고른 영역이 없습니다</div>
+            <div class="co-row">
+              <span class="co-tag">페더</span>
+              <input type="range" id="image-sel-feather" min="0" max="10" value="0">
+              <b class="co-value" id="image-sel-feather-label">없음</b>
+            </div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini" id="image-sel-grow" title="선택을 1px 넓힙니다">
+                <svg viewBox="0 0 24 24"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/></svg>넓히기
+              </button>
+              <button type="button" class="btn-mini" id="image-sel-shrink" title="선택을 1px 좁힙니다">
+                <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>좁히기
+              </button>
+              <button type="button" class="btn-mini" id="image-sel-invert" title="고른 영역의 반대를 고릅니다">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16" /><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg>반전
+              </button>
+            </div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini btn-mini-solid" id="image-sel-delete">
+                <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>선택 삭제
+              </button>
+              <button type="button" class="btn-mini" id="image-sel-clear">
+                <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>선택 해제
+              </button>
+            </div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini btn-mini-strong" id="image-sel-matte">
+                <svg viewBox="0 0 24 24"><path d="M4 20 20 4"/><circle cx="7" cy="8" r="3"/><circle cx="17" cy="16" r="3"/></svg>머리카락까지 지우기
+              </button>
+            </div>
+            <p class="co-hint">인물 사진은 <b>머리카락까지 지우기</b>가 가장 자연스럽습니다.</p>
+          </div>
+
+          <div class="co-block" id="image-blur">
+            <div class="co-label">배경 흐림 (아웃포커스)</div>
+            <div class="co-row">
+              <span class="co-tag">강도</span>
+              <input type="range" id="image-blur-strength" min="2" max="30" value="10">
+              <b class="co-value" id="image-blur-strength-label">10</b>
+            </div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini" id="image-blur-apply">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M3.5 12S7 6.5 12 6.5S20.5 12 20.5 12"/><path d="M3.5 12s3.5 5.5 8.5 5.5S20.5 12 20.5 12" opacity=".5"/></svg>선택 영역 흐리게
+              </button>
+            </div>
+            <p class="co-hint">배경을 고른 뒤 누르세요. 누를 때마다 조금씩 더 흐려집니다.</p>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">자동 제거</div>
+            <div class="co-row">
+              <span class="co-tag">감도</span>
+              <input type="range" id="image-tolerance" min="4" max="70" value="22">
+              <b class="co-value" id="image-tolerance-label">22</b>
+            </div>
+            <button type="button" class="btn-mini btn-mini-solid btn-block" id="image-auto">
+              <svg viewBox="0 0 24 24"><path d="M4 20 20 4"/><path d="M14 4h6v6"/><path d="M20 4 12 12"/></svg>배경 자동 제거
+            </button>
+            <label class="co-check">
+              <input type="checkbox" id="image-tidy">
+              <span>남은 배경 조각 정리<em>가장 큰 피사체만 남깁니다</em></span>
+            </label>
+            <p class="co-hint">감도가 높을수록 더 많이 지웁니다. <b>낮게 둘수록 인물이 안전</b>합니다.</p>
+          </div>
+        </div>
+
+        <div class="image-pane" id="image-pane-retouch" hidden>
+          <div class="co-now" id="co-now-retouch">지금 도구 <b>턱 갸름</b></div>
+          <div class="co-block">
+            <div class="co-label">빠른 보정 — 눌러서 바로 적용</div>
+            <div class="tone-presets" id="image-presets"></div>
+            <p class="co-hint">눌러서 바로 적용 — 아래 슬라이더가 그 값으로 바뀝니다.</p>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">자동 보정</div>
+            <button type="button" class="btn-mini btn-mini-solid btn-block" id="image-auto-tone">
+              <svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.5"/></svg>인물 자동 보정
+            </button>
+            <p class="co-hint">밝기·대비·색감을 사진에 맞춰 한 번에 계산합니다.</p>
+            <div class="co-row">
+              <span class="co-tag">밝기</span>
+              <input type="range" id="image-brightness" min="-60" max="60" value="0">
+              <b class="co-value" id="image-brightness-label">0</b>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">대비</span>
+              <input type="range" id="image-contrast" min="-50" max="80" value="0">
+              <b class="co-value" id="image-contrast-label">0</b>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">채도</span>
+              <input type="range" id="image-saturation" min="-50" max="60" value="0">
+              <b class="co-value" id="image-saturation-label">0</b>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">색감</span>
+              <input type="range" id="image-warmth" min="-50" max="50" value="0">
+              <b class="co-value" id="image-warmth-label">0</b>
+            </div>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">피부 · 선명도</div>
+            <div class="co-row">
+              <span class="co-tag">부드럽게</span>
+              <input type="range" id="image-smooth" min="0" max="100" value="0">
+              <b class="co-value" id="image-smooth-label">0%</b>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">선명하게</span>
+              <input type="range" id="image-sharpen" min="0" max="100" value="0">
+              <b class="co-value" id="image-sharpen-label">0%</b>
+            </div>
+            <p class="co-hint">부드럽게는 <b>피부색 부분만</b> — 눈·머리카락은 그대로 남습니다.</p>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">얼굴 성형 프리셋 — 눌러서 자동 적용</div>
+            <div class="face-detect" id="image-face-status"></div>
+            <div class="tone-presets" id="image-face-presets"></div>
+            <p class="co-hint">
+              미리보기는 <b>실제로 휘어 본 모습</b>입니다. 자리가 안 맞으면
+              [한 단계 취소] 뒤에 브러시로 직접 다듬으세요.
+            </p>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">얼굴 성형 — 브러시로 직접</div>
+            <div class="seg wrap" id="image-sculpt">
+              <button type="button" data-image-sculpt="push">밀기</button>
+              <button type="button" data-image-sculpt="pinch" class="is-active">턱 갸름</button>
+              <button type="button" data-image-sculpt="bulge">눈 키우기</button>
+              <button type="button" data-image-sculpt="swirl">돌리기</button>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">굵기</span>
+              <input type="range" id="image-sculpt-size" min="10" max="400" value="120">
+              <b class="co-value" id="image-sculpt-size-label">120px</b>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">강도</span>
+              <input type="range" id="image-sculpt-intensity" min="5" max="100" value="45">
+              <b class="co-value" id="image-sculpt-intensity-label">45</b>
+            </div>
+            <p class="co-hint">문질러 조절합니다. <kbd>[</kbd> <kbd>]</kbd> 로 굵기 — 아래 프리셋으로 한 번에 적용할 수도 있습니다.</p>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">잡티 제거 · 분위기</div>
+            <div class="seg wrap" id="image-heal-row">
+              <button type="button" data-image-heal="off" class="is-active">잡티 제거 끔</button>
+              <button type="button" data-image-heal="on">잡티 제거</button>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">굵기</span>
+              <input type="range" id="image-heal-size" min="10" max="140" value="26">
+              <b class="co-value" id="image-heal-size-label">26px</b>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">비네트</span>
+              <input type="range" id="image-vignette" min="0" max="100" value="0">
+              <b class="co-value" id="image-vignette-label">0</b>
+            </div>
+            <p class="co-hint">
+              켜고 점·흉터를 클릭하거나 문지르세요. 주변 피부 조각으로 덮어 <b>결이 살아남습니다.</b>
+            </p>
+          </div>
+        </div>
+
+        <div class="image-pane" id="image-pane-crop" hidden>
+          <div class="co-now" id="co-now-crop">지금 도구 <b>자르기</b></div>
+          <div class="co-block">
+            <div class="co-label">비율</div>
+            <div class="ratio-grid" id="image-crop-ratios"></div>
+            <div class="co-count" id="image-crop-size">-</div>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">회전 · 뒤집기</div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini" id="image-rot-left">
+                <svg viewBox="0 0 24 24"><path d="M3 5v5h5"/><path d="M3.4 10a8.5 8.5 0 1 1 1.5 8.1"/></svg>왼쪽 90°
+              </button>
+              <button type="button" class="btn-mini" id="image-rot-right">
+                <svg viewBox="0 0 24 24"><path d="M21 5v5h-5"/><path d="M20.6 10a8.5 8.5 0 1 0-1.5 8.1"/></svg>오른쪽 90°
+              </button>
+            </div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini" id="image-flip-h">
+                <svg viewBox="0 0 24 24"><path d="M12 4v16"/><path d="M8.5 8 4 12l4.5 4"/><path d="M15.5 8 20 12l-4.5 4"/></svg>좌우 반전
+              </button>
+              <button type="button" class="btn-mini" id="image-flip-v">
+                <svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M8 8.5 12 4l4 4.5"/><path d="M8 15.5 12 20l4-4.5"/></svg>상하 반전
+              </button>
+            </div>
+            <div class="co-row">
+              <span class="co-tag">기울기</span>
+              <input type="range" id="image-straighten" min="-15" max="15" value="0" step="0.5">
+              <b class="co-value" id="image-straighten-label">0°</b>
+            </div>
+            <p class="co-hint">기울이면 빈 모서리가 생기지 않도록 자를 영역이 <b>자동으로 안쪽</b>에 맞춰집니다.</p>
+          </div>
+
+          <div class="co-block">
+            <div class="co-label">자를 영역</div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini btn-mini-solid" id="image-crop-apply">
+                <svg viewBox="0 0 24 24"><path d="M6 2v16h16"/><path d="M2 6h16v16"/></svg>이 영역으로 자르기
+              </button>
+            </div>
+            <div class="co-btn-row">
+              <button type="button" class="btn-mini" id="image-crop-max">
+                <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>가장 크게
+              </button>
+              <button type="button" class="btn-mini" id="image-crop-center">
+                <svg viewBox="0 0 24 24"><path d="M12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>가운데로
+              </button>
+              <button type="button" class="btn-mini" id="image-crop-reset">
+                <svg viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v5h5"/></svg>처음으로
+              </button>
+            </div>
+            <p class="co-hint">
+              사진을 끌어 옮기고, 손잡이로 크기를 바꿉니다. 바깥을 끌면 <b>새 영역</b>을 그립니다.
+              자르기는 <b>적용을 눌러야</b> 확정됩니다.
+            </p>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <footer class="modal-foot">
+      <button type="button" class="btn-solid ghost" id="image-cancel">취소</button>
+      <button type="button" class="btn-solid" id="image-apply">적용</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 단축키 -->
+<div class="modal-backdrop" id="modal-shortcuts" hidden>
+  <div class="modal modal-medium">
+    <header class="modal-head">
+      <h2>단축키</h2>
+      <button class="modal-close" id="modal-shortcuts-close" title="닫기">&#10005;</button>
+    </header>
+    <div class="modal-body">
+      <div class="shortcut-grid">
+        <div class="shortcut-col">
+          <h3>편집</h3>
+          <div class="shortcut-row"><span>되돌리기</span><kbd>Ctrl Z</kbd></div>
+          <div class="shortcut-row"><span>다시하기</span><kbd>Ctrl Y</kbd></div>
+          <div class="shortcut-row"><span>복사 / 붙여넣기</span><kbd>Ctrl C / V</kbd></div>
+          <div class="shortcut-row"><span>복제</span><kbd>Ctrl D</kbd></div>
+          <div class="shortcut-row"><span>모든 객체 선택</span><kbd>Ctrl A</kbd></div>
+          <div class="shortcut-row"><span>선택 삭제</span><kbd>Delete</kbd></div>
+          <div class="shortcut-row"><span>작업 저장</span><kbd>Ctrl S</kbd></div>
+        </div>
+        <div class="shortcut-col">
+          <h3>이동 · 보기</h3>
+          <div class="shortcut-row"><span>미세 이동</span><kbd>방향키</kbd></div>
+          <div class="shortcut-row"><span>10px 이동</span><kbd>Shift 방향키</kbd></div>
+          <div class="shortcut-row"><span>확대 / 축소</span><kbd>+ / -</kbd></div>
+          <div class="shortcut-row"><span>커서 기준 확대</span><kbd>Ctrl 휠</kbd></div>
+          <div class="shortcut-row"><span>화면 이동</span><kbd>Space 드래그</kbd></div>
+          <div class="shortcut-row"><span>화면에 맞춤</span><kbd>0</kbd></div>
+          <div class="shortcut-row"><span>구도 조절 끝내기</span><kbd>Esc</kbd></div>
+        </div>
+        <div class="shortcut-col">
+          <h3>사진 · 누끼</h3>
+          <div class="shortcut-row"><span>구도 조절 시작</span><kbd>사진 더블클릭</kbd></div>
+          <div class="shortcut-row"><span>누끼 지우개 / 복원</span><kbd>Esc 로 닫기</kbd></div>
+          <div class="shortcut-row"><span>누끼 한 단계 취소</span><kbd>Ctrl Z</kbd></div>
+          <div class="shortcut-row"><span>브러시 굵기</span><kbd>[ / ]</kbd></div>
+          <h3>페이지</h3>
+          <div class="shortcut-row"><span>이름 바꾸기</span><kbd>썸네일 더블클릭</kbd></div>
+          <div class="shortcut-row"><span>순서 바꾸기</span><kbd>썸네일 드래그</kbd></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<input type="file" id="file-image" accept="image/*" hidden multiple>
+<input type="file" id="file-project" accept=".json,application/json" hidden>
+<input type="file" id="file-template" accept=".json,application/json" hidden>
+
+<script>
+/*@@FABRIC@@*/
+</script>
+/*@@APP@@*/
+</body>
+</html>
