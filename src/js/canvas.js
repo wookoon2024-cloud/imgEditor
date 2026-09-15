@@ -387,7 +387,10 @@ window.IE = window.IE || {};
     zoom = util.clamp(zoom, 0.05, 4);
 
     IE.state.autoFit = true;
-    return api.setZoom(zoom);
+    var res = api.setZoom(zoom);
+    stage.scrollTop = 0;
+    stage.scrollLeft = 0;
+    return res;
   };
 
   /* ------------------------------------------------------------ 문서 관리 */

@@ -50,11 +50,23 @@ window.IE = window.IE || {};
 
   function renderSwatches() {
     var host = util.$('page-bg-swatches');
-    host.innerHTML = BG_COLORS.map(function (color) {
+    var curColor = (selectedBg && selectedBg.indexOf('#') === 0) ? selectedBg : '#ffffff';
+
+    var swatches = BG_COLORS.map(function (color) {
       return '<button type="button" class="swatch' +
-        (selectedBg === color ? ' is-active' : '') +
+        (selectedBg && color.toLowerCase() === selectedBg.toLowerCase() ? ' is-active' : '') +
         '" data-bg="' + color + '" style="background:' + color + '" title="' + color + '"></button>';
     }).join('');
+
+    var customBg = '<div class="page-bg-custom-wrap" title="직접 색상 선택">' +
+      '<label class="color-picker-box" title="클릭하여 색상 선택">' +
+        '<input type="color" id="page-bg-custom-color" value="' + curColor + '">' +
+        '<span class="color-picker-thumb" id="page-bg-custom-thumb" style="background:' + curColor + '"></span>' +
+      '</label>' +
+      '<input type="text" id="page-bg-custom-hex" class="color-hex-input" value="' + curColor.toUpperCase() + '" maxlength="7" spellcheck="false" placeholder="#FFFFFF">' +
+    '</div>';
+
+    host.innerHTML = swatches + customBg;
 
     Array.prototype.forEach.call(host.querySelectorAll('[data-bg]'), function (button) {
       button.addEventListener('click', function () {
@@ -62,6 +74,54 @@ window.IE = window.IE || {};
         renderSwatches();
       });
     });
+
+    var pColor = util.$('page-bg-custom-color');
+    var pHex = util.$('page-bg-custom-hex');
+    var pThumb = util.$('page-bg-custom-thumb');
+
+    if (pColor) {
+      var onPageColor = function (e) {
+        selectedBg = e.target.value;
+        if (pThumb) pThumb.style.background = selectedBg;
+        if (pHex) pHex.value = selectedBg.toUpperCase();
+        Array.prototype.forEach.call(host.querySelectorAll('[data-bg]'), function (other) {
+          other.classList.toggle('is-active', other.getAttribute('data-bg').toLowerCase() === selectedBg.toLowerCase());
+        });
+      };
+      pColor.addEventListener('input', onPageColor);
+      pColor.addEventListener('change', onPageColor);
+    }
+
+    if (pHex) {
+      var onHexChange = function () {
+        var raw = pHex.value.trim();
+        var valid = null;
+        if (/^#?[0-9a-fA-F]{6}$/.test(raw)) {
+          valid = (raw.indexOf('#') === 0 ? raw : '#' + raw).toLowerCase();
+        } else if (/^#?[0-9a-fA-F]{3}$/.test(raw)) {
+          var c = raw.replace('#', '');
+          valid = ('#' + c[0] + c[0] + c[1] + c[1] + c[2] + c[2]).toLowerCase();
+        }
+        if (valid) {
+          selectedBg = valid;
+          if (pColor) pColor.value = valid;
+          if (pThumb) pThumb.style.background = valid;
+          pHex.value = valid.toUpperCase();
+          Array.prototype.forEach.call(host.querySelectorAll('[data-bg]'), function (other) {
+            other.classList.toggle('is-active', other.getAttribute('data-bg').toLowerCase() === valid.toLowerCase());
+          });
+        } else {
+          pHex.value = (selectedBg || '#FFFFFF').toUpperCase();
+        }
+      };
+      pHex.addEventListener('change', onHexChange);
+      pHex.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onHexChange();
+        }
+      });
+    }
   }
 
   function presetById(id) {
@@ -114,10 +174,6 @@ window.IE = window.IE || {};
       $('h').value = page.height;
     } else {
       applyOrientationToInputs();
-    }
-
-    if (!BG_COLORS.some(function (c) { return c === selectedBg; })) {
-      selectedBg = '#ffffff';
     }
 
     renderPresets();

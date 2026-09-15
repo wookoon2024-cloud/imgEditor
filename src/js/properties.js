@@ -58,9 +58,17 @@ window.IE = window.IE || {};
 
   function normalizeColor(value) {
     if (typeof value !== 'string') return '#000000';
-    if (/^#[0-9a-fA-F]{6}$/.test(value)) return value.toLowerCase();
-    if (/^#[0-9a-fA-F]{3}$/.test(value)) {
-      return ('#' + value[1] + value[1] + value[2] + value[2] + value[3] + value[3]).toLowerCase();
+    var v = value.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(v)) return v.toLowerCase();
+    if (/^#[0-9a-fA-F]{3}$/.test(v)) {
+      return ('#' + v[1] + v[1] + v[2] + v[2] + v[3] + v[3]).toLowerCase();
+    }
+    var m = v.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+    if (m) {
+      var r = ('0' + parseInt(m[1], 10).toString(16)).slice(-2);
+      var g = ('0' + parseInt(m[2], 10).toString(16)).slice(-2);
+      var b = ('0' + parseInt(m[3], 10).toString(16)).slice(-2);
+      return ('#' + r + g + b).toLowerCase();
     }
     return '#000000';
   }
@@ -94,7 +102,14 @@ window.IE = window.IE || {};
   }
 
   function colorInput(prop, value) {
-    return '<input type="color" data-prop="' + prop + '" value="' + normalizeColor(value) + '">';
+    var hex = normalizeColor(value);
+    return '<div class="color-control">' +
+      '<label class="color-swatch-box" title="클릭하여 색상 선택">' +
+        '<input type="color" data-prop="' + prop + '" value="' + hex + '" class="color-native-input">' +
+        '<span class="color-preview" style="background:' + hex + '"></span>' +
+      '</label>' +
+      '<input type="text" class="color-hex-field" data-hex-for="' + prop + '" value="' + hex.toUpperCase() + '" maxlength="7" spellcheck="false" placeholder="#000000">' +
+    '</div>';
   }
 
   function rangeInput(prop, value, min, max, step) {
@@ -1175,6 +1190,51 @@ window.IE = window.IE || {};
         else IE.canvas.setCropOffset(obj, obj.cropOffsetX || 0, offset);
       });
       syncOutput('crop' + cropAxis, el);
+      return;
+    }
+
+    // 색상 고르기: <input type="color">
+    if (el.type === 'color' && el.hasAttribute('data-prop')) {
+      var colorProp = el.getAttribute('data-prop');
+      var colorVal = el.value;
+      var control = el.closest ? el.closest('.color-control') : null;
+      if (control) {
+        var preview = control.querySelector('.color-preview');
+        if (preview) preview.style.background = colorVal;
+        var hexField = control.querySelector('.color-hex-field');
+        if (hexField) hexField.value = colorVal.toUpperCase();
+      }
+      apply(colorProp, colorVal);
+      return;
+    }
+
+    // 색상 직접 입력: .color-hex-field
+    var hexFor = el.getAttribute('data-hex-for');
+    if (hexFor) {
+      var raw = el.value.trim();
+      var validHex = null;
+      if (/^#?[0-9a-fA-F]{6}$/.test(raw)) {
+        validHex = (raw.indexOf('#') === 0 ? raw : '#' + raw).toLowerCase();
+      } else if (/^#?[0-9a-fA-F]{3}$/.test(raw)) {
+        var clean = raw.replace('#', '');
+        validHex = ('#' + clean[0] + clean[0] + clean[1] + clean[1] + clean[2] + clean[2]).toLowerCase();
+      }
+      if (validHex) {
+        var control2 = el.closest ? el.closest('.color-control') : null;
+        if (control2) {
+          var natInput = control2.querySelector('input[type="color"]');
+          if (natInput) natInput.value = validHex;
+          var preview2 = control2.querySelector('.color-preview');
+          if (preview2) preview2.style.background = validHex;
+        }
+        apply(hexFor, validHex);
+      } else if (ev.type === 'change') {
+        var ctrl = el.closest ? el.closest('.color-control') : null;
+        var curPicker = ctrl ? ctrl.querySelector('input[type="color"]') : null;
+        if (curPicker) {
+          el.value = curPicker.value.toUpperCase();
+        }
+      }
       return;
     }
 

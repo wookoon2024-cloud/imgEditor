@@ -615,17 +615,30 @@ window.IE = window.IE || {};
       return;
     }
 
+    var called = false;
     var done = function () {
-      sheet.getObjects().forEach(function (obj) {
-        if (IE.canvas.editorOnly && IE.canvas.editorOnly(obj)) obj.set('visible', false);
-      });
+      if (called) return;
+      called = true;
+      try {
+        sheet.getObjects().forEach(function (obj) {
+          if (IE.canvas.editorOnly && IE.canvas.editorOnly(obj)) obj.set('visible', false);
+        });
+      } catch (e) {}
       cb(sheet);
     };
 
+    var fallbackTimer = setTimeout(function () {
+      done();
+    }, 2500);
+
     try {
-      sheet.loadFromJSON(page.json, done, IE.table.reviver);
+      sheet.loadFromJSON(page.json, function () {
+        clearTimeout(fallbackTimer);
+        done();
+      }, IE.table.reviver);
     } catch (err) {
-      cb(sheet);
+      clearTimeout(fallbackTimer);
+      done();
     }
   }
 

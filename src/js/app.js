@@ -238,6 +238,16 @@ window.IE = window.IE || {};
           return;
         }
 
+        if (item.getAttribute('data-export-pptx')) {
+          IE.exporter.exportPPTX();
+          return;
+        }
+
+        if (item.getAttribute('data-export-hwpx')) {
+          IE.exporter.exportHWPX();
+          return;
+        }
+
         IE.exporter.exportImage(
           item.getAttribute('data-format'),
           parseFloat(item.getAttribute('data-scale')) || 1
@@ -442,6 +452,12 @@ window.IE = window.IE || {};
       }
       if (ev.key === '0') {
         IE.canvas.zoomToFit();
+        return;
+      }
+      if (ev.key === 'F5') {
+        ev.preventDefault();
+        if (IE.preview) IE.preview.open();
+        return;
       }
     });
 
@@ -464,7 +480,6 @@ window.IE = window.IE || {};
   /** ctrl+휠 로 커서 위치를 기준으로 확대/축소, 스페이스+드래그로 화면 이동 */
   function initZoomPan() {
     var stage = util.$('stage');
-    var canvas = IE.state.canvas;
 
     stage.addEventListener('wheel', function (ev) {
       if (!ev.ctrlKey && !ev.metaKey) return;
@@ -472,15 +487,23 @@ window.IE = window.IE || {};
 
       IE.state.autoFit = false;
 
-      var previous = canvas.getZoom();
-      var next = util.clamp(previous * Math.pow(0.999, ev.deltaY), 0.05, 6);
-      if (next === previous) return;
+      var prevZoom = IE.state.zoom || 1;
+      var nextZoom = util.clamp(prevZoom * Math.pow(0.998, ev.deltaY), 0.05, 6);
+      if (Math.abs(nextZoom - prevZoom) < 0.001) return;
 
-      var pointer = canvas.getPointer(ev);
-      canvas.zoomToPoint(new fabric.Point(pointer.x, pointer.y), next);
-      IE.state.zoom = next;
+      var stageRect = stage.getBoundingClientRect();
+      var mouseX = ev.clientX - stageRect.left;
+      var mouseY = ev.clientY - stageRect.top;
 
-      canvas.requestRenderAll();
+      var ratio = nextZoom / prevZoom;
+      var targetScrollTop = (stage.scrollTop + mouseY) * ratio - mouseY;
+      var targetScrollLeft = (stage.scrollLeft + mouseX) * ratio - mouseX;
+
+      IE.canvas.setZoom(nextZoom);
+
+      stage.scrollTop = Math.max(0, targetScrollTop);
+      stage.scrollLeft = Math.max(0, targetScrollLeft);
+
       updateStatus();
       if (IE.panels) IE.panels.refresh();
     }, { passive: false });
@@ -488,17 +511,15 @@ window.IE = window.IE || {};
     stage.addEventListener('mousedown', function (ev) {
       if (!spaceDown) return;
       panning = true;
-      panStart = { x: ev.clientX, y: ev.clientY, vpt: canvas.viewportTransform.slice() };
+      panStart = { x: ev.clientX, y: ev.clientY, scrollLeft: stage.scrollLeft, scrollTop: stage.scrollTop };
       stage.classList.add('is-grabbing');
       ev.preventDefault();
     });
 
     window.addEventListener('mousemove', function (ev) {
       if (!panning || !panStart) return;
-
-      canvas.viewportTransform[4] = panStart.vpt[4] + (ev.clientX - panStart.x);
-      canvas.viewportTransform[5] = panStart.vpt[5] + (ev.clientY - panStart.y);
-      canvas.requestRenderAll();
+      stage.scrollLeft = panStart.scrollLeft - (ev.clientX - panStart.x);
+      stage.scrollTop = panStart.scrollTop - (ev.clientY - panStart.y);
       ev.preventDefault();
     });
 
@@ -563,6 +584,7 @@ window.IE = window.IE || {};
     IE.pagesettings.init();
     IE.pages.init();
     IE.panel.init();
+    if (IE.preview) IE.preview.init();
 
     initTopbar();
     initTabs();

@@ -25,7 +25,18 @@ window.IE = window.IE || {};
 
   /** 요소를 넣기 **전에** 색을 고른다 — 넣고 나서 속성까지 갈 일이 없다 */
   function colorRowHtml() {
-    return IE.shapes.paletteGroups.map(function (group) {
+    var customRow = '<div class="el-color-group el-color-custom-group">' +
+      '<span class="el-color-name">직접 선택</span>' +
+      '<div class="el-color-custom-bar">' +
+        '<label class="color-picker-box" title="클릭하여 색상 선택">' +
+          '<input type="color" id="el-custom-color" value="' + elColor + '">' +
+          '<span class="color-picker-thumb" id="el-custom-thumb" style="background:' + elColor + '"></span>' +
+        '</label>' +
+        '<input type="text" id="el-custom-hex" class="color-hex-input" value="' + elColor.toUpperCase() + '" maxlength="7" spellcheck="false" placeholder="#000000">' +
+      '</div>' +
+    '</div>';
+
+    return customRow + IE.shapes.paletteGroups.map(function (group) {
       return '<div class="el-color-group">' +
         '<span class="el-color-name">' + group.name + '</span>' +
         '<div class="el-color-row">' +
@@ -567,6 +578,7 @@ window.IE = window.IE || {};
   function backgroundHtml() {
     var page = IE.doc ? IE.doc.current() : null;
     var active = (page && page.background) || '#ffffff';
+    var activeHex = (typeof active === 'string' && active.indexOf('#') === 0) ? active : '#ffffff';
 
     var swatches = BG_COLORS.map(function (color) {
       return '<button class="swatch' + (color.toLowerCase() === String(active).toLowerCase() ? ' is-active' : '') +
@@ -583,8 +595,18 @@ window.IE = window.IE || {};
         '" style="background:linear-gradient(135deg,' + stops + ')"></button>';
     }).join('');
 
+    var customBg = '<div class="custom-bg-picker-bar">' +
+      '<label class="color-picker-box" title="클릭하여 색상 선택">' +
+        '<input type="color" id="panel-bg-custom" value="' + activeHex + '">' +
+        '<span class="color-picker-thumb" id="panel-bg-thumb" style="background:' + activeHex + '"></span>' +
+      '</label>' +
+      '<input type="text" id="panel-bg-hex" class="color-hex-input" value="' + activeHex.toUpperCase() + '" maxlength="7" spellcheck="false" placeholder="#FFFFFF">' +
+      '<span class="custom-bg-label">직접 선택</span>' +
+    '</div>';
+
     return '<div class="fo-section">' +
       '<h3 class="fo-title">배경색</h3>' +
+      customBg +
       '<div class="swatch-row">' + swatches + '</div>' +
     '</div>' +
     '<div class="fo-section">' +
@@ -711,15 +733,63 @@ window.IE = window.IE || {};
       });
     });
 
+    function updateElColorUI(hex) {
+      elColor = hex;
+      var picker = host.querySelector('#el-custom-color');
+      var thumb = host.querySelector('#el-custom-thumb');
+      var hexIn = host.querySelector('#el-custom-hex');
+      if (picker) picker.value = hex;
+      if (thumb) thumb.style.background = hex;
+      if (hexIn) hexIn.value = hex.toUpperCase();
+
+      Array.prototype.forEach.call(host.querySelectorAll('[data-el-color]'), function (other) {
+        other.classList.toggle('is-active', other.getAttribute('data-el-color').toLowerCase() === hex.toLowerCase());
+      });
+    }
+
+    var customPicker = host.querySelector('#el-custom-color');
+    var customHex = host.querySelector('#el-custom-hex');
+
+    if (customPicker) {
+      var onPickerInput = function (ev) {
+        updateElColorUI(ev.target.value);
+        repaintAll();
+      };
+      customPicker.addEventListener('input', onPickerInput);
+      customPicker.addEventListener('change', onPickerInput);
+    }
+
+    if (customHex) {
+      var applyHexInput = function () {
+        var raw = customHex.value.trim();
+        var valid = null;
+        if (/^#?[0-9a-fA-F]{6}$/.test(raw)) {
+          valid = (raw.indexOf('#') === 0 ? raw : '#' + raw).toLowerCase();
+        } else if (/^#?[0-9a-fA-F]{3}$/.test(raw)) {
+          var c = raw.replace('#', '');
+          valid = ('#' + c[0] + c[0] + c[1] + c[1] + c[2] + c[2]).toLowerCase();
+        }
+        if (valid) {
+          updateElColorUI(valid);
+          repaintAll();
+        } else {
+          customHex.value = elColor.toUpperCase();
+        }
+      };
+      customHex.addEventListener('change', applyHexInput);
+      customHex.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyHexInput();
+        }
+      });
+    }
+
     // 색 고르기 — 미리보기까지 그 색으로 바뀌어서 누르기 전에 보인다
     Array.prototype.forEach.call(host.querySelectorAll('[data-el-color]'), function (button) {
       button.addEventListener('click', function () {
-        elColor = button.getAttribute('data-el-color');
-
-        Array.prototype.forEach.call(host.querySelectorAll('[data-el-color]'), function (other) {
-          other.classList.toggle('is-active', other === button);
-        });
-
+        var nextColor = button.getAttribute('data-el-color');
+        updateElColorUI(nextColor);
         repaintAll();
       });
     });
@@ -1049,9 +1119,65 @@ window.IE = window.IE || {};
       return !!(box && box.checked);
     }
 
+    function updatePanelBgUI(hex) {
+      var p = host.querySelector('#panel-bg-custom');
+      var t = host.querySelector('#panel-bg-thumb');
+      var h = host.querySelector('#panel-bg-hex');
+      if (p) p.value = hex;
+      if (t) t.style.background = hex;
+      if (h) h.value = hex.toUpperCase();
+
+      Array.prototype.forEach.call(host.querySelectorAll('[data-bg]'), function (other) {
+        other.classList.toggle('is-active', other.getAttribute('data-bg').toLowerCase() === hex.toLowerCase());
+      });
+    }
+
+    var bgPicker = host.querySelector('#panel-bg-custom');
+    var bgHex = host.querySelector('#panel-bg-hex');
+
+    if (bgPicker) {
+      var onBgPicker = function (ev) {
+        var val = ev.target.value;
+        updatePanelBgUI(val);
+        IE.doc.setBackground(val, applyAll());
+      };
+      bgPicker.addEventListener('input', onBgPicker);
+      bgPicker.addEventListener('change', onBgPicker);
+    }
+
+    if (bgHex) {
+      var applyBgHex = function () {
+        var raw = bgHex.value.trim();
+        var valid = null;
+        if (/^#?[0-9a-fA-F]{6}$/.test(raw)) {
+          valid = (raw.indexOf('#') === 0 ? raw : '#' + raw).toLowerCase();
+        } else if (/^#?[0-9a-fA-F]{3}$/.test(raw)) {
+          var c = raw.replace('#', '');
+          valid = ('#' + c[0] + c[0] + c[1] + c[1] + c[2] + c[2]).toLowerCase();
+        }
+        if (valid) {
+          updatePanelBgUI(valid);
+          IE.doc.setBackground(valid, applyAll());
+        } else {
+          var page = IE.doc ? IE.doc.current() : null;
+          var curBg = (page && page.background) || '#ffffff';
+          bgHex.value = (curBg.indexOf('#') === 0 ? curBg : '#ffffff').toUpperCase();
+        }
+      };
+      bgHex.addEventListener('change', applyBgHex);
+      bgHex.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyBgHex();
+        }
+      });
+    }
+
     Array.prototype.forEach.call(host.querySelectorAll('[data-bg]'), function (button) {
       button.addEventListener('click', function () {
-        IE.doc.setBackground(button.getAttribute('data-bg'), applyAll());
+        var bg = button.getAttribute('data-bg');
+        updatePanelBgUI(bg);
+        IE.doc.setBackground(bg, applyAll());
         refresh();
       });
     });

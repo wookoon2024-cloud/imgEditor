@@ -39,6 +39,7 @@ const JS_ORDER = [
   'layers.js',
   'properties.js',
   'exporter.js',
+  'preview.js',
   'app.js'
 ];
 
@@ -92,7 +93,8 @@ const REQUIRED_EXPORTS = {
   'gallery.js': ['gallery.thumbnail', 'gallery.bodyHtml'],
   'layers.js': ['layers.refresh'],
   'properties.js': ['properties.refresh'],
-  'exporter.js': ['exporter.saveProject', 'exporter.loadProject'],
+  'exporter.js': ['exporter.saveProject', 'exporter.loadProject', 'exporter.exportPPTX', 'exporter.exportHWPX'],
+  'preview.js': ['preview.open', 'preview.close'],
   'app.js': ['app.init']
 };
 
