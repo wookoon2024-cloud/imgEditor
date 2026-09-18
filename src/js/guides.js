@@ -110,37 +110,62 @@ window.IE = window.IE || {};
   }
 
   function draw(ctx) {
-    if (!active || !lines.length) return;
-
     var canvas = IE.state.canvas;
+    if (!canvas || !IE.state.guidesVisible) return;
+
     var zoom = canvas.getZoom();
     var vpt = canvas.viewportTransform;
     var w = docW();
     var h = docH();
+    if (!w || !h) return;
 
     ctx.save();
     ctx.translate(vpt[4], vpt[5]);
     ctx.scale(zoom, zoom);
-    ctx.strokeStyle = COLOR;
-    ctx.lineWidth = 1 / zoom;
-    ctx.setLineDash([6 / zoom, 4 / zoom]);
 
-    lines.forEach(function (line) {
-      ctx.beginPath();
-      if (line.axis === 'v') {
-        ctx.moveTo(line.value, -h * 0.05);
-        ctx.lineTo(line.value, h * 1.05);
-      } else {
-        ctx.moveTo(-w * 0.05, line.value);
-        ctx.lineTo(w * 1.05, line.value);
-      }
-      ctx.stroke();
-    });
+    // 1. 고정 캔버스 가이드 (사방 5% 안전 여백선 + 50% 중앙 십자선)
+    var marginX = Math.round(w * 0.05);
+    var marginY = Math.round(h * 0.05);
+
+    ctx.strokeStyle = 'rgba(14, 165, 233, 0.45)';
+    ctx.lineWidth = 1 / zoom;
+    ctx.setLineDash([5 / zoom, 5 / zoom]);
+
+    // 여백선
+    ctx.strokeRect(marginX, marginY, w - marginX * 2, h - marginY * 2);
+
+    // 가로 / 세로 중앙 십자선
+    ctx.beginPath();
+    ctx.moveTo(w / 2, 0);
+    ctx.lineTo(w / 2, h);
+    ctx.moveTo(0, h / 2);
+    ctx.lineTo(w, h / 2);
+    ctx.stroke();
+
+    // 2. 객체 이동 중 스마트 스냅 가이드선 (핑크색)
+    if (active && lines.length) {
+      ctx.strokeStyle = COLOR;
+      ctx.lineWidth = 1.2 / zoom;
+      ctx.setLineDash([6 / zoom, 4 / zoom]);
+
+      lines.forEach(function (line) {
+        ctx.beginPath();
+        if (line.axis === 'v') {
+          ctx.moveTo(line.value, -h * 0.05);
+          ctx.lineTo(line.value, h * 1.05);
+        } else {
+          ctx.moveTo(-w * 0.05, line.value);
+          ctx.lineTo(w * 1.05, line.value);
+        }
+        ctx.stroke();
+      });
+    }
 
     ctx.restore();
   }
 
   api.onMoving = function (opt) {
+    if (!IE.state.guidesVisible) return;
     var target = opt.target;
     if (!target) return;
 
