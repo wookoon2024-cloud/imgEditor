@@ -759,6 +759,9 @@ window.IE = window.IE || {};
 
       IE.state.docName = template.id;
       IE.doc.newDocumentFromTemplate(template);
+      if (IE.pages && typeof IE.pages.setVisible === 'function') {
+        IE.pages.setVisible(true);
+      }
       util.toast('템플릿 「' + template.name + '」 ' + template.pages.length + '장을 불러왔습니다.');
       return true;
     }

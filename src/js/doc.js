@@ -460,6 +460,9 @@ window.IE = window.IE || {};
     IE.canvas.zoomToFit();
     if (IE.panels) IE.panels.refresh();
     if (IE.app) IE.app.updateStatus();
+    if (IE.pages && typeof IE.pages.setVisible === 'function' && IE.state.pages.length > 1) {
+      IE.pages.setVisible(true);
+    }
   };
 
   api.newDocument = function (width, height, background, objects) {
