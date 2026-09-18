@@ -733,8 +733,7 @@ window.IE = window.IE || {};
     function closeModal() {
       if (chkToday && chkToday.checked) {
         try {
-          var expire = Date.now() + 24 * 60 * 60 * 1000;
-          localStorage.setItem('hide_beta_notice_until', String(expire));
+          localStorage.setItem('hide_beta_notice_forever', '1');
         } catch (e) {}
       }
       modal.hidden = true;
@@ -747,13 +746,14 @@ window.IE = window.IE || {};
       if (ev.target === modal) closeModal();
     });
 
-    // 실행 즉시 팝업 오픈 (오늘 하루 보지 않기 여부 체크)
-    var hideUntil = 0;
+    // 실행 즉시 팝업 오픈 (다시 보지 않기 여부 체크)
+    var hideForever = false;
     try {
-      hideUntil = parseInt(localStorage.getItem('hide_beta_notice_until') || '0', 10);
+      hideForever = localStorage.getItem('hide_beta_notice_forever') === '1' ||
+                    (parseInt(localStorage.getItem('hide_beta_notice_until') || '0', 10) > Date.now());
     } catch (e) {}
 
-    if (Date.now() > hideUntil) {
+    if (!hideForever) {
       modal.hidden = false;
     }
   }
