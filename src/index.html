@@ -496,11 +496,11 @@
 
       <aside class="image-side">
         <div class="image-pane" id="image-pane-cutout">
-          <div class="co-now" id="co-now-cutout">지금 도구 <b>매직툴</b></div>
+          <div class="co-now" id="co-now-cutout">지금 도구 <b>선택 안 됨</b></div>
           <div class="co-block">
             <div class="co-label">도구</div>
             <div class="seg wrap" id="image-modes">
-              <button type="button" data-image-mode="magic" class="is-active">
+              <button type="button" data-image-mode="magic">
                 <svg viewBox="0 0 24 24"><path d="M15 4V2M15 22v-2M8.5 8.5 7 7M21.5 15.5 20 14M22 8.5 20.5 10M7 20.5 8.5 19"/><path d="M14 6 6 14l4 4 8-8z"/></svg>매직툴
               </button>
               <button type="button" data-image-mode="brush">
@@ -609,7 +609,7 @@
         </div>
 
         <div class="image-pane" id="image-pane-retouch" hidden>
-          <div class="co-now" id="co-now-retouch">지금 도구 <b>턱 갸름</b></div>
+          <div class="co-now" id="co-now-retouch">지금 도구 <b>선택 안 됨</b></div>
           <div class="co-block">
             <div class="co-label">빠른 보정 — 눌러서 바로 적용</div>
             <div class="tone-presets" id="image-presets"></div>
@@ -673,7 +673,7 @@
             <div class="co-label">얼굴 성형 — 브러시로 직접</div>
             <div class="seg wrap" id="image-sculpt">
               <button type="button" data-image-sculpt="push">밀기</button>
-              <button type="button" data-image-sculpt="pinch" class="is-active">턱 갸름</button>
+              <button type="button" data-image-sculpt="pinch">턱 갸름</button>
               <button type="button" data-image-sculpt="bulge">눈 키우기</button>
               <button type="button" data-image-sculpt="swirl">돌리기</button>
             </div>
@@ -693,7 +693,7 @@
           <div class="co-block">
             <div class="co-label">잡티 제거 · 분위기</div>
             <div class="seg wrap" id="image-heal-row">
-              <button type="button" data-image-heal="off" class="is-active">잡티 제거 끔</button>
+              <button type="button" data-image-heal="off">잡티 제거 끔</button>
               <button type="button" data-image-heal="on">잡티 제거</button>
             </div>
             <div class="co-row">
@@ -713,7 +713,7 @@
         </div>
 
         <div class="image-pane" id="image-pane-crop" hidden>
-          <div class="co-now" id="co-now-crop">지금 도구 <b>자르기</b></div>
+          <div class="co-now" id="co-now-crop">지금 도구 <b>선택 안 됨</b></div>
           <div class="co-block">
             <div class="co-label">비율</div>
             <div class="ratio-grid" id="image-crop-ratios"></div>
@@ -749,7 +749,7 @@
           <div class="co-block">
             <div class="co-label">자를 영역</div>
             <div class="co-btn-row">
-              <button type="button" class="btn-mini btn-mini-solid" id="image-crop-apply">
+              <button type="button" class="btn-mini" id="image-crop-apply">
                 <svg viewBox="0 0 24 24"><path d="M6 2v16h16"/><path d="M2 6h16v16"/></svg>이 영역으로 자르기
               </button>
             </div>

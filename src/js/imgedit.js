@@ -209,7 +209,7 @@ window.IE = window.IE || {};
 
       tab: tab || 'cutout',
 
-      mode: 'magic',
+      mode: null,
       brushSize: Math.max(16, Math.round(Math.max(w, h) * 0.05)),
       tolerance: 22,
       magicTolerance: 24,
@@ -238,7 +238,7 @@ window.IE = window.IE || {};
       mask: null,
       cacheReady: false,
 
-      sculpt: 'pinch',
+      sculpt: null,
       sculptSize: Math.max(24, Math.round(Math.max(w, h) * 0.12)),
       sculptIntensity: 45,
 
@@ -253,19 +253,18 @@ window.IE = window.IE || {};
 
     var s = state;
 
-    if (s.tab === 'crop') initCrop();
     if (s.tab === 'retouch') renderAllPresets();
 
     renderCropRatios();
     syncTabs();
     syncControls();
+    syncCropBox();
     fitView();
     refreshWork();
     refreshAll();
     hideBrush();
-    updateInfo(s.tab === 'crop'
-      ? '자를 영역을 끌어 옮기고, 모서리 손잡이로 크기를 바꾸세요.'
-      : CUT_MODES.magic.hint);
+    updateBrushCursor();
+    updateInfo('작업할 도구를 선택하세요.');
 
     return true;
   }
@@ -304,25 +303,33 @@ window.IE = window.IE || {};
     s.tab = (tab === 'retouch' || tab === 'crop') ? tab : 'cutout';
 
     if (s.tab === 'crop') {
-      initCrop();
       fitView();
       syncCropBox();
     } else if (s.crop) {
       // 자르지 않고 탭만 옮기면 미리보기만 버린다 (사진은 그대로)
       s.crop = null;
       fitView();
+      syncCropBox();
     }
 
     syncTabs();
+    syncControls();
 
     if (s.tab === 'cutout') {
-      updateInfo(CUT_MODES[s.mode].hint + (s.selection ? selectionText() : ''));
+      updateInfo(s.mode && CUT_MODES[s.mode]
+        ? (CUT_MODES[s.mode].hint + (s.selection ? ' · ' + selectionText() : ''))
+        : '도구를 선택하세요 (매직툴, 선택 브러시, 지우개, 복원).');
     } else if (s.tab === 'retouch') {
       renderAllPresets();
-      updateInfo(SCULPT_MODES[s.sculpt].hint);
+      updateInfo(s.healOn
+        ? '점·흉터를 클릭하거나 문질러 지우세요. 주변 피부 조각으로 덮습니다.'
+        : (s.sculpt && SCULPT_MODES[s.sculpt]
+            ? SCULPT_MODES[s.sculpt].hint
+            : '얼굴 성형 도구(밀기·턱 갸름 등) 또는 잡티 제거를 선택하세요.'));
     } else {
-      updateInfo('자를 영역을 끌어 옮기고, 모서리 손잡이로 크기를 바꾸세요. ' +
-        '[이 영역으로 자르기] 를 눌러야 확정됩니다.');
+      updateInfo(s.crop
+        ? '자를 영역을 끌어 옮기고, 모서리 손잡이로 크기를 바꾸세요. [이 영역으로 자르기] 를 눌러야 확정됩니다.'
+        : '자를 비율(자유, 1:1, 3:4 등)을 선택하거나 사진 위를 끌어 자를 영역을 정하세요.');
     }
 
     refreshAll();
@@ -682,8 +689,8 @@ window.IE = window.IE || {};
   function brushLabel() {
     var s = state;
     if (!s) return '';
-    if (s.tab === 'cutout') return CUT_MODES[s.mode].label;
-    return s.healOn ? '잡티 제거' : SCULPT_MODES[s.sculpt].label;
+    if (s.tab === 'cutout') return (s.mode && CUT_MODES[s.mode]) ? CUT_MODES[s.mode].label : '';
+    return s.healOn ? '잡티 제거' : (s.sculpt && SCULPT_MODES[s.sculpt] ? SCULPT_MODES[s.sculpt].label : '');
   }
 
   /** 지금 도구가 브러시(원형 커서)를 쓰는지 */
@@ -694,7 +701,10 @@ window.IE = window.IE || {};
     if (s.tab === 'cutout') {
       return s.mode === 'brush' || s.mode === 'erase' || s.mode === 'restore';
     }
-    return true;
+    if (s.tab === 'retouch') {
+      return !!s.healOn || !!s.sculpt;
+    }
+    return false;
   }
 
   function showBrush(clientX, clientY) {
@@ -738,9 +748,35 @@ window.IE = window.IE || {};
     var view = util.$('image-canvas');
     if (!s || !view) return;
 
-    // 커서는 항상 보이게 둔다 (안 보여서 불편하다는 의견 반영).
-    // 브러시 도구일 때는 원형 표시가 함께 따라온다.
-    view.style.cursor = 'crosshair';
+    if (s.tab === 'crop') {
+      view.style.cursor = 'default';
+      hideBrush();
+      return;
+    }
+
+    if (s.tab === 'cutout') {
+      if (!s.mode) {
+        view.style.cursor = 'default';
+        hideBrush();
+        return;
+      }
+      view.style.cursor = 'crosshair';
+      if (!usesBrush()) hideBrush();
+      return;
+    }
+
+    if (s.tab === 'retouch') {
+      if (!s.healOn && !s.sculpt) {
+        view.style.cursor = 'default';
+        hideBrush();
+        return;
+      }
+      view.style.cursor = 'crosshair';
+      if (!usesBrush()) hideBrush();
+      return;
+    }
+
+    view.style.cursor = 'default';
     if (!usesBrush()) hideBrush();
   }
 
@@ -1024,7 +1060,7 @@ window.IE = window.IE || {};
     syncControls();
 
     if (!silent) {
-      updateInfo(CUT_MODES[s.mode].hint);
+      updateInfo(s.mode && CUT_MODES[s.mode] ? CUT_MODES[s.mode].hint : '선택을 해제했습니다.');
     }
   }
 
@@ -1032,19 +1068,29 @@ window.IE = window.IE || {};
     var s = state;
     if (!s) return;
 
-    s.mode = mode;
+    if (s.mode === mode) {
+      s.mode = null;
+    } else {
+      s.mode = mode;
+      s.sculpt = null;
+      s.healOn = false;
+      s.crop = null;
+    }
 
     // 선택을 쓰지 않는 도구로 바꾸면 선택 표시를 지운다
-    if (mode !== 'magic' && mode !== 'brush') clearSelection(true);
+    if (s.mode !== 'magic' && s.mode !== 'brush') clearSelection(true);
 
     // 매직툴은 클릭, 선택 브러시는 문지르기다 — 붓 크기를 도구에 맞춰 준다
-    if (mode === 'brush' && s.brushSize < 24) {
+    if (s.mode === 'brush' && s.brushSize < 24) {
       s.brushSize = Math.max(24, Math.round(s.size.w * 0.08));
     }
 
     syncControls();
+    syncCropBox();
     updateBrushCursor();
-    updateInfo(CUT_MODES[mode].hint + (s.selection ? ' · ' + selectionText() : ''));
+    updateInfo(s.mode && CUT_MODES[s.mode]
+      ? (CUT_MODES[s.mode].hint + (s.selection ? ' · ' + selectionText() : ''))
+      : '도구를 선택하세요 (매직툴, 선택 브러시, 지우개, 복원).');
   }
 
   /* ================================================== 사진 자르기 */
@@ -1164,10 +1210,24 @@ window.IE = window.IE || {};
    */
   function syncCropBox() {
     var s = state;
-    var c = s.crop;
     var box = util.$('image-crop-box');
-    if (!s || !c || !box) return;
+    var applyBtn = util.$('image-crop-apply');
+    if (!s || !box) return;
 
+    if (!s.crop) {
+      box.hidden = true;
+      ['ic-shade-t', 'ic-shade-b', 'ic-shade-l', 'ic-shade-r'].forEach(function (id) {
+        setShade(id, 'display:none');
+      });
+      setText('image-crop-size', '-');
+      if (applyBtn) {
+        applyBtn.classList.remove('btn-mini-solid', 'is-active');
+      }
+      return;
+    }
+
+    box.hidden = false;
+    var c = s.crop;
     var W = c.txSize.w;
     var H = c.txSize.h;
     var r = c.rect;
@@ -1189,6 +1249,10 @@ window.IE = window.IE || {};
 
     setText('image-crop-size',
       Math.round(r.w) + ' × ' + Math.round(r.h) + ' px  ·  ' + ratioLabel(c));
+
+    if (applyBtn) {
+      applyBtn.classList.add('btn-mini-solid', 'is-active');
+    }
   }
 
   function ratioLabel(c) {
@@ -1205,7 +1269,21 @@ window.IE = window.IE || {};
   /** 비율을 고르면 그 비율의 가장 큰 영역으로 맞춘다 */
   function setCropRatio(id) {
     var s = state;
-    if (!s || !s.crop) return;
+    if (!s) return;
+
+    if (s.crop && s.crop.ratioId === id) {
+      s.crop = null;
+      syncCropBox();
+      syncControls();
+      updateInfo('자르기 영역 선택을 해제했습니다.');
+      return;
+    }
+
+    s.mode = null;
+    s.sculpt = null;
+    s.healOn = false;
+
+    if (!s.crop) initCrop();
 
     var preset = null;
     for (var i = 0; i < CROP_RATIOS.length; i++) {
@@ -1340,16 +1418,18 @@ window.IE = window.IE || {};
 
   function resetCrop() {
     var s = state;
-    if (!s || !s.crop) return;
+    if (!s) return;
 
-    s.crop.rotation = 0;
-    s.crop.straighten = 0;
-    s.crop.flipH = false;
-    s.crop.flipV = false;
-    s.crop.ratioId = 'free';
-    s.crop.ratio = null;
+    if (s.crop) {
+      s.crop.rotation = 0;
+      s.crop.straighten = 0;
+      s.crop.flipH = false;
+      s.crop.flipV = false;
+      s.crop.ratioId = 'free';
+      s.crop.ratio = null;
+    }
+    s.crop = null;
 
-    rebuildCropSource();
     syncCropBox();
     syncControls();
     fitView();
@@ -1410,8 +1490,8 @@ window.IE = window.IE || {};
     overlayCache = null;
 
     invalidateCache();
+    syncCropBox();
     syncControls();
-    initCrop();
     fitView();
     refreshWork();
     refreshAll();
@@ -1869,19 +1949,27 @@ window.IE = window.IE || {};
 
     var cutout = util.$('co-now-cutout');
     if (cutout) {
-      cutout.innerHTML = '지금 도구 <b>' + (MODE_NAME[s.mode] || '매직툴') + '</b>';
+      cutout.innerHTML = s.mode
+        ? '지금 도구 <b>' + (MODE_NAME[s.mode] || s.mode) + '</b>'
+        : '지금 도구 <b>선택 안 됨</b>';
     }
 
     var retouch = util.$('co-now-retouch');
     if (retouch) {
-      retouch.innerHTML = s.healOn
-        ? '지금 도구 <b>잡티 제거</b> — 문질러 지웁니다'
-        : '지금 도구 <b>' + (SCULPT_NAME[s.sculpt] || '턱 갸름') + '</b> — 끌어서 밀어 줍니다';
+      if (s.healOn) {
+        retouch.innerHTML = '지금 도구 <b>잡티 제거</b> — 문질러 지웁니다';
+      } else if (s.sculpt) {
+        retouch.innerHTML = '지금 도구 <b>' + (SCULPT_NAME[s.sculpt] || s.sculpt) + '</b> — 끌어서 밀어 줍니다';
+      } else {
+        retouch.innerHTML = '지금 도구 <b>선택 안 됨</b>';
+      }
     }
 
     var crop = util.$('co-now-crop');
     if (crop) {
-      crop.innerHTML = '지금 도구 <b>자르기 · 회전</b> — 상자를 끌어 정합니다';
+      crop.innerHTML = s.crop
+        ? '지금 도구 <b>자르기 · 회전</b> — 상자를 끌어 정합니다'
+        : '지금 도구 <b>선택 안 됨</b>';
     }
   }
 
@@ -1894,7 +1982,7 @@ window.IE = window.IE || {};
       function (button) {
         button.classList.toggle(
           'is-active',
-          button.getAttribute('data-image-mode') === s.mode
+          !!s.mode && button.getAttribute('data-image-mode') === s.mode
         );
       }
     );
@@ -1904,7 +1992,7 @@ window.IE = window.IE || {};
       function (button) {
         button.classList.toggle(
           'is-active',
-          button.getAttribute('data-image-sculpt') === s.sculpt
+          !!s.sculpt && button.getAttribute('data-image-sculpt') === s.sculpt
         );
       }
     );
@@ -1929,10 +2017,8 @@ window.IE = window.IE || {};
     Array.prototype.forEach.call(
       document.querySelectorAll('#image-heal-row [data-image-heal]'),
       function (button) {
-        button.classList.toggle(
-          'is-active',
-          (button.getAttribute('data-image-heal') === 'on') === !!s.healOn
-        );
+        var action = button.getAttribute('data-image-heal');
+        button.classList.toggle('is-active', action === 'on' && !!s.healOn);
       }
     );
 
@@ -1958,9 +2044,9 @@ window.IE = window.IE || {};
     var magicBox = util.$('image-magic-options');
     if (magicBox) magicBox.hidden = s.mode !== 'magic';
 
-    // 붓 굵기 — 매직툴(클릭)만 빼고 모두 쓴다
+    // 붓 굵기 — 매직툴(클릭)만 빼고 모두 쓴다 (도구가 선택되었을 때만)
     var brushBox = util.$('image-brush-options');
-    if (brushBox) brushBox.hidden = s.mode === 'magic';
+    if (brushBox) brushBox.hidden = !s.mode || s.mode === 'magic';
 
     // 선택 다듬기 — 고른 게 있을 때만 할 일이 있다
     updateSelectionSummary();
@@ -2159,9 +2245,15 @@ window.IE = window.IE || {};
       if (!point) return;
 
       // 매직툴은 '클릭 한 번 = 선택' 이다 (문지르지 않는다)
-      if (s.tab === 'cutout' && s.mode === 'magic') {
-        selectAt(point, event.shiftKey);
-        return;
+      if (s.tab === 'cutout') {
+        if (!s.mode) {
+          util.toast('먼저 도구를 선택하세요.');
+          return;
+        }
+        if (s.mode === 'magic') {
+          selectAt(point, event.shiftKey);
+          return;
+        }
       }
 
       // 선택 브러시는 되돌리기 스택을 쓰지 않는다 — 픽셀을 건드리지 않으므로
@@ -2183,16 +2275,23 @@ window.IE = window.IE || {};
 
       // 잡티 제거 — 한 획 동안 쓸 원본을 한 번만 떠 둔다
       // (덮은 자리를 다시 베끼면 번지므로 항상 처음 상태에서 가져온다)
-      if (s.tab === 'retouch' && s.healOn) {
-        snapshot();
-        s.painting = true;
-        s.dirty = true;
-        s.healSrc = s.base.getContext('2d').getImageData(0, 0, s.size.w, s.size.h);
-        last = null;
+      if (s.tab === 'retouch') {
+        if (!s.healOn && !s.sculpt) {
+          util.toast('먼저 얼굴 성형 도구 또는 잡티 제거를 선택하세요.');
+          return;
+        }
 
-        healStrokeAt(event);
-        updateInfo('잡티를 주변 조각으로 덮는 중…');
-        return;
+        if (s.healOn) {
+          snapshot();
+          s.painting = true;
+          s.dirty = true;
+          s.healSrc = s.base.getContext('2d').getImageData(0, 0, s.size.w, s.size.h);
+          last = null;
+
+          healStrokeAt(event);
+          updateInfo('잡티를 주변 조각으로 덮는 중…');
+          return;
+        }
       }
 
       snapshot();
@@ -2202,7 +2301,7 @@ window.IE = window.IE || {};
       last = null;
 
       if (s.tab === 'cutout') cutStroke(event);
-      else sculptStrokeAt(event);
+      else if (s.tab === 'retouch' && s.sculpt) sculptStrokeAt(event);
 
       refreshAll();
     });
@@ -2282,24 +2381,40 @@ window.IE = window.IE || {};
     var pointAt = function (event) {
       var s = state;
       var view = util.$('image-canvas');
-      if (!s || !s.crop || !view) return null;
+      if (!s || !view) return null;
 
       var rect = view.getBoundingClientRect();
       if (!rect.width || !rect.height) return null;
 
+      var txW = s.crop ? s.crop.txSize.w : s.size.w;
+      var txH = s.crop ? s.crop.txSize.h : s.size.h;
+
       return {
-        x: ((event.clientX - rect.left) / rect.width) * s.crop.txSize.w,
-        y: ((event.clientY - rect.top) / rect.height) * s.crop.txSize.h
+        x: ((event.clientX - rect.left) / rect.width) * txW,
+        y: ((event.clientY - rect.top) / rect.height) * txH
       };
     };
 
     wrap.addEventListener('mousedown', function (event) {
       var s = state;
-      if (!s || !s.crop || event.button !== 0) return;
+      if (!s || event.button !== 0) return;
 
       var p = pointAt(event);
       if (!p) return;
       event.preventDefault();
+
+      if (!s.crop) {
+        initCrop();
+        s.mode = null;
+        s.sculpt = null;
+        s.healOn = false;
+        s.crop.rect = { x: p.x, y: p.y, w: 8, h: 8 };
+        drag = { kind: 'new', from: p };
+        syncCropBox();
+        syncControls();
+        updateBrushCursor();
+        return;
+      }
 
       var handle = event.target.getAttribute && event.target.getAttribute('data-ic');
 
@@ -2392,9 +2507,19 @@ window.IE = window.IE || {};
       function (button) {
         button.addEventListener('click', function () {
           if (!state) return;
-          state.sculpt = button.getAttribute('data-image-sculpt');
+          var target = button.getAttribute('data-image-sculpt');
+          if (state.sculpt === target) {
+            state.sculpt = null;
+            updateInfo('얼굴 성형 도구 선택을 해제했습니다.');
+          } else {
+            state.sculpt = target;
+            state.healOn = false;
+            state.mode = null;
+            if (state.crop) { state.crop = null; syncCropBox(); }
+            updateInfo(SCULPT_MODES[state.sculpt].hint);
+          }
           syncControls();
-          updateInfo(SCULPT_MODES[state.sculpt].hint);
+          updateBrushCursor();
         });
       }
     );
@@ -2444,12 +2569,24 @@ window.IE = window.IE || {};
       function (button) {
         button.addEventListener('click', function () {
           if (!state) return;
-          state.healOn = button.getAttribute('data-image-heal') === 'on';
+          var target = button.getAttribute('data-image-heal');
+          if (target === 'on') {
+            if (state.healOn) {
+              state.healOn = false;
+              updateInfo('잡티 제거를 껐습니다.');
+            } else {
+              state.healOn = true;
+              state.sculpt = null;
+              state.mode = null;
+              if (state.crop) { state.crop = null; syncCropBox(); }
+              updateInfo('점·흉터를 클릭하거나 문질러 지우세요. 주변 피부 조각으로 덮습니다.');
+            }
+          } else {
+            state.healOn = false;
+            updateInfo('잡티 제거를 껐습니다.');
+          }
           syncControls();
           updateBrushCursor();
-          updateInfo(state.healOn
-            ? '점·흉터를 클릭하거나 문질러 지우세요. 주변 피부 조각으로 덮습니다.'
-            : SCULPT_MODES[state.sculpt].hint);
         });
       }
     );
@@ -2482,10 +2619,38 @@ window.IE = window.IE || {};
     util.on('image-rot-left', 'click', function () { rotateCrop(-1); });
     util.on('image-rot-right', 'click', function () { rotateCrop(1); });
     util.on('image-flip-h', 'click', function () { flipCrop('h'); });
-    util.on('image-flip-v', 'click', function () { flipCrop('v'); });
-    util.on('image-crop-apply', 'click', applyCrop);
-    util.on('image-crop-max', 'click', maxCrop);
-    util.on('image-crop-center', 'click', centerCrop);
+    util.on('image-crop-apply', 'click', function () {
+      if (!state) return;
+      if (!state.crop) {
+        initCrop();
+        state.mode = null;
+        state.sculpt = null;
+        state.healOn = false;
+        syncCropBox();
+        syncControls();
+        updateInfo('자를 영역을 조절한 뒤 다시 [이 영역으로 자르기]를 누르세요.');
+        return;
+      }
+      applyCrop();
+    });
+    util.on('image-crop-max', 'click', function () {
+      if (!state) return;
+      if (!state.crop) initCrop();
+      state.mode = null;
+      state.sculpt = null;
+      state.healOn = false;
+      maxCrop();
+      syncControls();
+    });
+    util.on('image-crop-center', 'click', function () {
+      if (!state) return;
+      if (!state.crop) initCrop();
+      state.mode = null;
+      state.sculpt = null;
+      state.healOn = false;
+      centerCrop();
+      syncControls();
+    });
     util.on('image-crop-reset', 'click', resetCrop);
 
     slider('image-brightness', function (v) {
