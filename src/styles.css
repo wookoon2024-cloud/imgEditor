@@ -3329,14 +3329,19 @@ kbd {
 .new-doc-info b {
   font-size: 13.5px;
   color: var(--ink-1);
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: -0.2px;
 }
 
 .new-doc-info span {
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--brand-700);
+}
+
+.new-doc-card b,
+.new-doc-card span {
+  font-weight: 400 !important;
 }
 
 .new-doc-info small {
