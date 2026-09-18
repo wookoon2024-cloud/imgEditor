@@ -3279,6 +3279,10 @@ kbd {
   flex-direction: column;
 }
 
+.new-doc-modal .modal-head h2 {
+  font-weight: 400;
+}
+
 .new-doc-body {
   max-height: calc(88vh - 90px);
   overflow-y: auto;
