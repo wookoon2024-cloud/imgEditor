@@ -11,15 +11,17 @@
 
 ---
 
-## 📥 다운로드 (바로 실행)
+## 📥 다운로드 (스마트폰 · PC 원클릭 다운로드)
 
-| 파일 | 설명 | 링크 |
+| 파일 | 설명 | 원클릭 다운로드 링크 |
 | :--- | :--- | :--- |
-| 🌐 **ImgEditor.html** | **단일 HTML 실행 파일 (설치 불필요, 더블클릭 실행)** | [다운로드 (HTML)](dist/ImgEditor.html) |
-| 📄 **프로그램_설명글.txt** | 공무원 자료실/게시판 등록용 안내문 전문 | [열기](프로그램_설명글.txt) |
+| 📦 **ImgEditor.zip** | **배포용 압축 파일 (HTML + 설명서 포함, 스마트폰·PC 즉시 다운로드)** | [⬇️ 압축 파일 받기 (ZIP)](https://github.com/wookoon2024-cloud/imgEditor/raw/main/ImgEditor.zip) |
+| 🌐 **ImgEditor.html** | 단일 HTML 실행 파일 (설치 불필요, 바로 실행) | [⬇️ HTML 파일 받기](https://github.com/wookoon2024-cloud/imgEditor/raw/main/dist/ImgEditor.html) |
+| 📄 **프로그램_설명글.txt** | 공무원 자료실/게시판 등록용 안내문 전문 | [📄 안내문 보기](https://github.com/wookoon2024-cloud/imgEditor/raw/main/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8_%EC%84%A4%EB%AA%85%EA%B8%80.txt) |
 
-> 💡 **설치 프로그램 없음 · 관리자 권한 불필요 · 서버 통신 0회**  
-> 다운로드 후 더블클릭만 하면 Edge, Chrome, Whale 등 웹 브라우저에서 즉시 실행됩니다.
+> 💡 **스마트폰/모바일 다운로드 안내**:  
+> 스마트폰이나 태블릿에서도 위 **[⬇️ 압축 파일 받기 (ZIP)]** 링크를 누르면 웹페이지 이동 없이 즉시 내 휴대폰 '다운로드' 폴더로 파일이 저장됩니다.  
+> (PC에서는 다운로드 후 압축을 풀거나 더블클릭하면 즉시 실행됩니다.)
 
 ---
 
