@@ -15,8 +15,7 @@
 
 | 파일 | 설명 | 링크 |
 | :--- | :--- | :--- |
-| 🌐 **ImgEditor.html** | **최신 단일 HTML 실행 파일 (설치 불필요, 더블클릭 실행)** | [다운로드 (HTML)](dist/ImgEditor.html) |
-| 📦 **ImgEditor.zip** | 배포용 단일 패키지 압축 파일 | [다운로드 (Zip)](dist/ImgEditor.zip) |
+| 🌐 **ImgEditor.html** | **단일 HTML 실행 파일 (설치 불필요, 더블클릭 실행)** | [다운로드 (HTML)](dist/ImgEditor.html) |
 | 📄 **프로그램_설명글.txt** | 공무원 자료실/게시판 등록용 안내문 전문 | [열기](프로그램_설명글.txt) |
 
 > 💡 **설치 프로그램 없음 · 관리자 권한 불필요 · 서버 통신 0회**  
