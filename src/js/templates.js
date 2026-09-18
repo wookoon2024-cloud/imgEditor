@@ -1845,6 +1845,1357 @@ window.IE = window.IE || {};
         })
       ]
     }
+,
+    {
+      id: 'doc-weekly-meeting',
+      category: 'doc',
+      name: '주간 업무보고 및 회의록',
+      note: 'A4(1240×1754) 부서 주간 추진실적 및 차주 계획 회의 공식 서식',
+      width: 1240,
+      height: 1754,
+      background: '#ffffff',
+      objects: [
+        rect({
+          left: 80,
+          top: 80,
+          width: 1080,
+          height: 6,
+          fill: '#1e3a8a'
+        }),
+        text({
+          text: '병무행정 실무 서식 제14호',
+          left: 80,
+          top: 105,
+          width: 500,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#64748b'
+        }),
+        text({
+          text: '주간 주요업무 추진실적 및 계획',
+          left: 80,
+          top: 140,
+          width: 1080,
+          fontSize: 44,
+          fontWeight: 900,
+          fill: '#0f172a'
+        }),
+        rect({
+          left: 80,
+          top: 215,
+          width: 1080,
+          height: 2,
+          fill: '#cbd5e1'
+        }),
+        rect({
+          left: 80,
+          top: 235,
+          width: 1080,
+          height: 110,
+          rx: 8,
+          ry: 8,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 1.5
+        }),
+        text({
+          text: '• 회의일시 :',
+          left: 105,
+          top: 255,
+          width: 120,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b'
+        }),
+        text({
+          text: '2026. 09. 21.(월) 09:30 ~ 11:00',
+          left: 215,
+          top: 255,
+          width: 380,
+          fontSize: 19,
+          fill: '#334155'
+        }),
+        text({
+          text: '• 회의장소 :',
+          left: 620,
+          top: 255,
+          width: 120,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b'
+        }),
+        text({
+          text: '본관 3층 소회의실 (영상회의 병행)',
+          left: 730,
+          top: 255,
+          width: 410,
+          fontSize: 19,
+          fill: '#334155'
+        }),
+        text({
+          text: '• 주재/보고 :',
+          left: 105,
+          top: 295,
+          width: 120,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b'
+        }),
+        text({
+          text: '운영지원과장 / 각 팀장 및 실무자',
+          left: 215,
+          top: 295,
+          width: 380,
+          fontSize: 19,
+          fill: '#334155'
+        }),
+        text({
+          text: '• 참석인원 :',
+          left: 620,
+          top: 295,
+          width: 120,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b'
+        }),
+        text({
+          text: '총 14명 (과장 1, 팀장 4, 담당 9)',
+          left: 730,
+          top: 295,
+          width: 410,
+          fontSize: 19,
+          fill: '#334155'
+        }),
+        text({
+          text: 'Ⅰ. 금주 주요업무 추진실적',
+          left: 80,
+          top: 380,
+          width: 500,
+          fontSize: 26,
+          fontWeight: 900,
+          fill: '#1e3a8a'
+        }),
+        rect({
+          left: 80,
+          top: 425,
+          width: 1080,
+          height: 48,
+          fill: '#1e3a8a'
+        }),
+        text({
+          text: '번호',
+          left: 95,
+          top: 438,
+          width: 70,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        text({
+          text: '주요 업무 추진 내용',
+          left: 190,
+          top: 438,
+          width: 650,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff'
+        }),
+        text({
+          text: '담당자',
+          left: 855,
+          top: 438,
+          width: 120,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        text({
+          text: '진행상태',
+          left: 985,
+          top: 438,
+          width: 120,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 80,
+          top: 473,
+          width: 1080,
+          height: 75,
+          fill: '#ffffff',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '1',
+          left: 95,
+          top: 498,
+          width: 70,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#0f172a',
+          textAlign: 'center'
+        }),
+        text({
+          text: '2026년 하반기 병역판정검사 운영 종합점검 및 시설 보수',
+          left: 190,
+          top: 488,
+          width: 650,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '- 수검자 동선 안전 점검 완료, 대기실 안내 키오스크 교체',
+          left: 190,
+          top: 516,
+          width: 650,
+          fontSize: 16,
+          fill: '#64748b'
+        }),
+        text({
+          text: '홍길동 팀장',
+          left: 855,
+          top: 498,
+          width: 120,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 1010,
+          top: 494,
+          width: 70,
+          height: 32,
+          rx: 6,
+          ry: 6,
+          fill: '#dcfce7'
+        }),
+        text({
+          text: '완료',
+          left: 1010,
+          top: 500,
+          width: 70,
+          fontSize: 16,
+          fontWeight: 700,
+          fill: '#166534',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 80,
+          top: 548,
+          width: 1080,
+          height: 75,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '2',
+          left: 95,
+          top: 573,
+          width: 70,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#0f172a',
+          textAlign: 'center'
+        }),
+        text({
+          text: '찾아가는 병역진로설계 1:1 맞춤 상담 (관내 고교 3개교)',
+          left: 190,
+          top: 563,
+          width: 650,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '- 입영 전 군 특기 및 전역 후 진로 연계 상담 총 142명 실시',
+          left: 190,
+          top: 591,
+          width: 650,
+          fontSize: 16,
+          fill: '#64748b'
+        }),
+        text({
+          text: '이순신 주임',
+          left: 855,
+          top: 573,
+          width: 120,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 1005,
+          top: 569,
+          width: 80,
+          height: 32,
+          rx: 6,
+          ry: 6,
+          fill: '#dbeafe'
+        }),
+        text({
+          text: '진행중',
+          left: 1005,
+          top: 575,
+          width: 80,
+          fontSize: 16,
+          fontWeight: 700,
+          fill: '#1e40af',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 80,
+          top: 623,
+          width: 1080,
+          height: 75,
+          fill: '#ffffff',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '3',
+          left: 95,
+          top: 648,
+          width: 70,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#0f172a',
+          textAlign: 'center'
+        }),
+        text({
+          text: '개인정보보호 주간 안심 마스킹 시스템 실무 교육',
+          left: 190,
+          top: 638,
+          width: 650,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '- 온디바이스 마스킹 툴 전 직원 배포 및 취약점 자체 진단',
+          left: 190,
+          top: 666,
+          width: 650,
+          fontSize: 16,
+          fill: '#64748b'
+        }),
+        text({
+          text: '강감찬 주임',
+          left: 855,
+          top: 648,
+          width: 120,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 1010,
+          top: 644,
+          width: 70,
+          height: 32,
+          rx: 6,
+          ry: 6,
+          fill: '#dcfce7'
+        }),
+        text({
+          text: '완료',
+          left: 1010,
+          top: 650,
+          width: 70,
+          fontSize: 16,
+          fontWeight: 700,
+          fill: '#166534',
+          textAlign: 'center'
+        }),
+        text({
+          text: 'Ⅱ. 차주 주요업무 추진계획',
+          left: 80,
+          top: 740,
+          width: 500,
+          fontSize: 26,
+          fontWeight: 900,
+          fill: '#1e3a8a'
+        }),
+        rect({
+          left: 80,
+          top: 785,
+          width: 1080,
+          height: 48,
+          fill: '#334155'
+        }),
+        text({
+          text: '번호',
+          left: 95,
+          top: 798,
+          width: 70,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        text({
+          text: '추진 계획 및 세부 내용',
+          left: 190,
+          top: 798,
+          width: 650,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff'
+        }),
+        text({
+          text: '추진일정',
+          left: 855,
+          top: 798,
+          width: 120,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        text({
+          text: '협조부서',
+          left: 985,
+          top: 798,
+          width: 120,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 80,
+          top: 833,
+          width: 1080,
+          height: 75,
+          fill: '#ffffff',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '1',
+          left: 95,
+          top: 858,
+          width: 70,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#0f172a',
+          textAlign: 'center'
+        }),
+        text({
+          text: '2026 청년 병역·취업 페스타 현장 운영본부 설치 및 예행연습',
+          left: 190,
+          top: 848,
+          width: 650,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '- 행사장 층별 부스 배치(1~3F) 및 음향·네트워크 사전 점검',
+          left: 190,
+          top: 876,
+          width: 650,
+          fontSize: 16,
+          fill: '#64748b'
+        }),
+        text({
+          text: '09.24.(목)',
+          left: 855,
+          top: 858,
+          width: 120,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        text({
+          text: '전 팀 협조',
+          left: 985,
+          top: 858,
+          width: 120,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#0284c7',
+          textAlign: 'center'
+        }),
+        rect({
+          left: 80,
+          top: 908,
+          width: 1080,
+          height: 75,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '2',
+          left: 95,
+          top: 933,
+          width: 70,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#0f172a',
+          textAlign: 'center'
+        }),
+        text({
+          text: '예비군 모바일 전자고지 송달률 제고 및 미열람자 안내 강화',
+          left: 190,
+          top: 923,
+          width: 650,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '- 카카오톡/네이버 알림톡 재발송 및 유선 상담창구 운영',
+          left: 190,
+          top: 951,
+          width: 650,
+          fontSize: 16,
+          fill: '#64748b'
+        }),
+        text({
+          text: '09.25.(금)',
+          left: 855,
+          top: 933,
+          width: 120,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        text({
+          text: '병무민원과',
+          left: 985,
+          top: 933,
+          width: 120,
+          fontSize: 18,
+          fill: '#64748b',
+          textAlign: 'center'
+        }),
+        text({
+          text: 'Ⅲ. 간부 지시사항 및 부서 협조사항',
+          left: 80,
+          top: 1025,
+          width: 500,
+          fontSize: 26,
+          fontWeight: 900,
+          fill: '#1e3a8a'
+        }),
+        rect({
+          left: 80,
+          top: 1070,
+          width: 1080,
+          height: 250,
+          rx: 12,
+          ry: 12,
+          fill: '#f8fafc',
+          stroke: '#cbd5e1',
+          strokeWidth: 1.5
+        }),
+        text({
+          text: '1. 페스타 행사 당일 안전사고 예방 및 밀집 인원 분산 관리 철저',
+          left: 110,
+          top: 1098,
+          width: 1020,
+          fontSize: 21,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '- 에스컬레이터, 비상구 등 병목 구간에 안전요원을 상시 배치하고 비상 대피로 표지판 사전 점검 요망',
+          left: 135,
+          top: 1132,
+          width: 995,
+          fontSize: 18,
+          fill: '#475569'
+        }),
+        text({
+          text: '2. 민원 응대 시 적극행정 마인드 유지 및 개인정보 보호 규정 준수',
+          left: 110,
+          top: 1178,
+          width: 1020,
+          fontSize: 21,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '- 유선 및 창구 상담 시 신분 확인 절차를 철저히 이행하고, 상담 모니터 내 개인정보 보호 필름 부착 상태 점검',
+          left: 135,
+          top: 1212,
+          width: 995,
+          fontSize: 18,
+          fill: '#475569'
+        }),
+        text({
+          text: '3. 하반기 부서 지출품의 및 조기집행 잔여 예산 점검 (09. 30. 한)',
+          left: 110,
+          top: 1258,
+          width: 1020,
+          fontSize: 21,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        rect({
+          left: 80,
+          top: 1620,
+          width: 1080,
+          height: 2,
+          fill: '#e2e8f0'
+        }),
+        text({
+          text: '병무청 운영지원과  |  기안자: 행정주사 홍길동  |  문서분류: 주간업무-2026-038',
+          left: 80,
+          top: 1640,
+          width: 800,
+          fontSize: 17,
+          fill: '#94a3b8'
+        }),
+        text({
+          text: '1 / 1',
+          left: 1100,
+          top: 1640,
+          width: 60,
+          fontSize: 17,
+          fontWeight: 700,
+          fill: '#94a3b8',
+          textAlign: 'right'
+        })
+      ]
+    },
+    {
+      id: 'doc-visit-guide',
+      category: 'doc',
+      name: '청사 방문·견학 안내문',
+      note: 'A4(1240×1754) 단체 견학, 진로체험 방문객용 공식 안내 공문',
+      width: 1240,
+      height: 1754,
+      background: '#ffffff',
+      objects: [
+        rect({
+          left: 80,
+          top: 80,
+          width: 140,
+          height: 38,
+          rx: 6,
+          ry: 6,
+          fill: '#0284c7'
+        }),
+        text({
+          text: '공식 안내문',
+          left: 80,
+          top: 89,
+          width: 140,
+          fontSize: 17,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        text({
+          text: '대한민국 병무청 병역진로설계관',
+          left: 240,
+          top: 89,
+          width: 600,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#0284c7'
+        }),
+        text({
+          text: '2026년도 하반기 청사 방문 및',
+          left: 80,
+          top: 145,
+          width: 1080,
+          fontSize: 46,
+          fontWeight: 900,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '병역진로체험 프로그램 안내',
+          left: 80,
+          top: 210,
+          width: 1080,
+          fontSize: 46,
+          fontWeight: 900,
+          fill: '#0284c7'
+        }),
+        rect({
+          left: 80,
+          top: 285,
+          width: 1080,
+          height: 2,
+          fill: '#cbd5e1'
+        }),
+        rect({
+          left: 80,
+          top: 310,
+          width: 1080,
+          height: 130,
+          rx: 12,
+          ry: 12,
+          fill: '#f0f9ff',
+          stroke: '#bae6fd',
+          strokeWidth: 1.5
+        }),
+        text({
+          text: '귀 기관의 무궁한 발전을 기원합니다.',
+          left: 115,
+          top: 335,
+          width: 1010,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#0369a1'
+        }),
+        text({
+          text: '병무청에서는 청년들의 군 복무 불안감을 해소하고 적성에 맞는 군 특기를 설계할 수 있도록',
+          left: 115,
+          top: 370,
+          width: 1010,
+          fontSize: 18,
+          fill: '#334155'
+        }),
+        text({
+          text: '「찾아가는 병역진로설계 견학 프로그램」을 아래와 같이 운영하오니 많은 신청 바랍니다.',
+          left: 115,
+          top: 400,
+          width: 1010,
+          fontSize: 18,
+          fill: '#334155'
+        }),
+        text({
+          text: '1. 방문 및 견학 개요',
+          left: 80,
+          top: 480,
+          width: 500,
+          fontSize: 26,
+          fontWeight: 900,
+          fill: '#0f172a'
+        }),
+        rect({
+          left: 80,
+          top: 525,
+          width: 1080,
+          height: 240,
+          rx: 8,
+          ry: 8,
+          fill: '#ffffff',
+          stroke: '#cbd5e1',
+          strokeWidth: 1.5
+        }),
+        rect({
+          left: 80,
+          top: 525,
+          width: 220,
+          height: 240,
+          rx: 8,
+          ry: 8,
+          fill: '#f8fafc'
+        }),
+        rect({
+          left: 80,
+          top: 585,
+          width: 1080,
+          height: 1,
+          fill: '#e2e8f0'
+        }),
+        rect({
+          left: 80,
+          top: 645,
+          width: 1080,
+          height: 1,
+          fill: '#e2e8f0'
+        }),
+        rect({
+          left: 80,
+          top: 705,
+          width: 1080,
+          height: 1,
+          fill: '#e2e8f0'
+        }),
+        text({
+          text: '일  시',
+          left: 100,
+          top: 543,
+          width: 180,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b',
+          textAlign: 'center'
+        }),
+        text({
+          text: '2026. 10. 15.(목) 14:00 ~ 16:30 (총 2시간 30분 소요)',
+          left: 330,
+          top: 543,
+          width: 800,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '장  소',
+          left: 100,
+          top: 603,
+          width: 180,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b',
+          textAlign: 'center'
+        }),
+        text({
+          text: '서울지방병무청 본관 2층 병역진로설계관 및 대강당',
+          left: 330,
+          top: 603,
+          width: 800,
+          fontSize: 19,
+          fill: '#334155'
+        }),
+        text({
+          text: '대  상',
+          left: 100,
+          top: 663,
+          width: 180,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b',
+          textAlign: 'center'
+        }),
+        text({
+          text: '관내 고교 재학생 및 군 입영 대상 청년 (회차당 50명 이내)',
+          left: 330,
+          top: 663,
+          width: 800,
+          fontSize: 19,
+          fill: '#334155'
+        }),
+        text({
+          text: '주요내용',
+          left: 100,
+          top: 723,
+          width: 180,
+          fontSize: 19,
+          fontWeight: 700,
+          fill: '#1e293b',
+          textAlign: 'center'
+        }),
+        text({
+          text: '군 특기병 설명회, VR 군 장비 가상체험, 전문 상담관 1:1 진로 상담',
+          left: 330,
+          top: 723,
+          width: 800,
+          fontSize: 19,
+          fill: '#334155'
+        }),
+        text({
+          text: '2. 세부 진행 일정표',
+          left: 80,
+          top: 805,
+          width: 500,
+          fontSize: 26,
+          fontWeight: 900,
+          fill: '#0f172a'
+        }),
+        rect({
+          left: 80,
+          top: 850,
+          width: 1080,
+          height: 46,
+          fill: '#0284c7'
+        }),
+        text({
+          text: '시간',
+          left: 100,
+          top: 863,
+          width: 180,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        text({
+          text: '세부 프로그램',
+          left: 310,
+          top: 863,
+          width: 500,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff'
+        }),
+        text({
+          text: '장소 / 진행자',
+          left: 840,
+          top: 863,
+          width: 300,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#ffffff'
+        }),
+        rect({
+          left: 80,
+          top: 896,
+          width: 1080,
+          height: 60,
+          fill: '#ffffff',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '14:00 ~ 14:30',
+          left: 100,
+          top: 916,
+          width: 180,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        text({
+          text: '방문객 등록 및 오리엔테이션 (홍보영상 시청)',
+          left: 310,
+          top: 916,
+          width: 500,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '본관 대강당 / 운영팀',
+          left: 840,
+          top: 916,
+          width: 300,
+          fontSize: 18,
+          fill: '#64748b'
+        }),
+        rect({
+          left: 80,
+          top: 956,
+          width: 1080,
+          height: 60,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '14:30 ~ 15:20',
+          left: 100,
+          top: 976,
+          width: 180,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        text({
+          text: '군 복무 분야 추천 및 특기병 제도 설명회',
+          left: 310,
+          top: 976,
+          width: 500,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '본관 대강당 / 병역지도관',
+          left: 840,
+          top: 976,
+          width: 300,
+          fontSize: 18,
+          fill: '#64748b'
+        }),
+        rect({
+          left: 80,
+          top: 1016,
+          width: 1080,
+          height: 60,
+          fill: '#ffffff',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '15:20 ~ 16:00',
+          left: 100,
+          top: 1036,
+          width: 180,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        text({
+          text: '첨단 국방 VR 가상 군사훈련 및 시뮬레이터 체험',
+          left: 310,
+          top: 1036,
+          width: 500,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '2층 VR체험관 / 전문교관',
+          left: 840,
+          top: 1036,
+          width: 300,
+          fontSize: 18,
+          fill: '#64748b'
+        }),
+        rect({
+          left: 80,
+          top: 1076,
+          width: 1080,
+          height: 60,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 1
+        }),
+        text({
+          text: '16:00 ~ 16:30',
+          left: 100,
+          top: 1096,
+          width: 180,
+          fontSize: 18,
+          fill: '#334155',
+          textAlign: 'center'
+        }),
+        text({
+          text: '1:1 심층 병역진로 컨설팅 및 만족도 설문',
+          left: 310,
+          top: 1096,
+          width: 500,
+          fontSize: 18,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '상담실 A~E / 상담관',
+          left: 840,
+          top: 1096,
+          width: 300,
+          fontSize: 18,
+          fill: '#64748b'
+        }),
+        text({
+          text: '3. 방문객 준수사항 및 준비물',
+          left: 80,
+          top: 1180,
+          width: 500,
+          fontSize: 26,
+          fontWeight: 900,
+          fill: '#0f172a'
+        }),
+        rect({
+          left: 80,
+          top: 1225,
+          width: 1080,
+          height: 180,
+          rx: 12,
+          ry: 12,
+          fill: '#fffbeb',
+          stroke: '#fef3c7',
+          strokeWidth: 1.5
+        }),
+        text({
+          text: '✔ 본인 확인을 위해 신분증(주민등록증, 학생증, 모바일신분증)을 필히 지참해 주십시오.',
+          left: 115,
+          top: 1255,
+          width: 1010,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#92400e'
+        }),
+        text({
+          text: '✔ 청사 내 보안 구역이므로 지정된 동선 외 임의 이동 및 허가되지 않은 사진 촬영은 엄격히 제한됩니다.',
+          left: 115,
+          top: 1298,
+          width: 1010,
+          fontSize: 18,
+          fill: '#78350f'
+        }),
+        text({
+          text: '✔ 대형 버스 주차는 공간이 협소하므로 방문 3일 전까지 차량 번호를 유선 통보해 주시기 바랍니다.',
+          left: 115,
+          top: 1338,
+          width: 1010,
+          fontSize: 18,
+          fill: '#78350f'
+        }),
+        rect({
+          left: 80,
+          top: 1450,
+          width: 1080,
+          height: 120,
+          rx: 10,
+          ry: 10,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 1.5
+        }),
+        text({
+          text: '문의처: 병역진로설계과 (☎ 02-820-4114, 이메일: mma_career@korea.kr)',
+          left: 115,
+          top: 1475,
+          width: 1010,
+          fontSize: 20,
+          fontWeight: 700,
+          fill: '#1e293b'
+        }),
+        text({
+          text: '서울 영등포구 여의대방로 43길 13 (신길동) 병무청 고객지원센터',
+          left: 115,
+          top: 1515,
+          width: 1010,
+          fontSize: 18,
+          fill: '#64748b'
+        }),
+        text({
+          text: '대 한 민 국   병 무 청 장   [직인생략]',
+          left: 80,
+          top: 1635,
+          width: 1080,
+          fontSize: 32,
+          fontWeight: 900,
+          fill: '#0f172a',
+          textAlign: 'center',
+          charSpacing: 100
+        })
+      ]
+    },
+    {
+      id: 'doc-facility-notice',
+      category: 'doc',
+      name: '청사 중요 공지 안내문',
+      note: 'A4(1240×1754) 엘리베이터, 로비 게시대 부착용 시설/행정 긴급 공지문',
+      width: 1240,
+      height: 1754,
+      background: '#ffffff',
+      objects: [
+        rect({
+          left: 0,
+          top: 0,
+          width: 1240,
+          height: 310,
+          fill: '#b91c1c'
+        }),
+        rect({
+          left: 80,
+          top: 55,
+          width: 280,
+          height: 46,
+          rx: 23,
+          ry: 23,
+          fill: 'rgba(255,255,255,0.2)'
+        }),
+        text({
+          text: '⚠️ 청사 시설 긴급 안내',
+          left: 80,
+          top: 67,
+          width: 280,
+          fontSize: 22,
+          fontWeight: 700,
+          fill: '#ffffff',
+          textAlign: 'center'
+        }),
+        text({
+          text: '청사 승강기 노후설비 교체공사에 따른',
+          left: 80,
+          top: 125,
+          width: 1080,
+          fontSize: 48,
+          fontWeight: 900,
+          fill: '#ffffff'
+        }),
+        text({
+          text: '승강기 운행 중단 및 계단 이용 안내',
+          left: 80,
+          top: 195,
+          width: 1080,
+          fontSize: 44,
+          fontWeight: 800,
+          fill: '#fef08a'
+        }),
+        rect({
+          left: 80,
+          top: 360,
+          width: 1080,
+          height: 200,
+          rx: 16,
+          ry: 16,
+          fill: '#fff1f2',
+          stroke: '#fecdd3',
+          strokeWidth: 2
+        }),
+        text({
+          text: '공사 및 운행 중단 기간 (총 5일간)',
+          left: 120,
+          top: 390,
+          width: 1000,
+          fontSize: 23,
+          fontWeight: 700,
+          fill: '#9f1239'
+        }),
+        text({
+          text: '2026. 10. 12.(월) 08:00 ~ 10. 16.(금) 18:00',
+          left: 120,
+          top: 430,
+          width: 1000,
+          fontSize: 40,
+          fontWeight: 900,
+          fill: '#be123c'
+        }),
+        text({
+          text: '※ 해당 기간 동안 본관 중앙 1~3호기 승강기 전면 가동 중단 (비상용 제외)',
+          left: 120,
+          top: 505,
+          width: 1000,
+          fontSize: 20,
+          fill: '#881337'
+        }),
+        text({
+          text: '📢 청사 이용객 및 직원 협조사항',
+          left: 80,
+          top: 610,
+          width: 800,
+          fontSize: 28,
+          fontWeight: 900,
+          fill: '#0f172a'
+        }),
+        rect({
+          left: 80,
+          top: 660,
+          width: 1080,
+          height: 155,
+          rx: 12,
+          ry: 12,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 2
+        }),
+        text({
+          text: '1. 일반 계단(동편/서편) 이용 요망',
+          left: 120,
+          top: 690,
+          width: 1000,
+          fontSize: 24,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '• 계단 통행 시 안전 손잡이를 잡고 이동해 주시기 바라며, 우측통행을 준수해 주십시오.',
+          left: 120,
+          top: 735,
+          width: 1000,
+          fontSize: 19,
+          fill: '#475569'
+        }),
+        text({
+          text: '• 공사 자재 반입 시간(08:30~09:30)에는 중앙 로비 통행이 일시 혼잡할 수 있습니다.',
+          left: 120,
+          top: 768,
+          width: 1000,
+          fontSize: 19,
+          fill: '#475569'
+        }),
+        rect({
+          left: 80,
+          top: 845,
+          width: 1080,
+          height: 155,
+          rx: 12,
+          ry: 12,
+          fill: '#eff6ff',
+          stroke: '#bfdbfe',
+          strokeWidth: 2
+        }),
+        text({
+          text: '2. 보행 약자(장애인, 임산부, 어르신) 비상 승강기 안내',
+          left: 120,
+          top: 875,
+          width: 1000,
+          fontSize: 24,
+          fontWeight: 700,
+          fill: '#1e40af'
+        }),
+        text({
+          text: '• 휠체어 이용자 및 보행이 불편하신 민원인은 서편 비상용 승강기를 이용하십시오.',
+          left: 120,
+          top: 920,
+          width: 1000,
+          fontSize: 19,
+          fill: '#1e3a8a'
+        }),
+        text({
+          text: '• 1층 종합안내데스크에 요청하시면 직원 동행 도우미 서비스가 즉시 제공됩니다.',
+          left: 120,
+          top: 953,
+          width: 1000,
+          fontSize: 19,
+          fill: '#1e3a8a'
+        }),
+        rect({
+          left: 80,
+          top: 1030,
+          width: 1080,
+          height: 130,
+          rx: 12,
+          ry: 12,
+          fill: '#f8fafc',
+          stroke: '#e2e8f0',
+          strokeWidth: 2
+        }),
+        text({
+          text: '3. 공사 소음 및 분진 발생 양해 요청',
+          left: 120,
+          top: 1060,
+          width: 1000,
+          fontSize: 24,
+          fontWeight: 700,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '• 주간 철거 작업 중 일부 소음이 발생할 수 있습니다. 보다 안전한 시설 환경을 위해 양해 바랍니다.',
+          left: 120,
+          top: 1105,
+          width: 1000,
+          fontSize: 19,
+          fill: '#475569'
+        }),
+        rect({
+          left: 80,
+          top: 1210,
+          width: 1080,
+          height: 140,
+          rx: 14,
+          ry: 14,
+          fill: '#0f172a'
+        }),
+        text({
+          text: '시설 이용에 불편을 드려 대단히 죄송합니다.',
+          left: 120,
+          top: 1245,
+          width: 1000,
+          fontSize: 26,
+          fontWeight: 900,
+          fill: '#ffffff'
+        }),
+        text({
+          text: '문의: 운영지원과 시설관리팀 (☎ 02-820-4230, 4231)  |  상황실: 02-820-4119',
+          left: 120,
+          top: 1290,
+          width: 1000,
+          fontSize: 20,
+          fill: '#94a3b8'
+        }),
+        text({
+          text: '대 한 민 국   병 무 청   운 영 지 원 과',
+          left: 80,
+          top: 1460,
+          width: 1080,
+          fontSize: 34,
+          fontWeight: 900,
+          fill: '#1e293b',
+          textAlign: 'center',
+          charSpacing: 100
+        })
+      ]
+    }
   ];
 
   var byId = {};
