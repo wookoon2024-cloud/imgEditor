@@ -1,6 +1,6 @@
 {
   "name": "img-editor",
-  "version": "1.26.0",
+  "version": "1.27.0",
   "private": true,
   "description": "오프라인(폐쇄망) 환경용 템플릿 기반 이미지 편집기. 소스를 단일 HTML 파일로 빌드해 배포한다.",
   "scripts": {

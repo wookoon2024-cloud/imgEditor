@@ -7,12 +7,13 @@ window.IE = window.IE || {};
 
   var KEY = 'imgeditor.templates.v1';
   var BUNDLE = 'ImgEditorTemplates';
+  var DB_NAME = 'imgeditor_db';
+  var DB_VERSION = 1;
+  var STORE_NAME = 'templates';
 
-  /**
-   * file:// 로 연 페이지에서는 브라우저가 localStorage 접근을 막는 경우가 있다.
-   * 저장이 안 되면 사용자 템플릿을 '파일로만' 다루게 하고, UI 에 그 사실을 알린다.
-   */
-  function probe() {
+  /* --------------------------------------------------- 가용성 점검 */
+
+  function probeLocalStorage() {
     try {
       var test = '__imgeditor_probe__';
       window.localStorage.setItem(test, '1');
@@ -23,10 +24,22 @@ window.IE = window.IE || {};
     }
   }
 
-  var available = probe();
+  function probeIndexedDB() {
+    try {
+      return !!(typeof window !== 'undefined' && window.indexedDB);
+    } catch (err) {
+      return false;
+    }
+  }
 
-  function readAll() {
-    if (!available) return [];
+  var lsAvailable = probeLocalStorage();
+  var idbAvailable = probeIndexedDB();
+  var available = idbAvailable || lsAvailable;
+
+  /* --------------------------------------------------- localStorage Fallback */
+
+  function readLocalStorage() {
+    if (!lsAvailable) return [];
     try {
       var raw = window.localStorage.getItem(KEY);
       if (!raw) return [];
@@ -37,16 +50,174 @@ window.IE = window.IE || {};
     }
   }
 
-  function writeAll(list) {
-    if (!available) return false;
+  function writeLocalStorage(list) {
+    if (!lsAvailable) return false;
     try {
       window.localStorage.setItem(KEY, JSON.stringify(list));
       return true;
     } catch (err) {
-      util.toast('저장 공간이 부족해 템플릿을 보관하지 못했습니다. 파일로 내보내 주세요.');
       return false;
     }
   }
+
+  /* --------------------------------------------------- 인메모리 캐시 & IndexedDB */
+
+  // 초기 응답 속도(0ms) 및 하위 호환성을 위해 localStorage 데이터를 1차 캐시로 적재
+  var cache = readLocalStorage();
+  var dbInstance = null;
+  var dbReady = false;
+  var pendingQueue = [];
+
+  function getAllFromStore(store, callback) {
+    if (typeof store.getAll === 'function') {
+      var req = store.getAll();
+      req.onsuccess = function () {
+        callback(null, req.result || []);
+      };
+      req.onerror = function (e) {
+        callback(e, []);
+      };
+    } else {
+      var items = [];
+      var cursorReq = store.openCursor();
+      cursorReq.onsuccess = function (e) {
+        var cursor = e.target.result;
+        if (cursor) {
+          items.push(cursor.value);
+          cursor.continue();
+        } else {
+          callback(null, items);
+        }
+      };
+      cursorReq.onerror = function (e) {
+        callback(e, []);
+      };
+    }
+  }
+
+  function openDB(onSuccess, onError) {
+    if (!idbAvailable) {
+      if (onError) onError(new Error('IndexedDB not supported'));
+      return;
+    }
+    if (dbInstance) {
+      if (onSuccess) onSuccess(dbInstance);
+      return;
+    }
+
+    try {
+      var req = window.indexedDB.open(DB_NAME, DB_VERSION);
+
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        }
+      };
+
+      req.onsuccess = function (e) {
+        dbInstance = e.target.result;
+        dbReady = true;
+
+        dbInstance.onversionchange = function () {
+          dbInstance.close();
+          dbInstance = null;
+          dbReady = false;
+        };
+
+        if (onSuccess) onSuccess(dbInstance);
+
+        while (pendingQueue.length) {
+          var task = pendingQueue.shift();
+          task(dbInstance);
+        }
+      };
+
+      req.onerror = function (e) {
+        console.warn('[IE.store] IndexedDB open error, fallback to memory/localStorage', e);
+        idbAvailable = false;
+        dbReady = false;
+        if (onError) onError(e);
+      };
+    } catch (err) {
+      console.warn('[IE.store] IndexedDB init exception', err);
+      idbAvailable = false;
+      dbReady = false;
+      if (onError) onError(err);
+    }
+  }
+
+  function withStore(mode, action) {
+    if (dbReady && dbInstance) {
+      try {
+        var tx = dbInstance.transaction(STORE_NAME, mode);
+        var st = tx.objectStore(STORE_NAME);
+        action(st, tx);
+      } catch (e) {
+        console.warn('[IE.store] Transaction failed', e);
+      }
+    } else if (idbAvailable) {
+      pendingQueue.push(function (db) {
+        try {
+          var tx = db.transaction(STORE_NAME, mode);
+          var st = tx.objectStore(STORE_NAME);
+          action(st, tx);
+        } catch (e) {
+          console.warn('[IE.store] Queued transaction failed', e);
+        }
+      });
+      openDB();
+    }
+  }
+
+  // 초기화 및 localStorage -> IndexedDB 자동 마이그레이션
+  function initStore() {
+    if (!idbAvailable) return;
+
+    openDB(function (db) {
+      try {
+        var tx = db.transaction(STORE_NAME, 'readonly');
+        var st = tx.objectStore(STORE_NAME);
+
+        getAllFromStore(st, function (err, idbList) {
+          if (!err && idbList) {
+            var migratedKey = '__imgeditor_idb_migrated__';
+            var alreadyMigrated = false;
+            try { alreadyMigrated = !!window.localStorage.getItem(migratedKey); } catch(e) {}
+
+            if (idbList.length > 0) {
+              cache = idbList;
+              try { window.localStorage.setItem(migratedKey, '1'); } catch(e) {}
+              writeLocalStorage(cache);
+              if (IE.panel && typeof IE.panel.refresh === 'function') {
+                IE.panel.refresh();
+              }
+            } else if (!alreadyMigrated && cache.length > 0) {
+              // 최초 1회에 한해 구버전 localStorage 데이터를 IndexedDB로 이관
+              var writeTx = db.transaction(STORE_NAME, 'readwrite');
+              var writeSt = writeTx.objectStore(STORE_NAME);
+              cache.forEach(function (item) {
+                writeSt.put(item);
+              });
+              try { window.localStorage.setItem(migratedKey, '1'); } catch(e) {}
+            } else {
+              // IndexedDB가 비어있고 이미 마이그레이션 후라면 사용자가 삭제한 것이므로 빈 상태 유지
+              cache = [];
+              writeLocalStorage([]);
+              if (IE.panel && typeof IE.panel.refresh === 'function') {
+                IE.panel.refresh();
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.warn('[IE.store] Initial read failed', err);
+      }
+    });
+  }
+
+  // 로드 즉시 초기화 시작
+  initStore();
 
   /* --------------------------------------------------- 형식 검증 */
 
@@ -89,62 +260,130 @@ window.IE = window.IE || {};
   api.available = available;
   api.BUNDLE = BUNDLE;
   api.KEY = KEY;
+  api.DB_NAME = DB_NAME;
 
   api.isTemplate = isTemplate;
 
-  /** 내장 + 사용자 템플릿을 합친 전체 목록 */
+  /** 내장 + 사용자 템플릿을 합친 전체 목록 (동기 조회) */
   api.all = function () {
-    return IE.templates.all.concat(readAll());
+    return IE.templates.all.concat(cache);
   };
 
+  /** 사용자 저장 템플릿 목록 (동기 조회) */
   api.userTemplates = function () {
-    return readAll();
+    return cache;
   };
 
   api.byId = function (id) {
     return api.all().filter(function (tpl) { return tpl.id === id; })[0] || null;
   };
 
-  api.save = function (template, options) {
+  /** 템플릿 저장 (동기 즉시 반환 + 비동기 IndexedDB 대용량 영구 저장) */
+  api.save = function (template, options, callback) {
     options = options || {};
 
-    var list = readAll();
     var entry = normalize(template);
 
     if (options.overwrite) {
-      var index = list.findIndex(function (tpl) { return tpl.id === entry.id; });
+      var index = cache.findIndex(function (tpl) { return tpl.id === entry.id; });
       if (index >= 0) {
-        entry.createdAt = list[index].createdAt || entry.createdAt;
+        entry.createdAt = cache[index].createdAt || entry.createdAt;
         entry.updatedAt = new Date().toISOString();
-        list[index] = entry;
+        cache[index] = entry;
       } else {
-        list.push(entry);
+        cache.push(entry);
       }
     } else {
       entry.id = util.uid('user');
-      list.push(entry);
+      cache.push(entry);
     }
 
-    if (!writeAll(list)) {
-      return { ok: false, template: entry, reason: available ? 'quota' : 'unavailable' };
+    // 항상 localStorage 캐시도 동기화 시도
+    writeLocalStorage(cache);
+    try { window.localStorage.setItem('__imgeditor_idb_migrated__', '1'); } catch (e) {}
+
+    if (idbAvailable) {
+      withStore('readwrite', function (store) {
+        var req = store.put(entry);
+        req.onsuccess = function () {
+          if (callback) callback({ ok: true, template: entry });
+        };
+        req.onerror = function (e) {
+          console.warn('[IE.store] IDB save failed', e);
+          if (callback) callback({ ok: false, template: entry, reason: 'idb_error' });
+        };
+      });
+    } else {
+      if (callback) callback({ ok: true, template: entry });
     }
+
     return { ok: true, template: entry };
   };
 
-  api.remove = function (id) {
-    var list = readAll();
-    var next = list.filter(function (tpl) { return tpl.id !== id; });
-    if (next.length === list.length) return false;
-    return writeAll(next);
+  /** 템플릿 단건 삭제 */
+  api.remove = function (id, callback) {
+    var next = cache.filter(function (tpl) { return tpl.id !== id; });
+    cache = next;
+    writeLocalStorage(cache);
+    try { window.localStorage.setItem('__imgeditor_idb_migrated__', '1'); } catch (e) {}
+
+    if (idbAvailable) {
+      withStore('readwrite', function (store) {
+        var req = store.delete(id);
+        req.onsuccess = function () {
+          if (callback) callback(true);
+        };
+        req.onerror = function () {
+          if (callback) callback(false);
+        };
+      });
+    } else {
+      if (callback) callback(true);
+    }
+    return true;
   };
 
-  api.rename = function (id, name) {
-    var list = readAll();
-    var target = list.filter(function (tpl) { return tpl.id === id; })[0];
+  /** 템플릿 전체 삭제 */
+  api.clear = function (callback) {
+    cache = [];
+    writeLocalStorage([]);
+    try { window.localStorage.setItem('__imgeditor_idb_migrated__', '1'); } catch (e) {}
+
+    if (idbAvailable) {
+      withStore('readwrite', function (store) {
+        var req = store.clear();
+        req.onsuccess = function () {
+          if (callback) callback(true);
+        };
+        req.onerror = function () {
+          if (callback) callback(false);
+        };
+      });
+    } else {
+      if (callback) callback(true);
+    }
+    return true;
+  };
+
+  /** 템플릿 이름 변경 */
+  api.rename = function (id, name, callback) {
+    var target = cache.filter(function (tpl) { return tpl.id === id; })[0];
     if (!target) return false;
     target.name = name;
     target.updatedAt = new Date().toISOString();
-    return writeAll(list);
+    writeLocalStorage(cache);
+
+    if (idbAvailable) {
+      withStore('readwrite', function (store) {
+        var req = store.put(target);
+        req.onsuccess = function () {
+          if (callback) callback(true);
+        };
+      });
+    } else {
+      if (callback) callback(true);
+    }
+    return true;
   };
 
   /**
@@ -193,7 +432,7 @@ window.IE = window.IE || {};
 
   api.exportTemplates = function (templates, filename) {
     // undefined/null 이면 '내 템플릿 전부', 빈 배열이면 '내보낼 것 없음'
-    var list = (templates === undefined || templates === null) ? readAll() : templates;
+    var list = (templates === undefined || templates === null) ? cache : templates;
     if (!list.length) {
       util.toast('내보낼 템플릿이 없습니다.');
       return false;
@@ -214,7 +453,7 @@ window.IE = window.IE || {};
 
   /**
    * 파일 하나 또는 묶음을 읽어 사용자 템플릿으로 등록한다.
-   * 콜백: (result) => result = { ok, added, skipped, reason }
+   * 콜백: (result) => result = { ok, added, skipped, persisted, reason }
    */
   api.importFile = function (file, callback) {
     util.readAsText(file, function (err, text) {
@@ -245,21 +484,36 @@ window.IE = window.IE || {};
       }
 
       var added = 0;
-      var list = readAll();
+      var addedEntries = [];
       valid.forEach(function (item) {
         var entry = normalize(item);
         entry.id = util.uid('user');
-        list.push(entry);
+        cache.push(entry);
+        addedEntries.push(entry);
         added++;
       });
 
-      var stored = writeAll(list);
-      callback({
-        ok: true,
-        added: added,
-        skipped: skipped,
-        persisted: stored
-      });
+      if (idbAvailable) {
+        withStore('readwrite', function (store) {
+          addedEntries.forEach(function (entry) {
+            store.put(entry);
+          });
+          callback({
+            ok: true,
+            added: added,
+            skipped: skipped,
+            persisted: true
+          });
+        });
+      } else {
+        var stored = writeLocalStorage(cache);
+        callback({
+          ok: true,
+          added: added,
+          skipped: skipped,
+          persisted: stored
+        });
+      }
     });
   };
 

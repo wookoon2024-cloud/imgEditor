@@ -14,6 +14,20 @@ window.IE = window.IE || {};
    * 설치돼 있지 않으면 대체 글꼴로 그려져 폭이 기준과 똑같아진다.
    */
 
+  /** 배너 · 홍보물용 대표 굵은 글꼴 (웹폰트 및 표준 볼드 폰트) */
+  var BANNER_FONTS = [
+    { value: 'Black Han Sans', label: '검은고딕 [상업용 무료·OFL]' },
+    { value: 'Pretendard', label: '프리텐다드 [상업용 무료·OFL]' },
+    { value: 'Gmarket Sans', label: '지마켓 산스 [상업용 무료]' },
+    { value: 'Noto Sans KR', label: '본고딕 [상업용 무료·OFL]' },
+    { value: 'Do Hyeon', label: '도현체 [상업용 무료·OFL]' },
+    { value: 'Jua', label: '주아체 [상업용 무료·OFL]' },
+    { value: 'HYHeadLine M', label: 'HY헤드라인M (PC설치용)' },
+    { value: 'Malgun Gothic', label: '맑은 고딕 (윈도우 기본)' },
+    { value: 'Arial Black', label: 'Arial Black (영문 초볼드)' },
+    { value: 'Impact', label: 'Impact (영문 헤드라인)' }
+  ];
+
   /** 설치 여부와 상관없이 항상 보여 줄 글꼴 (없으면 브라우저가 비슷한 것으로 대체) */
   var SAFE = [
     { value: 'Malgun Gothic', label: '맑은 고딕' },
@@ -218,7 +232,10 @@ window.IE = window.IE || {};
   /** 평평한 목록 — 지금 쓰는 값이 목록에 없으면 맨 앞에 끼워 넣는다 */
   api.list = function (current) {
     var data = api.all();
-    var out = data.safe.concat(data.local);
+    var bannerList = BANNER_FONTS.map(function (f) {
+      return { value: f.value, label: f.label, group: '추천 배너' };
+    });
+    var out = bannerList.concat(data.safe, data.local);
 
     if (current && !out.some(function (f) { return f.value === current; })) {
       out = [{ value: current, label: current + ' (현재)', group: '기타' }].concat(out);
@@ -226,15 +243,22 @@ window.IE = window.IE || {};
     return out;
   };
 
-  /** 목록에 넣을 수 있게 묶음으로 — 기본 / 내 PC 한글 / 내 PC 영문 */
+  /** 목록에 넣을 수 있게 묶음으로 — 추천 배너 글꼴 / 기본 / 내 PC 한글 / 내 PC 영문 */
   api.groups = function (current) {
     var data = api.all();
-    var groups = [{ label: '기본', fonts: data.safe }];
+    var groups = [
+      { label: '🔥 추천 배너·타이틀 (굵은 글꼴)', fonts: BANNER_FONTS },
+      { label: '기본 글꼴', fonts: data.safe }
+    ];
 
     if (data.korean.length) groups.push({ label: '내 PC · 한글', fonts: data.korean });
     if (data.latin.length) groups.push({ label: '내 PC · 영문', fonts: data.latin });
 
-    if (current && !data.safe.concat(data.local).some(function (f) { return f.value === current; })) {
+    var allValues = {};
+    BANNER_FONTS.forEach(function (f) { allValues[f.value] = true; });
+    data.safe.concat(data.local).forEach(function (f) { allValues[f.value] = true; });
+
+    if (current && !allValues[current]) {
       groups.unshift({ label: '기타', fonts: [{ value: current, label: current }] });
     }
     return groups;

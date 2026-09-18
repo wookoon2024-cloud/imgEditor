@@ -2,10 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>이미지 편집기 v@@VERSION@@</title>
+<title>안심 디자인 v@@VERSION@@</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="ImgEditor @@VERSION@@ (built @@BUILD_DATE@@)">
-<meta name="description" content="오프라인 환경용 템플릿 기반 이미지 편집기">
+<meta name="description" content="폐쇄 행정망 전용 안심 시각화 웹 플랫폼 안심 디자인">
 <style>
 /*@@STYLES@@*/
 </style>
@@ -14,8 +14,8 @@
 
 <header class="topbar">
   <div class="brand">
-    <span class="brand-mark">IE</span>
-    <span class="brand-text">이미지 편집기</span>
+    <span class="brand-mark" style="background:#1e3a8a;">안심</span>
+    <span class="brand-text">안심 디자인</span>
   </div>
 
   <div class="menu" id="file-menu-wrap">
@@ -126,6 +126,14 @@
       <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 14.5h17v3a3 3 0 0 1-3 3h-11a3 3 0 0 1-3-3z" fill="currentColor" stroke="none"/></svg>
       <span>배경</span>
     </button>
+    <button class="rail-item" data-panel="privacy" title="개인정보점검">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span>개인정보점검</span>
+    </button>
+    <button class="rail-item" data-panel="market" title="공유마켓">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      <span>공유마켓</span>
+    </button>
   </nav>
 
   <aside class="flyout" id="flyout" hidden>
@@ -183,12 +191,42 @@
       </div>
       <div class="layer-list" id="layer-list"></div>
       <div class="layer-actions">
-        <button id="btn-layer-up" class="btn-mini" title="앞으로">앞으로</button>
-        <button id="btn-layer-down" class="btn-mini" title="뒤로">뒤로</button>
-        <button id="btn-layer-front" class="btn-mini" title="맨앞">맨앞</button>
-        <button id="btn-layer-back" class="btn-mini" title="맨뒤">맨뒤</button>
-        <button id="btn-layer-dup" class="btn-mini" title="복제 (Ctrl+D)">복제</button>
-        <button id="btn-layer-del" class="btn-mini btn-mini-danger" title="삭제 (Delete)">삭제</button>
+        <button id="btn-layer-group" class="btn-mini btn-mini-solid" title="그룹화 (Ctrl+G)">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke-dasharray="2 2"/></svg>
+          그룹화
+        </button>
+        <button id="btn-layer-ungroup" class="btn-mini btn-mini-solid" title="그룹 해제 (Ctrl+Shift+G)">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/><path d="M7 17l10-10M13 7h4v4M11 17H7v-4"/></svg>
+          그룹해제
+        </button>
+        <button id="btn-layer-lock" class="btn-mini" title="잠금 / 해제 (Ctrl+L)">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="16" r="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          잠금
+        </button>
+        <button id="btn-layer-up" class="btn-mini" title="한 단계 앞으로 (])">
+          <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+          앞으로
+        </button>
+        <button id="btn-layer-down" class="btn-mini" title="한 단계 뒤로 ([)">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          뒤로
+        </button>
+        <button id="btn-layer-dup" class="btn-mini" title="복제 (Ctrl+D)">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          복제
+        </button>
+        <button id="btn-layer-front" class="btn-mini" title="맨앞으로 (Ctrl+])">
+          <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/><line x1="6" y1="5" x2="18" y2="5"/></svg>
+          맨앞
+        </button>
+        <button id="btn-layer-back" class="btn-mini" title="맨뒤로 (Ctrl+[)">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/><line x1="6" y1="19" x2="18" y2="19"/></svg>
+          맨뒤
+        </button>
+        <button id="btn-layer-del" class="btn-mini btn-mini-danger" title="삭제 (Delete)">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          삭제
+        </button>
       </div>
     </div>
   </aside>
@@ -278,6 +316,105 @@
       <button type="button" class="btn-solid ghost" id="modal-page-cancel">취소</button>
       <button type="button" class="btn-solid" id="modal-page-apply">적용</button>
     </footer>
+  </div>
+</div>
+
+<!-- 새 문서 만들기 (작업 규격 선택 모달) -->
+<div class="modal-backdrop" id="modal-new-doc" hidden>
+  <div class="modal modal-medium new-doc-modal">
+    <header class="modal-head">
+      <h2>새 문서 만들기</h2>
+      <span class="modal-note">제작할 작업 유형을 선택하세요. 용도에 맞는 최적 규격으로 시작합니다.</span>
+      <button class="modal-close" id="modal-new-doc-close" title="닫기">&#10005;</button>
+    </header>
+    <div class="modal-body new-doc-body">
+      <div class="new-doc-grid">
+        <button type="button" class="new-doc-card" data-new-type="web-banner">
+          <div class="new-doc-info">
+            <b>홈페이지 배너 (메인 / 롤링)</b>
+            <span>1200 × 400 px (3:1 가로형)</span>
+            <small>포털 메인 롤링 배너, 상단 비주얼 홍보 배너</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="sub-banner">
+          <div class="new-doc-info">
+            <b>홈페이지 띠배너 / 바로가기</b>
+            <span>1200 × 200 px (6:1 슬림형)</span>
+            <small>공지 띠배너, 하단 슬림 배너, 링크 바로가기 배너</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="popup-small">
+          <div class="new-doc-info">
+            <b>홈페이지 작은 팝업</b>
+            <span>400 × 400 px (1:1 정사각)</span>
+            <small>간편 안내 알림창, 미니 이벤트 팝업, 윈도우 알림</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="popup-medium">
+          <div class="new-doc-info">
+            <b>홈페이지 레이어 팝업</b>
+            <span>500 × 650 px (세로형 창)</span>
+            <small>공공기관 공지 팝업, 사업 상세 공고 레이어 팝업창</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="banner">
+          <div class="new-doc-info">
+            <b>현수막 / 와이드 배너</b>
+            <span>2400 × 800 px (3:1 와이드)</span>
+            <small>행사 안내 현수막, 강당 및 외벽 와이드 배너</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="poster">
+          <div class="new-doc-info">
+            <b>홍보물 / 안내 포스터</b>
+            <span>A4 세로 (1240 × 1754 px)</span>
+            <small>대국민 안내문, 게시판 공고문, 홍보 포스터</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="sns">
+          <div class="new-doc-info">
+            <b>SNS / 카드뉴스</b>
+            <span>1080 × 1080 px (정사각 1:1)</span>
+            <small>모바일 알림, 인스타그램, 블로그 카드뉴스</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="doc">
+          <div class="new-doc-info">
+            <b>공문서 / 보고서</b>
+            <span>A4 세로 (1240 × 1754 px)</span>
+            <small>기안문, 시행문, 업무협조전, 감사보고서</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="ppt">
+          <div class="new-doc-info">
+            <b>발표자료 (PPT 덱)</b>
+            <span>1920 × 1080 px (16:9 와이드)</span>
+            <small>프레젠테이션, 회의 보고자료, 슬라이드 쇼</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="photo">
+          <div class="new-doc-info">
+            <b>증명사진 / 신분증</b>
+            <span>413 × 531 px (3.5 × 4.5 cm)</span>
+            <small>여권, 주민등록증, 공무원증 표준 규격</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card" data-new-type="card">
+          <div class="new-doc-info">
+            <b>명함 / 안내장</b>
+            <span>1063 × 591 px (90 × 50 mm)</span>
+            <small>공무원 명함, 세미나 네임택, 초청장</small>
+          </div>
+        </button>
+        <button type="button" class="new-doc-card new-doc-custom" data-new-type="custom">
+          <div class="new-doc-info">
+            <b>직접 크기 설정</b>
+            <span>사용자 지정 W × H</span>
+            <small>상세 페이지 설정 창 열기</small>
+          </div>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -719,6 +856,48 @@
       </div>
       <button type="button" class="preview-nav-arrow preview-nav-right" id="btn-preview-nav-right" title="다음 페이지 (→)">&#10095;</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-copyright-confirm" hidden style="z-index: 9999;">
+  <div class="modal" style="width: min(520px, 92vw); border-radius: 12px; box-shadow: 0 20px 45px rgba(0,0,0,0.3); overflow: hidden;">
+    <div class="modal-head" style="background: var(--surface-1); border-bottom: 1px solid var(--line); padding: 14px 18px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:20px;">🛡️</span>
+        <h2 style="font-size:15px; font-weight:700; color:var(--ink-1); margin:0;">외부 이미지 저작권·초상권 안심 확인</h2>
+      </div>
+      <button class="modal-close" id="btn-copyright-cancel-x" title="닫기">&#10005;</button>
+    </div>
+    <div class="modal-body" style="padding: 20px 22px;">
+      <div style="background: var(--brand-soft); border: 1px solid var(--brand-line); border-radius: 8px; padding: 13px 15px; margin-bottom: 16px;">
+        <p style="margin: 0 0 6px 0; font-size: 13.5px; font-weight: 700; color: var(--brand-700);">
+          불러오려는 이미지가 저작권 및 초상권에 문제없는 자료가 맞습니까?
+        </p>
+        <p style="margin: 0; font-size: 12px; color: var(--ink-2); line-height: 1.55;">
+          공공누리(KOGL) 제1유형, 라이선스 검증 완료 자료 또는 기관 자체 제작 사진만 안전하게 사용하실 수 있습니다.
+        </p>
+      </div>
+
+      <div style="font-size: 12px; color: var(--ink-3); line-height: 1.6; margin-bottom: 16px;">
+        <div style="display:flex; gap:8px; margin-bottom:6px;">
+          <span style="color:#e11d48; font-weight:bold; font-size:13px;">⚠️</span>
+          <span>포털 검색, SNS 무단 캡처 사진, 비인가 상용 스톡 이미지는 <b>저작권 침해 분쟁 및 내용증명의 원인</b>이 될 수 있습니다.</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span style="color:#16a34a; font-weight:bold; font-size:13px;">✔</span>
+          <span>타인의 얼굴이 포함된 경우 초상권 동의 여부를 확인하시거나, 좌측 <b>[개인정보점검]</b> 탭에서 얼굴 모자이크를 적용해 주세요.</span>
+        </div>
+      </div>
+
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--ink-1); cursor: pointer; user-select: none; background: var(--surface-2); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--line);">
+        <input type="checkbox" id="chk-copyright-agree" checked style="width: 16px; height: 16px; accent-color: var(--brand);">
+        <span>위 저작권 및 초상권 준수 의무를 확인했으며, 계속 진행합니다.</span>
+      </label>
+    </div>
+    <footer class="modal-foot">
+      <button type="button" class="btn-solid ghost" id="btn-copyright-cancel">취소</button>
+      <button type="button" class="btn-solid" id="btn-copyright-proceed">확인하고 불러오기</button>
+    </footer>
   </div>
 </div>
 

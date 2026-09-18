@@ -8,6 +8,7 @@ window.IE = window.IE || {};
 
   var dragFrom = -1;
   var renderToken = 0;
+  var liveThumbTimer = null;
 
   var STORAGE_HEIGHT_KEY = 'imgeditor.pagesbar.h';
   var MIN_BAR_H = 105;
@@ -169,15 +170,21 @@ window.IE = window.IE || {};
       });
     });
 
-    // 현재 페이지는 실제 캔버스 상태를 즉시 반영
-    var live = strip().querySelector('[data-thumb="' + current + '"]');
-    if (live) {
-      var url = liveCanvasThumb(THUMB.w * 2, THUMB.h * 2);
-      if (url) {
-        live.src = url;
-        pages[current].thumb = url;
+    // 현재 페이지 썸네일은 캔버스 렌더링 직후 비동기로 뽑아 템플릿 전환 시 메인 스레드 멈춤 방지
+    clearTimeout(liveThumbTimer);
+    liveThumbTimer = setTimeout(function () {
+      if (token !== renderToken) return;
+      var el = strip();
+      if (!el) return;
+      var live = el.querySelector('[data-thumb="' + current + '"]');
+      if (live) {
+        var url = liveCanvasThumb(THUMB.w * 2, THUMB.h * 2);
+        if (url) {
+          live.src = url;
+          if (pages[current]) pages[current].thumb = url;
+        }
       }
-    }
+    }, 40);
   }
 
   /**

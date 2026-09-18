@@ -430,10 +430,12 @@ window.IE = window.IE || {};
       canvas.setDimensions({ width: page.width, height: page.height });
       canvas.setZoom(1);
 
+      canvas.renderOnAddRemove = false;
       (def.objects || []).forEach(function (item) {
         var obj = IE.canvas.makeObject(item);
         if (obj) canvas.add(obj);
       });
+      canvas.renderOnAddRemove = true;
 
       canvas.discardActiveObject();
       canvas.renderAll();
@@ -476,10 +478,12 @@ window.IE = window.IE || {};
     canvas.setDimensions({ width: width, height: height });
     canvas.setZoom(1);
 
+    canvas.renderOnAddRemove = false;
     (objects || []).forEach(function (def) {
       var obj = IE.canvas.makeObject(def);
       if (obj) canvas.add(obj);
     });
+    canvas.renderOnAddRemove = true;
 
     canvas.discardActiveObject();
     canvas.requestRenderAll();
@@ -522,10 +526,12 @@ window.IE = window.IE || {};
     canvas.setDimensions({ width: width, height: height });
     canvas.setZoom(1);
 
+    canvas.renderOnAddRemove = false;
     (objects || []).forEach(function (def) {
       var obj = IE.canvas.makeObject(def);
       if (obj) canvas.add(obj);
     });
+    canvas.renderOnAddRemove = true;
 
     canvas.discardActiveObject();
     canvas.requestRenderAll();

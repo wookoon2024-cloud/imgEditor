@@ -13,7 +13,8 @@ window.IE = window.IE || {};
    * (fabric 이 propertiesToInclude 를 깊은 복사하면서 순환/폭주할 수 있다)
    */
   util.EXTRA_PROPS = [
-    'kind', 'isSlot', 'slotLabel', 'slotW', 'slotH', 'isGuide',
+    'kind', 'name', 'isSlot', 'slotLabel', 'slotW', 'slotH', 'isGuide',
+    'isLocked', 'lockMovementX', 'lockMovementY', 'lockRotation', 'lockScalingX', 'lockScalingY', 'hasControls',
     'frameRect', 'cropInfo', 'cropOffsetX', 'cropOffsetY', 'clipShape',
     'gradientPreset', 'shadowPreset', 'iconName', 'decorName',
     'iconStyle', 'iconColors', 'iconSize', 'slot',

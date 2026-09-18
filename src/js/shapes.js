@@ -413,6 +413,114 @@ window.IE = window.IE || {};
       ' ' + round1(x) + ' ' + round1(y) + 'z';
   }
 
+  /* -------------------------------------------- 팝업 · 코너 장식 경로 */
+  var circleStripesD = 'M13.7 41.1L11.1 39.3L8.7 36.9L6.9 34.3z M22.5 43.9L20.5 43.7L19.4 43.4L4.6 28.6L4.3 27.5L4.1 25.5z M28.1 43.5L27.5 43.7L25.8 43.8L4.2 22.2L4.3 20.5L4.5 19.9z M32.6 42L30.8 42.8L5.2 17.2L6 15.4z M36.3 39.7L34.8 40.8L7.2 13.2L8.3 11.7z M39.4 36.8L38.1 38.1L9.9 9.9L11.1 8.7z M41.7 33.1L40.8 34.8L13.2 7.2L14.9 6.3z M43.4 28.8L42.8 30.8L17.2 5.2L19.2 4.6z M44 24L43.8 25.8L22.2 4.2L24 4L24.7 4.1L43.9 23.3z M28.6 4.6L30.8 5.2L32.6 6L42 15.4L42.8 17.2L43.4 19.4z';
+  var cornerStripesD = 'M4.5 6.5L4.4 5.7L4.2 3.8L8 0L11 0z M5.8 12.2L5.5 11.4L5.1 9.9L15 0L18 0z M7.6 17.4L7.3 16.8L6.8 15.2L22 0L25 0z M9.9 22.1L8.9 20.1L29 0L32 0z M12.7 26.3L11.5 24.5L36 0L39 0z M15.9 30.1L14.5 28.5L43 0L46 0z';
+  var dotGridD = (function () {
+    var coords = [9, 19, 29, 39];
+    var list = [];
+    coords.forEach(function (y) {
+      coords.forEach(function (x) {
+        list.push(circlePath(x, y, 2.2));
+      });
+    });
+    return list.join(' ');
+  })();
+
+  /* -------------------------------------------- 구름 · 하늘 · 군복 패치 경로 */
+  var fluffyCloudD = 'M10 34C6.5 34 4 31 4 27.5C4 23 7.5 19.5 12 19.5C13.5 13.5 19 9 25.5 9C32 9 37 13 38.5 18C42.5 18.5 45.5 21.5 45.5 25.5C45.5 30 42 34 37.5 34z';
+  var cloudShadeD = 'M10 34C6.5 34 4 31 4 27.5C4 26 4.5 24.5 5.5 23.5C7 28 11 31.5 16 31.5C21 31.5 24 29 28 29C32 29 35 31.5 38.5 31.5C41.5 31.5 44 30 45 28C44.5 31.5 41.5 34 37.5 34z';
+  var cloudClusterBack = 'M18 18C15 18 13 16 13 13C13 9.5 16 7 19.5 7C21 3.5 24.5 1 29 1C34 1 38 4 39.5 8C42.5 8.5 45 11 45 14C45 17.5 42 20 38.5 20L18 20z';
+  var cloudClusterFront = 'M6 36C3 36 1 33.5 1 30C1 26 4 23 8 23C9.5 17.5 14.5 13.5 20.5 13.5C26 13.5 30.5 17 32 21.5C35 22 37.5 24.5 37.5 28C37.5 32 34 36 30 36z';
+  var patchBorder = roundRectPath(5, 7, 38, 34, 4);
+  var patchInner = roundRectPath(7, 9, 34, 30, 3);
+  var taegeukRed = 'M17 24a7 7 0 0 1 14 0c0 1.9-1.6 3.5-3.5 3.5s-3.5-1.6-3.5-3.5a3.5 3.5 0 0 0-7 0z';
+  var taegeukBlue = 'M17 24a7 7 0 0 0 14 0c0 1.9-1.6 3.5-3.5 3.5s-3.5-1.6-3.5-3.5a3.5 3.5 0 0 0-7 0z';
+  var gwaeBars = 'M9.5 13.5l3-3m1 1l3-3m1 1l3-3 M31 10.5l3 3m1-1l3 3 M9.5 34.5l3 3m1-1l3 3 M31 37.5l3-3m1 1l3-3';
+
+  /* 축하 폭죽 및 배지 장식 경로 */
+  var leftBurstPinkSparkle = starAt(32, 11, 8, 6, 1.1);
+  var leftBurstGreenSpiky = starAt(18, 19, 12, 7, 4.2);
+  var leftBurstYellowStreamer = 'M 16 12 C 20 16, 20 21, 15 25 C 10 29, 15 33, 18 37 L 16.5 38 C 13 34, 8 29, 13 25.5 C 17 22, 17 17, 13.5 13 Z';
+  var leftBurstPinkStreamer = 'M 10 29 C 14 25, 17 32, 22 28 C 26 32, 30 28, 35 31 L 34.5 33 C 30 30, 26 34, 22 30 C 17 34, 14 27, 10 31 Z';
+  var leftBurstBlueDot = circlePath(24, 25, 2.3);
+  var leftBurstPurpleDot = circlePath(9, 23, 1.9);
+  var leftBurstOrangeTriangle = polygonD([{ x: 29, y: 27 }, { x: 33, y: 29 }, { x: 30, y: 33 }]);
+  var leftBurstMintTriangle = polygonD([{ x: 9, y: 29 }, { x: 14, y: 31 }, { x: 10, y: 33 }]);
+  var leftBurstPurpleTriangle = polygonD([{ x: 2, y: 30 }, { x: 10, y: 36 }, { x: 2, y: 42 }]);
+  var leftBurstYellowSun = starAt(25, 36, 10, 4.2, 2.9);
+
+  var rightBurstPurpleSparkle = starAt(32, 11, 8, 6, 1.1);
+  var rightBurstHotPinkSpiky = starAt(21, 20, 14, 8.5, 5.2);
+  var rightBurstOrangeStreamer = 'M 21 24 C 26 28, 20 32, 24 37 C 21 41, 26 44, 23 47 L 21.5 46.5 C 24 43.5, 19.5 40.5, 22.5 36.5 C 18 32, 24 27.5, 20 23.5 Z';
+  var rightBurstBlueTriangle = polygonD([{ x: 33, y: 23 }, { x: 38, y: 25 }, { x: 35, y: 29 }]);
+  var rightBurstVioletTriangle = polygonD([{ x: 32, y: 35 }, { x: 37, y: 33 }, { x: 34, y: 39 }]);
+  var rightBurstCyanDot = circlePath(29, 29, 1.9);
+  var rightBurstYellowSparkle = starAt(12, 15, 8, 4.5, 0.9);
+  var rightBurstPinkDot = circlePath(35, 17, 1.7);
+
+  var scallopCapsuleD = 'M14 16.5 A 2 2 0 0 1 18 16.5 A 2 2 0 0 1 22 16.5 A 2 2 0 0 1 26 16.5 A 2 2 0 0 1 30 16.5 A 2 2 0 0 1 34 16.5 A 3.7 3.7 0 0 1 39.3 18.7 A 3.7 3.7 0 0 1 41.5 24 A 3.7 3.7 0 0 1 39.3 29.3 A 3.7 3.7 0 0 1 34 31.5 A 2 2 0 0 1 30 31.5 A 2 2 0 0 1 26 31.5 A 2 2 0 0 1 22 31.5 A 2 2 0 0 1 18 31.5 A 2 2 0 0 1 14 31.5 A 3.7 3.7 0 0 1 8.7 29.3 A 3.7 3.7 0 0 1 6.5 24 A 3.7 3.7 0 0 1 8.7 18.7 A 3.7 3.7 0 0 1 14 16.5 Z';
+
+  /* 점선 베지어 곡선 생성 헬퍼 */
+  function genDashesBezier(p0, p1, p2, p3, count, dashLen, dashWidth) {
+    var path = '';
+    for (var i = 0; i < count; i++) {
+      var t = (i + 0.5) / count;
+      var mt = 1 - t;
+      var x = mt * mt * mt * p0.x + 3 * mt * mt * t * p1.x + 3 * mt * t * t * p2.x + t * t * t * p3.x;
+      var y = mt * mt * mt * p0.y + 3 * mt * mt * t * p1.y + 3 * mt * t * t * p2.y + t * t * t * p3.y;
+      var dx = 3 * mt * mt * (p1.x - p0.x) + 6 * mt * t * (p2.x - p1.x) + 3 * t * t * (p3.x - p2.x);
+      var dy = 3 * mt * mt * (p1.y - p0.y) + 6 * mt * t * (p2.y - p1.y) + 3 * t * t * (p3.y - p2.y);
+      var len = Math.hypot(dx, dy) || 1;
+      var ux = dx / len;
+      var uy = dy / len;
+      var nx = -uy;
+      var ny = ux;
+      var halfL = dashLen / 2;
+      var halfW = dashWidth / 2;
+      var pts = [
+        { x: x - halfL * ux - halfW * nx, y: y - halfL * uy - halfW * ny },
+        { x: x + halfL * ux - halfW * nx, y: y + halfL * uy - halfW * ny },
+        { x: x + halfL * ux + halfW * nx, y: y + halfL * uy + halfW * ny },
+        { x: x - halfL * ux + halfW * nx, y: y - halfL * uy + halfW * ny }
+      ];
+      path += polygonD(pts) + ' ';
+    }
+    return path.trim();
+  }
+
+  /* 우상향 3D 성장 화살표 · 종이비행기 비행 궤적 · 서류 폴더 경로 */
+  var arrowFrontD = polygonD([
+    { x: 14, y: 44 }, { x: 27, y: 24 }, { x: 18, y: 22 },
+    { x: 44, y: 4 }, { x: 44, y: 19 }, { x: 35, y: 20 }, { x: 22, y: 41 }
+  ]);
+  var arrowSideD = polygonD([
+    { x: 44, y: 4 }, { x: 47, y: 7 }, { x: 47, y: 22 }, { x: 38, y: 23 },
+    { x: 25, y: 44 }, { x: 17, y: 47 }, { x: 14, y: 44 }, { x: 22, y: 41 },
+    { x: 35, y: 20 }, { x: 44, y: 19 }
+  ]);
+  var arrowRidgeD = polygonD([
+    { x: 27, y: 24 }, { x: 44, y: 4 }, { x: 42, y: 4.5 }, { x: 26, y: 23.5 }
+  ]);
+
+  var planeLeftWing = polygonD([{ x: 44, y: 6 }, { x: 22, y: 20 }, { x: 33, y: 18 }]);
+  var planeKeelFold = polygonD([{ x: 44, y: 6 }, { x: 33, y: 18 }, { x: 29, y: 24 }]);
+  var planeRightWing = polygonD([{ x: 44, y: 6 }, { x: 29, y: 24 }, { x: 37, y: 10 }]);
+  var planeShadow = polygonD([{ x: 33, y: 18 }, { x: 29, y: 24 }, { x: 25, y: 21 }]);
+  var planeTrail = genDashesBezier(
+    { x: 6, y: 44 }, { x: 2, y: 18 }, { x: 15, y: 14 }, { x: 26, y: 23 }, 12, 2.5, 0.8
+  );
+
+  var folderBackTab = polygonD([{ x: 6, y: 12 }, { x: 16, y: 12 }, { x: 19, y: 15 }, { x: 6, y: 15 }]);
+  var folderBackBody = roundRectPath(6, 15, 26, 18, 2);
+  var folderFrontTab = polygonD([{ x: 14, y: 20 }, { x: 24, y: 20 }, { x: 27, y: 23 }, { x: 14, y: 23 }]);
+  var folderFrontBody = roundRectPath(14, 23, 26, 18, 2);
+  var folderFrontPaper = roundRectPath(17, 26, 20, 12, 1);
+
+  var trailLoopD = genDashesBezier(
+    { x: 8, y: 42 }, { x: 4, y: 12 }, { x: 36, y: 8 }, { x: 42, y: 38 }, 16, 2.8, 1.0
+  );
+
   var ILLUSTRATIONS = {
 
     /* -------------------------------------------- 자연 · 계절 */
@@ -3347,6 +3455,156 @@ window.IE = window.IE || {};
       ]
     },
 
+    decoCornerWave: {
+      box: 48, slots: ['앞 물결', '뒤 물결', '포인트'],
+      layers: [
+        part('M0 14C14 16 26 28 38 38C43 41.5 46 43 48 44.5L48 48H0z', 1),
+        part('M0 24C12 24 24 34 38 43C42 45.5 45 47 48 48H0z', 0),
+        part('M0 36C10 36 20 42 32 48H0z M20 20a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0z', 2)
+      ]
+    },
+
+    decoCornerHills: {
+      box: 48, slots: ['앞 언덕', '뒷산', '작은 언덕'],
+      layers: [
+        part('M0 16C12 12 24 18 34 28C40 34 44 38 48 41L48 48H0z', 1),
+        part('M0 28C10 26 20 32 30 40C36 44 42 46.5 48 48H0z', 0),
+        part('M14 48C20 42 32 40 48 44L48 48z M28 14a3 3 0 1 0 6 0a3 3 0 1 0 -6 0z', 2)
+      ]
+    },
+
+    decoCornerStripes: {
+      box: 48, slots: ['줄무늬', '바탕 원'],
+      layers: [
+        part(circlePath(24, 24, 20), 1),
+        part(circleStripesD, 0)
+      ]
+    },
+
+    decoQuarterStripes: {
+      box: 48, slots: ['줄무늬', '모서리 바탕'],
+      layers: [
+        part('M48 0H4A44 44 0 0 0 48 44z', 1),
+        part(cornerStripesD, 0)
+      ]
+    },
+
+    decoDotMatrix: {
+      box: 48, slots: ['도트 점', '바탕 테두리'],
+      layers: [
+        part(roundRectPath(3, 3, 42, 42, 6), 1),
+        part(dotGridD, 0)
+      ]
+    },
+
+    decoWaveFooter: {
+      box: 48, slots: ['윗 물결', '아랫 물결'],
+      layers: [
+        part('M0 22C12 14 24 30 36 22C42 18 45 20 48 24L48 48H0z', 0),
+        part('M0 34C10 28 22 40 34 34C40 31 45 35 48 38L48 48H0z', 1)
+      ]
+    },
+
+    decoCornerBlob: {
+      box: 48, slots: ['큰 블롭', '작은 블롭'],
+      layers: [
+        part('M0 12C16 10 32 20 38 34C42 42 44 46 48 48H0z', 1),
+        part('M0 26C10 24 22 32 30 42C33 46 34 47 36 48H0z', 0)
+      ]
+    },
+
+    decoFluffyCloud: {
+      box: 48, slots: ['구름 바탕', '구름 볼륨', '그늘'],
+      layers: [
+        part(fluffyCloudD, 0),
+        part(circlePath(25, 17, 7) + ' ' + circlePath(16, 23, 5.5), 1),
+        part(cloudShadeD, 2)
+      ]
+    },
+
+    decoCloudCluster: {
+      box: 48, slots: ['앞 구름', '뒤 구름'],
+      layers: [
+        part(cloudClusterBack, 1),
+        part(cloudClusterFront, 0)
+      ]
+    },
+
+    decoFestiveBurstLeft: {
+      box: 48, slots: ['스파크 · 별', '리본 띠', '조각 · 도트'],
+      layers: [
+        part(leftBurstGreenSpiky, 0),
+        part(leftBurstPinkSparkle, 0),
+        part(leftBurstYellowSun, 0),
+        part(leftBurstYellowStreamer, 1),
+        part(leftBurstPinkStreamer, 1),
+        part(leftBurstBlueDot, 2),
+        part(leftBurstPurpleDot, 2),
+        part(leftBurstOrangeTriangle, 2),
+        part(leftBurstMintTriangle, 2),
+        part(leftBurstPurpleTriangle, 2)
+      ]
+    },
+
+    decoFestiveBurstRight: {
+      box: 48, slots: ['스파크 · 별', '리본 띠', '조각 · 도트'],
+      layers: [
+        part(rightBurstHotPinkSpiky, 0),
+        part(rightBurstPurpleSparkle, 0),
+        part(rightBurstYellowSparkle, 0),
+        part(rightBurstOrangeStreamer, 1),
+        part(rightBurstBlueTriangle, 2),
+        part(rightBurstVioletTriangle, 2),
+        part(rightBurstCyanDot, 2),
+        part(rightBurstPinkDot, 2)
+      ]
+    },
+
+    decoScallopPill: {
+      box: 48, slots: ['물결 테두리', '안쪽 선', '배경 바탕'],
+      layers: [
+        part(scallopCapsuleD, 0),
+        part(roundRectPath(9, 18, 30, 12, 6), 1),
+        part(roundRectPath(11, 19.5, 26, 9, 4.5), 2)
+      ]
+    },
+
+    decoRisingArrow3D: {
+      box: 48, slots: ['화살표 정면', '3D 입체 그림자', '능선 하이라이트'],
+      layers: [
+        part(arrowSideD, 1),
+        part(arrowFrontD, 0),
+        part(arrowRidgeD, 2)
+      ]
+    },
+
+    decoPaperPlaneFlight: {
+      box: 48, slots: ['날개', '동체 음영', '점선 궤적'],
+      layers: [
+        part(planeTrail, 2),
+        part(planeLeftWing, 0),
+        part(planeRightWing, 0),
+        part(planeKeelFold, 1),
+        part(planeShadow, 1)
+      ]
+    },
+
+    decoFolderStack: {
+      box: 48, slots: ['앞 폴더', '문서 종이', '뒤 폴더'],
+      layers: [
+        part(folderBackTab + ' ' + folderBackBody, 2),
+        part(folderFrontTab + ' ' + folderFrontBody, 0),
+        part(folderFrontPaper, 1)
+      ]
+    },
+
+    decoFlightTrailLoop: {
+      box: 48, slots: ['점선 궤적'],
+      layers: [
+        part(trailLoopD, 0)
+      ]
+    },
+
     /* -------------------------------------------- 구분선 · 띠 */
     decoDividerWave: {
       box: 48, slots: ['띠', '옅은 띠'],
@@ -3626,6 +3884,88 @@ window.IE = window.IE || {};
           { x: 2, y: 38 }]), 0),
         part(rectPath(2, 34, 16, 4), 1),
         part(circlePath(43, 43, 3.5), 2)
+      ]
+    },
+
+    /* -------------------------------------------- 버튼 · 바로가기 (단색 배색) */
+    btnCircleChevron: {
+      box: 48, slots: ['배경 원', '화살표'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    btnCircleChevronLeft: {
+      box: 48, slots: ['배경 원', '화살표'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M31 12a2.6 2.6 0 0 0-3.7 0l-12 10.6a2 2 0 0 0 0 2.8l12 10.6a2.6 2.6 0 0 0 3.7-3.6l-10-8.4 10-8.4a2.6 2.6 0 0 0 0-3.6z', 1)
+      ]
+    },
+    btnCircleArrow: {
+      box: 48, slots: ['배경 원', '화살표'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M11 21.5h16.5v-5a1.5 1.5 0 0 1 2.5-1.1l8.5 7.5a1.5 1.5 0 0 1 0 2.2l-8.5 7.5a1.5 1.5 0 0 1-2.5-1.1v-5H11a2.5 2.5 0 0 1 0-5z', 1)
+      ]
+    },
+    btnCircleLink: {
+      box: 48, slots: ['배경 원', '화살표'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 29a2.5 2.5 0 0 1 0-3.5l10.8-10.8h-7.3a2 2 0 0 1 0-4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-4 0v-7.3L20.5 29a2.5 2.5 0 0 1-3.5 0z', 1)
+      ]
+    },
+    btnCirclePlay: {
+      box: 48, slots: ['배경 원', '재생 삼각'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M18 13.5a2 2 0 0 1 3.1-1.7l13.5 8.5a2 2 0 0 1 0 3.4l-13.5 8.5A2 2 0 0 1 18 30.5z', 1)
+      ]
+    },
+    btnCirclePlus: {
+      box: 48, slots: ['배경 원', '플러스'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M21.5 11a2.5 2.5 0 0 1 5 0v8h8a2.5 2.5 0 0 1 0 5h-8v8a2.5 2.5 0 0 1-5 0v-8h-8a2.5 2.5 0 0 1 0-5h8z', 1)
+      ]
+    },
+    btnCircleCheck: {
+      box: 48, slots: ['배경 원', '체크'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M14 24.5a2.5 2.5 0 0 1 3.5 0l4.5 4.5 11.5-12.5a2.5 2.5 0 1 1 3.7 3.4L23.8 34.3a2.5 2.5 0 0 1-3.6 0l-6.2-6.3a2.5 2.5 0 0 1 0-3.5z', 1)
+      ]
+    },
+    btnSquareChevron: {
+      box: 48, slots: ['배경 사각', '화살표'],
+      layers: [
+        part(roundRectPath(3, 3, 42, 42, 12), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    btnSquareArrow: {
+      box: 48, slots: ['배경 사각', '화살표'],
+      layers: [
+        part(roundRectPath(3, 3, 42, 42, 12), 0),
+        part('M11 21.5h16.5v-5a1.5 1.5 0 0 1 2.5-1.1l8.5 7.5a1.5 1.5 0 0 1 0 2.2l-8.5 7.5a1.5 1.5 0 0 1-2.5-1.1v-5H11a2.5 2.5 0 0 1 0-5z', 1)
+      ]
+    },
+    btnDoubleCircleChevron: {
+      box: 48, slots: ['바깥 링', '안쪽 원', '화살표'],
+      layers: [
+        part(ringPath(24, 24, 23, 20), 0),
+        part(circlePath(24, 24, 18), 1),
+        part('M18.5 14a2.2 2.2 0 0 1 3.1 0l9.8 8.7a1.8 1.8 0 0 1 0 2.6l-9.8 8.7a2.2 2.2 0 0 1-3.1-3l8-7.3-8-7.3a2.2 2.2 0 0 1 0-3.1z', 2)
+      ]
+    },
+    btnPillChevron: {
+      box: 48, slots: ['캡슐 배경', '원형 배지', '화살표', '텍스트 바'],
+      layers: [
+        part(roundRectPath(2, 9, 44, 30, 15), 0),
+        part(circlePath(36, 24, 10.5), 1),
+        part('M33.8 19a1.2 1.2 0 0 1 1.7 0l4.5 4.1a1 1 0 0 1 0 1.5l-4.5 4.1a1.2 1.2 0 0 1-1.7-1.7l3.6-3.1-3.6-3.1a1.2 1.2 0 0 1 0-1.8z', 2),
+        part(roundRectPath(8, 21.5, 18, 5, 2.5), 1)
       ]
     }
   };
@@ -6575,6 +6915,760 @@ window.IE = window.IE || {};
         part('M28 20a3 3 0 1 0 6 0a3 3 0 1 0 -6 0z', 0),
         part('M24 24L28 28L24 32L20 28z', 3)
       ]
+    },
+
+    /* -------------------------------------------- 팝업 · 배경 장식 */
+    artCornerWave: {
+      box: 48, slots: ['앞 물결', '뒤 물결', '포인트'],
+      colors: ['#bfdbfe', '#e0f2fe', '#60a5fa'],
+      layers: [
+        part('M0 14C14 16 26 28 38 38C43 41.5 46 43 48 44.5L48 48H0z', 1),
+        part('M0 24C12 24 24 34 38 43C42 45.5 45 47 48 48H0z', 0),
+        part('M0 36C10 36 20 42 32 48H0z M20 20a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0z', 2)
+      ]
+    },
+
+    artCornerHills: {
+      box: 48, slots: ['앞 언덕', '뒷산', '포인트'],
+      colors: ['#93c5fd', '#dbeafe', '#3b82f6'],
+      layers: [
+        part('M0 16C12 12 24 18 34 28C40 34 44 38 48 41L48 48H0z', 1),
+        part('M0 28C10 26 20 32 30 40C36 44 42 46.5 48 48H0z', 0),
+        part('M14 48C20 42 32 40 48 44L48 48z M28 14a3 3 0 1 0 6 0a3 3 0 1 0 -6 0z', 2)
+      ]
+    },
+
+    artCornerStripes: {
+      box: 48, slots: ['사선 줄무늬', '바탕 원'],
+      colors: ['#93c5fd', '#eff6ff'],
+      layers: [
+        part(circlePath(24, 24, 20), 1),
+        part(circleStripesD, 0)
+      ]
+    },
+
+    artQuarterStripes: {
+      box: 48, slots: ['사선 줄무늬', '모서리 바탕'],
+      colors: ['#93c5fd', '#f0f9ff'],
+      layers: [
+        part('M48 0H4A44 44 0 0 0 48 44z', 1),
+        part(cornerStripesD, 0)
+      ]
+    },
+
+    artDotMatrix: {
+      box: 48, slots: ['도트 점', '바탕 테두리'],
+      colors: ['#60a5fa', '#eff6ff'],
+      layers: [
+        part(roundRectPath(3, 3, 42, 42, 6), 1),
+        part(dotGridD, 0)
+      ]
+    },
+
+    artWaveFooter: {
+      box: 48, slots: ['윗 물결', '아랫 물결'],
+      colors: ['#bfdbfe', '#e0f2fe'],
+      layers: [
+        part('M0 22C12 14 24 30 36 22C42 18 45 20 48 24L48 48H0z', 0),
+        part('M0 34C10 28 22 40 34 34C40 31 45 35 48 38L48 48H0z', 1)
+      ]
+    },
+
+    artCornerBlob: {
+      box: 48, slots: ['큰 블롭', '작은 블롭'],
+      colors: ['#bfdbfe', '#e0f2fe'],
+      layers: [
+        part('M0 12C16 10 32 20 38 34C42 42 44 46 48 48H0z', 1),
+        part('M0 26C10 24 22 32 30 42C33 46 34 47 36 48H0z', 0)
+      ]
+    },
+
+    artSystemNotice: {
+      box: 48, slots: ['모니터', '화면', '스탠드', '톱니바퀴', '공지 배지'],
+      colors: ['#1e293b', '#e2e8f0', '#3b82f6', '#f59e0b', '#ef4444'],
+      layers: [
+        part(roundRectPath(4, 5, 40, 26, 3), 0),
+        part(rectPath(7, 8, 34, 20), 1),
+        part('M21 31h6v6h-6z M16 37h16v3H16z', 2),
+        part(circlePath(19, 18, 5.5), 3),
+        part(circlePath(19, 18, 2.8), 1),
+        part(circlePath(30, 18, 5), 4),
+        part('M28.5 18l1.2 1.2 2.8-2.8', 1)
+      ]
+    },
+
+    artServicePause: {
+      box: 48, slots: ['시계 테두리', '시계판', '일시중지 바', '공지 리본'],
+      colors: ['#3b82f6', '#eff6ff', '#ef4444', '#f59e0b'],
+      layers: [
+        part(circlePath(24, 24, 18), 0),
+        part(circlePath(24, 24, 14), 1),
+        part(roundRectPath(20, 17, 3, 14, 1.2), 2),
+        part(roundRectPath(25, 17, 3, 14, 1.2), 2),
+        part('M34 8l6 6-4 4-6-6z', 3)
+      ]
+    },
+
+    artFluffyCloud: {
+      box: 48, slots: ['구름 바탕', '구름 볼륨', '그늘'],
+      colors: ['#ffffff', '#f0f9ff', '#bae6fd'],
+      layers: [
+        part(fluffyCloudD, 0),
+        part(circlePath(25, 17, 7) + ' ' + circlePath(16, 23, 5.5), 1),
+        part(cloudShadeD, 2)
+      ]
+    },
+
+    artCloudCluster: {
+      box: 48, slots: ['앞 구름', '뒤 구름', '그늘'],
+      colors: ['#ffffff', '#e0f2fe', '#bae6fd'],
+      layers: [
+        part(cloudClusterBack, 1),
+        part(cloudClusterFront, 0),
+        part('M10 36C6 36 3 33 3 29C4 32 7 35 12 35C18 35 22 32 26 32C28 32 30 33 32 34C30 35.5 27 36 24 36z', 2)
+      ]
+    },
+
+    artSkyClouds: {
+      box: 48, slots: ['하늘 바탕', '뒤 구름', '앞 구름', '햇살'],
+      colors: ['#38bdf8', '#bae6fd', '#ffffff', '#fef08a'],
+      layers: [
+        part(roundRectPath(0, 0, 48, 48, 4), 0),
+        part(circlePath(12, 12, 6), 3),
+        part(cloudClusterBack, 1),
+        part(cloudClusterFront, 2)
+      ]
+    },
+
+    artKoreanMilitaryBadge: {
+      box: 48, slots: ['군복 바탕', '패치 바탕', '태극 빨강', '태극 파랑', '4괘 흑색'],
+      colors: ['#3f4f3e', '#ffffff', '#dc2626', '#2563eb', '#1e293b'],
+      layers: [
+        part(roundRectPath(3, 5, 42, 38, 5), 0),
+        part(patchBorder, 1),
+        part(patchInner, 1),
+        part(taegeukRed, 2),
+        part(taegeukBlue, 3),
+        part(gwaeBars, 4)
+      ]
+    },
+
+    artFestiveBurstLeft: {
+      box: 48,
+      slots: ['초록별', '분홍스파크', '노랑리본', '분홍리본', '파랑도트', '보라도트', '주황조각', '민트조각', '보라플래그', '개나리별'],
+      colors: ['#22c55e', '#ec4899', '#f59e0b', '#f43f5e', '#2563eb', '#8b5cf6', '#f97316', '#14b8a6', '#7c3aed', '#eab308'],
+      layers: [
+        part(leftBurstGreenSpiky, 0),
+        part(leftBurstPinkSparkle, 1),
+        part(leftBurstYellowStreamer, 2),
+        part(leftBurstPinkStreamer, 3),
+        part(leftBurstBlueDot, 4),
+        part(leftBurstPurpleDot, 5),
+        part(leftBurstOrangeTriangle, 6),
+        part(leftBurstMintTriangle, 7),
+        part(leftBurstPurpleTriangle, 8),
+        part(leftBurstYellowSun, 9)
+      ]
+    },
+
+    artFestiveBurstRight: {
+      box: 48,
+      slots: ['핫핑크별', '보라스파크', '노랑스파크', '주황리본', '파랑조각', '보라조각', '청록도트', '분홍도트'],
+      colors: ['#f43f5e', '#8b5cf6', '#fbbf24', '#ea580c', '#3b82f6', '#a855f7', '#06b6d4', '#ec4899'],
+      layers: [
+        part(rightBurstHotPinkSpiky, 0),
+        part(rightBurstPurpleSparkle, 1),
+        part(rightBurstYellowSparkle, 2),
+        part(rightBurstOrangeStreamer, 3),
+        part(rightBurstBlueTriangle, 4),
+        part(rightBurstVioletTriangle, 5),
+        part(rightBurstCyanDot, 6),
+        part(rightBurstPinkDot, 7)
+      ]
+    },
+
+    artScallopPill: {
+      box: 48,
+      slots: ['물결 테두리', '안쪽 선', '배경 바탕'],
+      colors: ['#0f766e', '#5eead4', '#115e59'],
+      layers: [
+        part(scallopCapsuleD, 0),
+        part(roundRectPath(9, 18, 30, 12, 6), 1),
+        part(roundRectPath(11, 19.5, 26, 9, 4.5), 2)
+      ]
+    },
+
+    artRisingArrow3D: {
+      box: 48,
+      slots: ['화살표 정면', '3D 입체 그림자', '능선 하이라이트'],
+      colors: ['#ef4444', '#991b1b', '#fca5a5'],
+      layers: [
+        part(arrowSideD, 1),
+        part(arrowFrontD, 0),
+        part(arrowRidgeD, 2)
+      ]
+    },
+
+    artPaperPlaneFlight: {
+      box: 48,
+      slots: ['날개 흰색', '동체 음영', '우측 날개', '하단 그림자', '점선 궤적'],
+      colors: ['#ffffff', '#e2e8f0', '#f1f5f9', '#94a3b8', '#64748b'],
+      layers: [
+        part(planeTrail, 4),
+        part(planeLeftWing, 0),
+        part(planeRightWing, 2),
+        part(planeKeelFold, 1),
+        part(planeShadow, 3)
+      ]
+    },
+
+    artFolderStack: {
+      box: 48,
+      slots: ['앞 폴더', '앞 탭', '문서 종이', '뒤 폴더', '뒤 탭'],
+      colors: ['#e2e8f0', '#cbd5e1', '#ffffff', '#cbd5e1', '#94a3b8'],
+      layers: [
+        part(folderBackBody, 3),
+        part(folderBackTab, 4),
+        part(folderFrontBody, 0),
+        part(folderFrontTab, 1),
+        part(folderFrontPaper, 2)
+      ]
+    },
+
+    artFlightTrailLoop: {
+      box: 48,
+      slots: ['점선 궤적'],
+      colors: ['#64748b'],
+      layers: [
+        part(trailLoopD, 0)
+      ]
+    },
+
+    artPersonSmartPhone: {
+      box: 80,
+      slots: ['셔츠 파랑', '바지 네이비', '피부톤', '스마트폰', '머리/신발', '이너 흰색', '화면 빛'],
+      colors: ['#2563eb', '#1e293b', '#ffd8be', '#0f172a', '#1e293b', '#ffffff', '#60a5fa'],
+      layers: [
+        part('M28 10c0 0 1 10 8 10s8-10 8-10c0-4-3-8-8-8s-8 4-8 8z', 2),
+        part('M25 6c-3 0-8 3-7 8 1 2 2 3 5 4 0-4 4-8 10-8 7 0 12 3 13 8 2-1 3-2 3-4 1-5-4-8-7-8h-17z', 4),
+        part('M33 13a1 1 0 1 1 0-1.8 1 1 0 0 1 0 1.8zm6 0a1 1 0 1 1 0-1.8 1 1 0 0 1 0 1.8zm-4.5 3.5c1 1.2 3 1.2 4 0z', 4),
+        part('M33 19h6l-1 3h-4z', 5),
+        part('M25 21c-3 1-5 4-6 9l4 2 2-5v18h22V27l2 5 4-2c-1-5-3-8-6-9l-7 2-3-2-3 2z', 0),
+        part('M33 30h6v12h-6z', 3),
+        part('M34 31.5h4v8.5h-4z', 6),
+        part('M31 32c1 0 2 1 3 3v6h-3v-5l-2-2zM41 32c-1 0-2 1-3 3v6h3v-5l2-2z', 2),
+        part('M28 44h16l2 28h-8l-1-17-1 17h-8z', 1),
+        part('M26 71h9v3h-9zM37 71h9v3h-9z', 4)
+      ]
+    },
+
+    artPersonConsultant: {
+      box: 80,
+      slots: ['셔츠 상의', '바지 슬랙스', '피부톤', '클립보드', '머리/신발', '출입증/랜야드', '서류 종이'],
+      colors: ['#e2e8f0', '#334155', '#ffd8be', '#d97706', '#1e293b', '#0284c7', '#ffffff'],
+      layers: [
+        part('M28 10c0 0 1 9 7 9s7-9 7-9c0-4-3-7-7-7s-7 3-7 7z', 2),
+        part('M25 8c-2 0-7 3-6 7 1 2 2 3 4 3 0-3 3-7 9-7 6 0 10 3 11 7 2-1 3-2 3-3 1-4-3-7-6-7h-15z', 4),
+        part('M32 13a0.8 0.8 0 1 1 0-1.6 0.8 0.8 0 0 1 0 1.6zm6 0a0.8 0.8 0 1 1 0-1.6 0.8 0.8 0 0 1 0 1.6zm-4.2 3c1 1 2.4 1 3.4 0z', 4),
+        part('M25 20c-2 1-4 4-5 8l3 2 3-5v18h16V25l3 5 3-2c-1-4-3-7-5-8l-5 2-3-2-3 2z', 0),
+        part('M33 18l2 6 2-6', 5),
+        part('M34 24h2v3h-2z', 6),
+        part('M21 28h8v12h-8z', 3),
+        part('M22.5 30h5v9h-5z', 6),
+        part('M20 34l3 2v-4h-3z', 2),
+        part('M37 23l8-4 2 3-8 4z', 0),
+        part('M45 20l2 2-1 1-2-2z', 2),
+        part('M26 43h14l2 28h-7l-1-16-1 16h-7z', 1),
+        part('M24 70h8v3h-8zM36 70h8v3h-8z', 4)
+      ]
+    },
+
+    artPersonVR: {
+      box: 80,
+      slots: ['후드 티셔츠', '청바지', '피부톤', 'VR 헤드셋', '소매 포인트', '고글 바이저'],
+      colors: ['#ffffff', '#1d4ed8', '#ffd8be', '#0284c7', '#f87171', '#38bdf8'],
+      layers: [
+        part('M26 12c0-5 4-8 10-8s10 3 10 8c0 5-4 8-10 8s-10-3-10-8z', 2),
+        part('M27 9h18v7H27z', 3),
+        part('M28.5 10.5h15v4h-15z', 5),
+        part('M24 12h3M45 12h3', 3),
+        part('M23 20c-3 1-5 4-6 9l4 2 3-6v18h20V25l3 6 4-2c-1-5-3-8-6-9l-7 2-3-2-3 2z', 0),
+        part('M18 28l4 2 2-4-4-2zM48 28l4-2-2-4-4 2z', 4),
+        part('M19 32l3 3-2 2-3-3zM47 32l-3 3 2 2 3-3z', 2),
+        part('M25 43l2 28h6l1-15 3 15h6l-2-28z', 1),
+        part('M24 70h7v3h-7zM39 70h7v3h-7z', 0)
+      ]
+    },
+
+    artPersonPhoneSmile: {
+      box: 80,
+      slots: ['상의 블루', '하의 네이비', '피부톤', '스마트폰', '머리/눈/신발', '이너 화이트', '화면/디테일'],
+      colors: ['#3b82f6', '#1e293b', '#ffd8be', '#0f172a', '#1e293b', '#ffffff', '#93c5fd'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M27 10c0-7 5-11 13-11s13 4 13 11c0 2-1 3-3 3-2 0-3-2-5-2-4 0-6 3-10 3-4 0-6-2-8-4z M38 0c2 2 4 4 3 6-2 0-4-2-4-4z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3.5 3c1.5 2 5.5 2 7 0-.5 2-3 3.5-3.5 3.5s-3-1.5-3.5-3.5z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M18 34c2 6 8 11 14 12l2-5c-4-1-8-4-10-9z M62 34c-2 6-8 11-14 12l-2-5c4-1 8-4 10-9z', 0),
+        part('M31 38c2-2 5-1 6 2l1 6c-2 1-5 1-7-2z M47 38c-2-2-5-1-6 2l-1 6c2 1 5 1 7-2z', 2),
+        part('M34 26c0-1 1-2 2-2h8c1 0 2 1 2 2v18c0 1-1 2-2 2h-8c-1 0-2-1-2-2z', 3),
+        part('M35.5 27h9v16h-9z', 6),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+
+    artPersonLaptopWork: {
+      box: 80,
+      slots: ['상의 틸그린', '하의 네이비', '피부톤', '노트북 바디', '머리/신발', '이너 화이트', '노트북 화면'],
+      colors: ['#0d9488', '#1e293b', '#ffd8be', '#64748b', '#1e293b', '#ffffff', '#38bdf8'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 14-11s12 3 12 9c-3 0-6-1-9-1-5 0-9 3-13 4z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3 3c1.5 2 4.5 2 6 0z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M18 34c2 6 8 8 13 8l1-5c-3 0-7-2-9-6z M62 34c-2 6-8 8-13 8l-1-5c3 0 7-2 9-6z', 0),
+        part('M26 38h28v10H26z M24 48h32l-2 3H26z', 3),
+        part('M28 40h24v7H28z', 6),
+        part('M29 45c1-1 3 0 4 2h-4z M47 45c1-1 3 0 4 2h-4z', 2),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+
+    artPersonWelcomeGuide: {
+      box: 80,
+      slots: ['자켓 네이비', '스커트/팬츠', '피부톤', '클립보드', '머리/슈즈', '블라우스 흰색', '사원증 랜야드'],
+      colors: ['#1d4ed8', '#1e293b', '#ffd8be', '#d97706', '#1e293b', '#ffffff', '#0284c7'],
+      layers: [
+        part('M34 19c0 3 2 5 6 5s6-2 6-5v-5H34z M31 11c0-6 4-10 9-10s9 4 9 10c0 5-4 9-9 9s-9-4-9-9z', 2),
+        part('M29 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M48 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M29 11c0-7 5-11 12-11s12 4 12 11c0 5-2 9-4 10-2-3-1-7-1-9 0-4-3-7-7-7s-7 3-7 7c0 2 1 6-1 9-2-1-4-5-4-10z', 4),
+        part('M37 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-3 1.5c.5 0 .8.3.8.8h-1.6c0-.5.3-.8.8-.8zm-2.5 3c1 1.5 4 1.5 5 0z', 4),
+        part('M37 19l3 6 3-6z', 5),
+        part('M38.5 25h3v4h-3z', 6),
+        part('M27 21c-4 1-7 5-8 12 3 1.5 5 1 7-2l2-5 1 25h22l1-26 3 3c4-2 9-5 13-9-2-2-5-2-8 0-4 3-7 6-9 8l-2-10c-3 1-9 1-12 0z', 0),
+        part('M67 20c2-1 4 0 5 2l2 2-4 3-4-4z', 2),
+        part('M20 33c1 6 4 9 8 11l2-4c-3-1-5-3-6-6z', 0),
+        part('M25 35h9v13h-9z', 3),
+        part('M26 37h7v10h-7z', 5),
+        part('M27 44c1 0 3 1 3 3h-3z', 2),
+        part('M28 51h24l1.5 25h-10l-1.5-15-1.5 15H29.5z', 1),
+        part('M28 77c2-1 7-1 10 0v2.5h-10z M42 77c2-1 7-1 10 0v2.5h-10z', 4)
+      ]
+    },
+
+    artPersonThumbsUp: {
+      box: 80,
+      slots: ['상의 오렌지', '하의 딥블루', '피부톤', '엄지 손', '머리/슈즈', '이너 화이트', '포인트 뱃지'],
+      colors: ['#ea580c', '#1e3a8a', '#ffd8be', '#ffd8be', '#1e293b', '#ffffff', '#fbbf24'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-2 0-5-2-7-1-3 1-5 4-10 3-4-1-6-2-8-2z', 4),
+        part('M35 11c.8 0 1.5-.7 1.5-1.5s-.7-.5-1.5-.5-1.5 0-1.5.5.7 1.5 1.5 1.5zm8 0c.8 0 1.5-.7 1.5-1.5s-.7-.5-1.5-.5-1.5 0-1.5.5.7 1.5 1.5 1.5zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3.5 3c1.5 2 5.5 2 7 0-.5 2-3 3.5-3.5 3.5s-3-1.5-3.5-3.5z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M51 27c3 5 4 9 3 14l-5-1c1-4 0-7-2-10z', 0),
+        part('M48 37c-1-3 1-7 4-7s3 2 2 5l1 1c1 0 2 1 2 2s-1 2-2 2h-4c-2 0-3-1-3-3z', 3),
+        part('M18 34c1 6 4 11 8 13l2-4c-3-2-5-5-6-8z', 0),
+        part('M26 47c1 1 3 1 4 0l-1-3h-2z', 2),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+
+    artPersonTabletIdea: {
+      box: 80,
+      slots: ['상의 라벤더', '하의 슬랙스', '피부톤', '태블릿', '머리/슈즈', '이너 화이트', '스마트 펜슬'],
+      colors: ['#8b5cf6', '#1e293b', '#ffd8be', '#334155', '#1e293b', '#ffffff', '#f59e0b'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-3 0-6-2-9-1-4 1-6 4-10 3-3-1-4-2-6-2z', 4),
+        part('M34 10a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm7 0a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm-2 0h2', 4),
+        part('M36 10a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6zm7 0a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6zm-3 4c1 1 3 1 4 0z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M18 34c2 6 7 9 12 10l1-5c-3-1-6-3-8-6z M62 34c-2 6-7 9-12 10l-1-5c3-1 6-3 8-6z', 0),
+        part('M32 30c0-1 1-2 2-2h12c1 0 2 1 2 2v18c0 1-1 2-2 2H34c-1 0-2-1-2-2z', 3),
+        part('M33.5 31h13v15h-13z', 5),
+        part('M46 32l6-6 2 2-6 6z', 6),
+        part('M45 35c1-2 3-2 4 0l-1 3h-3z', 2),
+        part('M31 42c1 0 3 1 3 3h-3z', 2),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+
+    artPersonTrustHeart: {
+      box: 80,
+      slots: ['자켓 스카이블루', '하의 차콜', '피부톤', '서류철/가방', '머리/슈즈', '이너 화이트', '안심 뱃지'],
+      colors: ['#0284c7', '#334155', '#ffd8be', '#0284c7', '#1e293b', '#ffffff', '#10b981'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-2 0-5-2-7-1-4 1-6 4-10 3-4-1-6-2-8-2z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3.5 3c1.5 2 5.5 2 7 0-.5 2-3 3.5-3.5 3.5s-3-1.5-3.5-3.5z', 4),
+        part('M36 19l4 6 4-6z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M51 27c2 5 2 8-1 12l-5-2c2-3 2-5 1-8z', 0),
+        part('M41 33c2-2 5-1 6 1l-1 4-5-1z', 2),
+        part('M18 34c1 6 4 11 8 13l2-4c-3-2-5-5-6-8z', 0),
+        part('M26 47c1 1 3 1 4 0l-1-3h-2z', 2),
+        part('M34 26l2-1 2 1v2c0 2-2 3-2 3s-2-1-2-3z', 6),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+
+    artPersonCoffeeBreak: {
+      box: 80,
+      slots: ['니트 베이지', '하의 슬랙스', '피부톤', '커피 텀블러', '머리/슈즈', '텀블러 뚜껑', '텀블러 슬리브'],
+      colors: ['#e2e8f0', '#1e293b', '#ffd8be', '#0284c7', '#1e293b', '#334155', '#fed7aa'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-2 0-5-2-7-1-3 1-5 4-10 3-4-1-6-2-8-2z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3 3c1.5 2 4.5 2 6 0z', 4),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M51 27c3 5 3 9 0 13l-5-2c2-3 2-5 0-7z', 0),
+        part('M42 33h7l-1 12h-5z', 3),
+        part('M42.5 37h6l-.5 4h-5z', 6),
+        part('M41.5 31h8v2h-8z', 5),
+        part('M41 36c-1-1 0-3 2-3h1v6h-1c-1 0-2-1-2-3z', 2),
+        part('M18 34c1 6 4 11 8 13l2-4c-3-2-5-5-6-8z', 0),
+        part('M26 47c1 1 3 1 4 0l-1-3h-2z', 2),
+        part('M27 50h26l1.5 26h-10.5l-2-15-2 15H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+
+    artPersonChartReport: {
+      box: 80,
+      slots: ['자켓 로열블루', '하의 네이비', '피부톤', '보고서 보드', '머리/슈즈', '차트 바 블루', '차트 바 그린'],
+      colors: ['#1d4ed8', '#0f172a', '#ffd8be', '#ffffff', '#1e293b', '#3b82f6', '#10b981'],
+      layers: [
+        part('M34 19c0 3 2 5 6 5s6-2 6-5v-5H34z M31 11c0-6 4-10 9-10s9 4 9 10c0 5-4 9-9 9s-9-4-9-9z', 2),
+        part('M29 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M48 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M29 11c0-7 5-11 12-11s12 4 12 11c-2 0-5-2-7-1-3 1-5 4-9 3-4-1-6-2-8-2z', 4),
+        part('M37 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-3 1.5c.5 0 .8.3.8.8h-1.6c0-.5.3-.8.8-.8zm-2.5 3c1 1.5 4 1.5 5 0z', 4),
+        part('M37 19l3 6 3-6z', 3),
+        part('M27 21c-4 1-7 5-8 12 3 1.5 5 1 7-2l2-5 1 25h22l1-26 3 3c3-1 7-3 10-5-1-2-4-2-6 0-3 2-6 3-8 4l-2-9c-3 1-7 1-9 0z', 0),
+        part('M58 24c1-1 3 0 4 2l1 2-3 2-3-3z', 2),
+        part('M20 33c1 6 3 8 7 10l2-4c-2-1-4-2-5-5z', 0),
+        part('M15 28h15v18H15z', 3),
+        part('M18 42v-5h2v5z M22 42v-9h2v9z', 5),
+        part('M26 42v-13h2v13z', 6),
+        part('M24 45c1 0 2 1 2 2h-4c0-1 1-2 2-2z', 2),
+        part('M28 51h24l1.5 25h-10l-1.5-15-1.5 15H29.5z', 1),
+        part('M28 77c2-1 7-1 10 0v2.5h-10z M42 77c2-1 7-1 10 0v2.5h-10z', 4)
+      ]
+    },
+
+    artDisplayBrochure: {
+      box: 80,
+      slots: ['곡면 외벽 주황', '내벽 흰색', '접힘 음영 깊이', '전시 그래픽/장비', '차트/포인트'],
+      colors: ['#ea580c', '#ffffff', '#0f172a', '#1e293b', '#3b82f6'],
+      layers: [
+        part('M42 17c6 4.5 12 4.5 18 1.5v28c-6 3-12 3-18-1.5z', 2),
+        part('M6 14c12-6 24-6 36 3 12 9 24 9 36 3v28c-12 6-24 6-36-3-12-9-24-9-36-3z', 0),
+        part('M10 18h16v18H10z', 1),
+        part('M13 32v-6h2v6zM17 32v-9h2v9zM21 32v-12h2v12z', 4),
+        part('M30 18h18v18H30z', 1),
+        part('M34 22h10v2H34zM36 26h6v8h-6z', 3),
+        part('M52 18h22v18H52z', 1),
+        part('M58 22h10M63 20v4M59 24h8l-2 2.5h-4z', 3),
+        part('M58 29h10v4H58z', 3)
+      ]
+    },
+
+    /* -------------------------------------------- 배너 버튼 (컬러 완결형) */
+    artBtnCircleBlueChevron: {
+      box: 48, slots: ['배경 블루', '흰색 셰브론'],
+      colors: ['#2563eb', '#ffffff'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    artBtnCircleSkyChevron: {
+      box: 48, slots: ['연하늘 배경', '진파랑 셰브론'],
+      colors: ['#dbeafe', '#1d4ed8'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    artBtnCircleDarkChevron: {
+      box: 48, slots: ['다크 네이비', '흰색 셰브론'],
+      colors: ['#0f172a', '#ffffff'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    artBtnCircleOrangeChevron: {
+      box: 48, slots: ['오렌지 배경', '흰색 셰브론'],
+      colors: ['#ea580c', '#ffffff'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    artBtnCircleGreenChevron: {
+      box: 48, slots: ['그린 배경', '흰색 셰브론'],
+      colors: ['#059669', '#ffffff'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    artBtnCircleRedChevron: {
+      box: 48, slots: ['레드 배경', '흰색 셰브론'],
+      colors: ['#dc2626', '#ffffff'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    artBtnCircleBlueArrow: {
+      box: 48, slots: ['블루 배경', '흰색 화살표'],
+      colors: ['#2563eb', '#ffffff'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M11 21.5h16.5v-5a1.5 1.5 0 0 1 2.5-1.1l8.5 7.5a1.5 1.5 0 0 1 0 2.2l-8.5 7.5a1.5 1.5 0 0 1-2.5-1.1v-5H11a2.5 2.5 0 0 1 0-5z', 1)
+      ]
+    },
+    artBtnCircleLink: {
+      box: 48, slots: ['블루 배경', '흰색 링크 화살표'],
+      colors: ['#2563eb', '#ffffff'],
+      layers: [
+        part(circlePath(24, 24, 21.5), 0),
+        part('M17 29a2.5 2.5 0 0 1 0-3.5l10.8-10.8h-7.3a2 2 0 0 1 0-4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-4 0v-7.3L20.5 29a2.5 2.5 0 0 1-3.5 0z', 1)
+      ]
+    },
+    artBtnSquareBlueChevron: {
+      box: 48, slots: ['라운드 사각', '흰색 셰브론'],
+      colors: ['#2563eb', '#ffffff'],
+      layers: [
+        part(roundRectPath(3, 3, 42, 42, 12), 0),
+        part('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', 1)
+      ]
+    },
+    artBtnDoubleCircleBlue: {
+      box: 48, slots: ['바깥 링', '안쪽 원', '셰브론'],
+      colors: ['#93c5fd', '#2563eb', '#ffffff'],
+      layers: [
+        part(ringPath(24, 24, 23, 20), 0),
+        part(circlePath(24, 24, 18), 1),
+        part('M18.5 14a2.2 2.2 0 0 1 3.1 0l9.8 8.7a1.8 1.8 0 0 1 0 2.6l-9.8 8.7a2.2 2.2 0 0 1-3.1-3l8-7.3-8-7.3a2.2 2.2 0 0 1 0-3.1z', 2)
+      ]
+    },
+    artBtnPillBlueChevron: {
+      box: 48, slots: ['캡슐 블루', '원형 배지', '파랑 셰브론', '텍스트 바'],
+      colors: ['#2563eb', '#ffffff', '#2563eb'],
+      layers: [
+        part(roundRectPath(2, 9, 44, 30, 15), 0),
+        part(circlePath(36, 24, 10.5), 1),
+        part('M33.8 19a1.2 1.2 0 0 1 1.7 0l4.5 4.1a1 1 0 0 1 0 1.5l-4.5 4.1a1.2 1.2 0 0 1-1.7-1.7l3.6-3.1-3.6-3.1a1.2 1.2 0 0 1 0-1.8z', 2),
+        part(roundRectPath(8, 21.5, 18, 5, 2.5), 1)
+      ]
+    },
+    artBtnPillDarkChevron: {
+      box: 48, slots: ['캡슐 다크', '원형 배지', '다크 셰브론', '텍스트 바'],
+      colors: ['#0f172a', '#ffffff', '#0f172a'],
+      layers: [
+        part(roundRectPath(2, 9, 44, 30, 15), 0),
+        part(circlePath(36, 24, 10.5), 1),
+        part('M33.8 19a1.2 1.2 0 0 1 1.7 0l4.5 4.1a1 1 0 0 1 0 1.5l-4.5 4.1a1.2 1.2 0 0 1-1.7-1.7l3.6-3.1-3.6-3.1a1.2 1.2 0 0 1 0-1.8z', 2),
+        part(roundRectPath(8, 21.5, 18, 5, 2.5), 1)
+      ]
+    },
+    artBtnPillOrangeChevron: {
+      box: 48, slots: ['캡슐 오렌지', '원형 배지', '오렌지 셰브론', '텍스트 바'],
+      colors: ['#ea580c', '#ffffff', '#ea580c'],
+      layers: [
+        part(roundRectPath(2, 9, 44, 30, 15), 0),
+        part(circlePath(36, 24, 10.5), 1),
+        part('M33.8 19a1.2 1.2 0 0 1 1.7 0l4.5 4.1a1 1 0 0 1 0 1.5l-4.5 4.1a1.2 1.2 0 0 1-1.7-1.7l3.6-3.1-3.6-3.1a1.2 1.2 0 0 1 0-1.8z', 2),
+        part(roundRectPath(8, 21.5, 18, 5, 2.5), 1)
+      ]
+    },
+
+    // 1. 스마트폰 터치 청년 (유저 참조 고도화 곡률 모델)
+    artPersonPhoneSmile: {
+      box: 80,
+      slots: ['상의 블루', '하의 네이비', '피부톤', '스마트폰', '머리/눈/신발', '이너 화이트', '화면/디테일'],
+      colors: ['#3b82f6', '#1e293b', '#ffd8be', '#0f172a', '#1e293b', '#ffffff', '#93c5fd'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M27 10c0-7 5-11 13-11s13 4 13 11c0 2-1 3-3 3-2 0-3-2-5-2-4 0-6 3-10 3-4 0-6-2-8-4z M38 0c2 2 4 4 3 6-2 0-4-2-4-4z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3.5 3c1.5 2 5.5 2 7 0-.5 2-3 3.5-3.5 3.5s-3-1.5-3.5-3.5z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M18 34c2 6 8 11 14 12l2-5c-4-1-8-4-10-9z M62 34c-2 6-8 11-14 12l-2-5c4-1 8-4 10-9z', 0),
+        part('M31 38c2-2 5-1 6 2l1 6c-2 1-5 1-7-2z M47 38c-2-2-5-1-6 2l-1 6c2 1 5 1 7-2z', 2),
+        part('M34 26c0-1 1-2 2-2h8c1 0 2 1 2 2v18c0 1-1 2-2 2h-8c-1 0-2-1-2-2z', 3),
+        part('M35.5 27h9v16h-9z', 6),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+    // 2. 노트북 작업 청년 (비즈니스 & 학습)
+    artPersonLaptopWork: {
+      box: 80,
+      slots: ['상의 틸그린', '하의 네이비', '피부톤', '노트북 바디', '머리/신발', '이너 화이트', '노트북 화면'],
+      colors: ['#0d9488', '#1e293b', '#ffd8be', '#64748b', '#1e293b', '#ffffff', '#38bdf8'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 14-11s12 3 12 9c-3 0-6-1-9-1-5 0-9 3-13 4z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3 3c1.5 2 4.5 2 6 0z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M18 34c2 6 8 8 13 8l1-5c-3 0-7-2-9-6z M62 34c-2 6-8 8-13 8l-1-5c3 0 7-2 9-6z', 0),
+        part('M26 38h28v10H26z M24 48h32l-2 3H26z', 3),
+        part('M28 40h24v7H28z', 6),
+        part('M29 45c1-1 3 0 4 2h-4z M47 45c1-1 3 0 4 2h-4z', 2),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+    // 3. 친절 안내·환영 상담관
+    artPersonWelcomeGuide: {
+      box: 80,
+      slots: ['자켓 네이비', '스커트/팬츠', '피부톤', '클립보드', '머리/슈즈', '블라우스 흰색', '사원증 랜야드'],
+      colors: ['#1d4ed8', '#1e293b', '#ffd8be', '#d97706', '#1e293b', '#ffffff', '#0284c7'],
+      layers: [
+        part('M34 19c0 3 2 5 6 5s6-2 6-5v-5H34z M31 11c0-6 4-10 9-10s9 4 9 10c0 5-4 9-9 9s-9-4-9-9z', 2),
+        part('M29 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M48 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M29 11c0-7 5-11 12-11s12 4 12 11c0 5-2 9-4 10-2-3-1-7-1-9 0-4-3-7-7-7s-7 3-7 7c0 2 1 6-1 9-2-1-4-5-4-10z', 4),
+        part('M37 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-3 1.5c.5 0 .8.3.8.8h-1.6c0-.5.3-.8.8-.8zm-2.5 3c1 1.5 4 1.5 5 0z', 4),
+        part('M37 19l3 6 3-6z', 5),
+        part('M38.5 25h3v4h-3z', 6),
+        part('M27 21c-4 1-7 5-8 12 3 1.5 5 1 7-2l2-5 1 25h22l1-26 3 3c4-2 9-5 13-9-2-2-5-2-8 0-4 3-7 6-9 8l-2-10c-3 1-9 1-12 0z', 0),
+        part('M67 20c2-1 4 0 5 2l2 2-4 3-4-4z', 2),
+        part('M20 33c1 6 4 9 8 11l2-4c-3-1-5-3-6-6z', 0),
+        part('M25 35h9v13h-9z', 3),
+        part('M26 37h7v10h-7z', 5),
+        part('M27 44c1 0 3 1 3 3h-3z', 2),
+        part('M28 51h24l1.5 25h-10l-1.5-15-1.5 15H29.5z', 1),
+        part('M28 77c2-1 7-1 10 0v2.5h-10z M42 77c2-1 7-1 10 0v2.5h-10z', 4)
+      ]
+    },
+    // 4. 엄지척 안심 청년
+    artPersonThumbsUp: {
+      box: 80,
+      slots: ['상의 오렌지', '하의 딥블루', '피부톤', '엄지 손', '머리/슈즈', '이너 화이트', '포인트 뱃지'],
+      colors: ['#ea580c', '#1e3a8a', '#ffd8be', '#ffd8be', '#1e293b', '#ffffff', '#fbbf24'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-2 0-5-2-7-1-3 1-5 4-10 3-4-1-6-2-8-2z', 4),
+        part('M35 11c.8 0 1.5-.7 1.5-1.5s-.7-.5-1.5-.5-1.5 0-1.5.5.7 1.5 1.5 1.5zm8 0c.8 0 1.5-.7 1.5-1.5s-.7-.5-1.5-.5-1.5 0-1.5.5.7 1.5 1.5 1.5zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3.5 3c1.5 2 5.5 2 7 0-.5 2-3 3.5-3.5 3.5s-3-1.5-3.5-3.5z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M51 27c3 5 4 9 3 14l-5-1c1-4 0-7-2-10z', 0),
+        part('M48 37c-1-3 1-7 4-7s3 2 2 5l1 1c1 0 2 1 2 2s-1 2-2 2h-4c-2 0-3-1-3-3z', 3),
+        part('M18 34c1 6 4 11 8 13l2-4c-3-2-5-5-6-8z', 0),
+        part('M26 47c1 1 3 1 4 0l-1-3h-2z', 2),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+    // 5. 태블릿 기획 청년
+    artPersonTabletIdea: {
+      box: 80,
+      slots: ['상의 라벤더', '하의 슬랙스', '피부톤', '태블릿', '머리/슈즈', '이너 화이트', '스마트 펜슬'],
+      colors: ['#8b5cf6', '#1e293b', '#ffd8be', '#334155', '#1e293b', '#ffffff', '#f59e0b'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-3 0-6-2-9-1-4 1-6 4-10 3-3-1-4-2-6-2z', 4),
+        part('M34 10a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm7 0a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm-2 0h2', 4),
+        part('M36 10a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6zm7 0a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6zm-3 4c1 1 3 1 4 0z', 4),
+        part('M36 19c1.5 2 6.5 2 8 0v2c-2 2-6 2-8 0z M27 49h26v3H27z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M18 34c2 6 7 9 12 10l1-5c-3-1-6-3-8-6z M62 34c-2 6-7 9-12 10l-1-5c3-1 6-3 8-6z', 0),
+        part('M32 30c0-1 1-2 2-2h12c1 0 2 1 2 2v18c0 1-1 2-2 2H34c-1 0-2-1-2-2z', 3),
+        part('M33.5 31h13v15h-13z', 5),
+        part('M46 32l6-6 2 2-6 6z', 6),
+        part('M45 35c1-2 3-2 4 0l-1 3h-3z', 2),
+        part('M31 42c1 0 3 1 3 3h-3z', 2),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+    // 6. 안심 서비스·신뢰 매니저
+    artPersonTrustHeart: {
+      box: 80,
+      slots: ['자켓 스카이블루', '하의 차콜', '피부톤', '서류철/가방', '머리/슈즈', '이너 화이트', '안심 뱃지'],
+      colors: ['#0284c7', '#334155', '#ffd8be', '#0284c7', '#1e293b', '#ffffff', '#10b981'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-2 0-5-2-7-1-4 1-6 4-10 3-4-1-6-2-8-2z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3.5 3c1.5 2 5.5 2 7 0-.5 2-3 3.5-3.5 3.5s-3-1.5-3.5-3.5z', 4),
+        part('M36 19l4 6 4-6z', 5),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M51 27c2 5 2 8-1 12l-5-2c2-3 2-5 1-8z', 0),
+        part('M41 33c2-2 5-1 6 1l-1 4-5-1z', 2),
+        part('M18 34c1 6 4 11 8 13l2-4c-3-2-5-5-6-8z', 0),
+        part('M26 47c1 1 3 1 4 0l-1-3h-2z', 2),
+        part('M34 26l2-1 2 1v2c0 2-2 3-2 3s-2-1-2-3z', 6),
+        part('M27 52h26l1.5 24h-10.5l-2-14-2 14H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+    // 7. 커피 텀블러·편안한 상담 청년
+    artPersonCoffeeBreak: {
+      box: 80,
+      slots: ['니트 베이지', '하의 슬랙스', '피부톤', '커피 텀블러', '머리/슈즈', '텀블러 뚜껑', '텀블러 슬리브'],
+      colors: ['#e2e8f0', '#1e293b', '#ffd8be', '#0284c7', '#1e293b', '#334155', '#fed7aa'],
+      layers: [
+        part('M33 19c0 3 2 5 7 5s7-2 7-5v-5H33z M30 11c0-6 4-10 10-10s10 4 10 10c0 5-4 9-10 9s-10-4-10-9z', 2),
+        part('M28 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M51 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M28 10c0-7 6-11 13-11s12 4 12 11c-2 0-5-2-7-1-3 1-5 4-10 3-4-1-6-2-8-2z', 4),
+        part('M36 11a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm8 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm-4 1.5c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm-3 3c1.5 2 4.5 2 6 0z', 4),
+        part('M26 21c-4 1-8 6-9 13 3 1.5 6 1 8-3l2-6 1 25h24l1-25 2 6c2 4 5 4.5 8 3-1-7-5-12-9-13-3 1.5-10 1.5-13 0-3 1.5-10 1.5-13 0z', 0),
+        part('M51 27c3 5 3 9 0 13l-5-2c2-3 2-5 0-7z', 0),
+        part('M42 33h7l-1 12h-5z', 3),
+        part('M42.5 37h6l-.5 4h-5z', 6),
+        part('M41.5 31h8v2h-8z', 5),
+        part('M41 36c-1-1 0-3 2-3h1v6h-1c-1 0-2-1-2-3z', 2),
+        part('M18 34c1 6 4 11 8 13l2-4c-3-2-5-5-6-8z', 0),
+        part('M26 47c1 1 3 1 4 0l-1-3h-2z', 2),
+        part('M27 50h26l1.5 26h-10.5l-2-15-2 15H28.5z', 1),
+        part('M26 76c2-1 8-1 11 0v3h-11z M43 76c2-1 8-1 11 0v3h-11z', 4)
+      ]
+    },
+    // 8. 보고서·차트 브리핑 기획관
+    artPersonChartReport: {
+      box: 80,
+      slots: ['자켓 로열블루', '하의 네이비', '피부톤', '보고서 보드', '머리/슈즈', '차트 바 블루', '차트 바 그린'],
+      colors: ['#1d4ed8', '#0f172a', '#ffd8be', '#ffffff', '#1e293b', '#3b82f6', '#10b981'],
+      layers: [
+        part('M34 19c0 3 2 5 6 5s6-2 6-5v-5H34z M31 11c0-6 4-10 9-10s9 4 9 10c0 5-4 9-9 9s-9-4-9-9z', 2),
+        part('M29 11c0-2 2-3 3-3v6c-1 0-3-1-3-3z M48 11c0-2-2-3-3-3v6c1 0 3-1 3-3z', 2),
+        part('M29 11c0-7 5-11 12-11s12 4 12 11c-2 0-5-2-7-1-3 1-5 4-9 3-4-1-6-2-8-2z', 4),
+        part('M37 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-3 1.5c.5 0 .8.3.8.8h-1.6c0-.5.3-.8.8-.8zm-2.5 3c1 1.5 4 1.5 5 0z', 4),
+        part('M37 19l3 6 3-6z', 3),
+        part('M27 21c-4 1-7 5-8 12 3 1.5 5 1 7-2l2-5 1 25h22l1-26 3 3c3-1 7-3 10-5-1-2-4-2-6 0-3 2-6 3-8 4l-2-9c-3 1-7 1-9 0z', 0),
+        part('M58 24c1-1 3 0 4 2l1 2-3 2-3-3z', 2),
+        part('M20 33c1 6 3 8 7 10l2-4c-2-1-4-2-5-5z', 0),
+        part('M15 28h15v18H15z', 3),
+        part('M18 42v-5h2v5z M22 42v-9h2v9z', 5),
+        part('M26 42v-13h2v13z', 6),
+        part('M24 45c1 0 2 1 2 2h-4c0-1 1-2 2-2z', 2),
+        part('M28 51h24l1.5 25h-10l-1.5-15-1.5 15H29.5z', 1),
+        part('M28 77c2-1 7-1 10 0v2.5h-10z M42 77c2-1 7-1 10 0v2.5h-10z', 4)
+      ]
     }
   };
 
@@ -6593,6 +7687,20 @@ window.IE = window.IE || {};
         'chevronBlock', 'heart', 'drop', 'shield', 'blob', 'wave', 'triangle', 'diamond',
         'pentagon', 'hexagon', 'heptagon', 'octagon', 'nonagon', 'decagon',
         'star5', 'star6', 'star7', 'star8', 'star12', 'burst', 'sealEdge']
+    },
+    {
+      id: 'btn', name: '배너 버튼 · 바로가기',
+      items: [
+        'btnCircleChevron', 'btnCircleArrow', 'btnCircleLink',
+        'btnCirclePlay', 'btnCirclePlus', 'btnCircleCheck',
+        'btnCircleChevronLeft', 'btnSquareChevron', 'btnSquareArrow',
+        'btnDoubleCircleChevron', 'btnPillChevron',
+        'artBtnCircleBlueChevron', 'artBtnCircleSkyChevron', 'artBtnCircleDarkChevron',
+        'artBtnCircleOrangeChevron', 'artBtnCircleGreenChevron', 'artBtnCircleRedChevron',
+        'artBtnCircleBlueArrow', 'artBtnCircleLink', 'artBtnSquareBlueChevron',
+        'artBtnDoubleCircleBlue', 'artBtnPillBlueChevron', 'artBtnPillDarkChevron',
+        'artBtnPillOrangeChevron'
+      ]
     },
     { id: 'decor', name: '장식 (여러 색)', items: Object.keys(DECOR_FIGURES) },
     { id: 'pattern', name: '무늬 (채우기)', items: Object.keys(PATTERN_FIGURES) },
@@ -6613,32 +7721,66 @@ window.IE = window.IE || {};
       'illUmbrella', 'illBag', 'illKey', 'illBicycle', 'illBus'] },
     { id: 'illust-public', name: '행정 · 공공', items: [
       'illGov', 'illStamp', 'illVote', 'illSpeaker'] },
-    { id: 'illust-people', name: '사람 · 캐릭터', items: [
+    { id: 'illust-people', name: '인물 · 비즈니스', items: [
+      'artPersonPhoneSmile', 'artPersonLaptopWork', 'artPersonWelcomeGuide', 'artPersonThumbsUp',
+      'artPersonTabletIdea', 'artPersonTrustHeart', 'artPersonCoffeeBreak', 'artPersonChartReport',
+      'artPersonSmartPhone', 'artPersonConsultant', 'artPersonVR', 'artDisplayBrochure',
       'illPerson', 'illStudent', 'illFamily', 'illDoctor', 'illWorker',
       'illChef', 'illSenior'] },
 
     /* 단색 장식 — 아이콘과 같은 성격이라 아이콘 탭에 함께 보인다.
        (고른 색 하나로 배색이 만들어진다) */
+    { id: 'icon-deco-btn', name: '버튼 · 바로가기 (단색)', items: [
+      'btnCircleChevron', 'btnCircleArrow', 'btnCircleLink',
+      'btnCirclePlay', 'btnCirclePlus', 'btnCircleCheck',
+      'btnCircleChevronLeft', 'btnSquareChevron', 'btnSquareArrow',
+      'btnDoubleCircleChevron', 'btnPillChevron'
+    ] },
     { id: 'icon-deco-back', name: '배경 장식', items: [
       'decoBlob', 'decoBlobSoft', 'decoWaveBand', 'decoDiagonalBand',
-      'decoCircleCluster', 'decoTriangleMosaic'] },
+      'decoCircleCluster', 'decoTriangleMosaic',
+      'decoCornerWave', 'decoCornerHills', 'decoCornerStripes', 'decoQuarterStripes',
+      'decoDotMatrix', 'decoWaveFooter', 'decoCornerBlob',
+      'decoFluffyCloud', 'decoCloudCluster', 'decoFestiveBurstLeft', 'decoFestiveBurstRight',
+      'decoPaperPlaneFlight', 'decoFolderStack'
+    ] },
     { id: 'icon-deco-line', name: '구분선 · 띠', items: [
       'decoDividerWave', 'decoDividerPeak', 'decoDividerCurve',
       'decoDividerDots', 'decoDividerDiamond', 'decoDividerRibbon'] },
     { id: 'icon-deco-ribbon', name: '리본 · 배지', items: [
       'decoRibbon', 'decoRibbonTail', 'decoBannerFlag', 'decoLabelTag',
-      'decoBookmark', 'decoBadge', 'decoPillBadge', 'decoHexBadge'] },
+      'decoBookmark', 'decoBadge', 'decoPillBadge', 'decoHexBadge', 'decoScallopPill'] },
     { id: 'icon-deco-frame', name: '프레임 · 테두리', items: [
       'decoFrameDouble', 'decoFrameCorners', 'decoFrameDots',
       'decoFrameBadge', 'decoCorner'] },
     { id: 'icon-deco-accent', name: '강조 · 화살표', items: [
       'decoQuote', 'decoSparkBurst', 'decoFocusLines', 'decoChevron3',
-      'decoSteps', 'decoArrowRibbon', 'decoCycle', 'decoRibbonArrow'] },
+      'decoSteps', 'decoArrowRibbon', 'decoCycle', 'decoRibbonArrow',
+      'decoRisingArrow3D', 'decoFlightTrailLoop'
+    ] },
 
     /* 일러스트형 장식 — 색이 정해진 컬러 장식. 장식 탭에 보인다 */
+    { id: 'deco-btn', name: '배너 버튼 · 바로가기 (컬러)', items: [
+      'artBtnCircleBlueChevron', 'artBtnCircleSkyChevron', 'artBtnCircleDarkChevron',
+      'artBtnCircleOrangeChevron', 'artBtnCircleGreenChevron', 'artBtnCircleRedChevron',
+      'artBtnCircleBlueArrow', 'artBtnCircleLink', 'artBtnSquareBlueChevron',
+      'artBtnDoubleCircleBlue', 'artBtnPillBlueChevron', 'artBtnPillDarkChevron',
+      'artBtnPillOrangeChevron'
+    ] },
+    { id: 'deco-popup', name: '팝업 · 배경 장식', items: [
+      'artCornerWave', 'artCornerHills', 'artCornerStripes', 'artQuarterStripes',
+      'artDotMatrix', 'artWaveFooter', 'artCornerBlob', 'artFluffyCloud', 'artCloudCluster', 'artSkyClouds',
+      'artKoreanMilitaryBadge', 'artFestiveBurstLeft', 'artFestiveBurstRight', 'artScallopPill',
+      'artRisingArrow3D', 'artPaperPlaneFlight', 'artFolderStack', 'artFlightTrailLoop',
+      'artPersonPhoneSmile', 'artPersonLaptopWork', 'artPersonWelcomeGuide', 'artPersonThumbsUp',
+      'artPersonTabletIdea', 'artPersonTrustHeart', 'artPersonCoffeeBreak', 'artPersonChartReport',
+      'artPersonSmartPhone', 'artPersonConsultant', 'artPersonVR', 'artDisplayBrochure',
+      'artSystemNotice', 'artServicePause'
+    ] },
     { id: 'deco-party', name: '행사 · 파티', items: [
       'artGarland', 'artConfetti', 'artBalloons', 'artPartyHat',
       'artBunting', 'artCurtain',
+      'artFestiveBurstLeft', 'artFestiveBurstRight', 'artScallopPill',
       'artBirthday', 'artPopper', 'artBalloonArch', 'artCupcake', 'artToast', 'artFirework'] },
     { id: 'deco-award', name: '상장 · 기념', items: [
       'artAward', 'artLaurel', 'artMedals', 'artCrown',
@@ -6654,7 +7796,7 @@ window.IE = window.IE || {};
     { id: 'deco-mark', name: '강조 · 표시', items: [
       'artStamp', 'artHighlight', 'artWashi', 'artClip', 'artNote'] },
     { id: 'deco-fancy', name: '반짝 · 꾸밈', items: [
-      'artBow', 'artCloudSun', 'artSparkles', 'artDrops', 'artPaperPlane', 'artSticker'] },
+      'artBow', 'artCloudSun', 'artSparkles', 'artDrops', 'artPaperPlane', 'artPaperPlaneFlight', 'artFlightTrailLoop', 'artSticker'] },
     { id: 'deco-season', name: '계절 · 이벤트', items: [
       'artXmasTree', 'artSantaHat', 'artStocking', 'artPumpkin', 'artGradCap', 'artDiploma', 'artLuckyBag'] },
     { id: 'deco-sports', name: '운동회 · 스포츠', items: [
@@ -6753,6 +7895,32 @@ window.IE = window.IE || {};
     burstStar: '폭발 별', arrowTrio: '삼색 화살표', chevronTrio: '삼색 꺾쇠',
     labelStack: '삼색 라벨', frameTriple: '삼중 테두리',
 
+    btnCircleChevron: '원형 셰브론 우 버튼',
+    btnCircleChevronLeft: '원형 셰브론 좌 버튼',
+    btnCircleArrow: '원형 화살표 버튼',
+    btnCircleLink: '원형 링크 버튼',
+    btnCirclePlay: '원형 재생 버튼',
+    btnCirclePlus: '원형 더보기 버튼',
+    btnCircleCheck: '원형 확인 버튼',
+    btnSquareChevron: '사각 셰브론 버튼',
+    btnSquareArrow: '사각 화살표 버튼',
+    btnDoubleCircleChevron: '이중링 셰브론 버튼',
+    btnPillChevron: '캡슐 셰브론 버튼',
+
+    artBtnCircleBlueChevron: '블루 원형 셰브론',
+    artBtnCircleSkyChevron: '연하늘 원형 셰브론',
+    artBtnCircleDarkChevron: '다크 원형 셰브론',
+    artBtnCircleOrangeChevron: '오렌지 원형 셰브론',
+    artBtnCircleGreenChevron: '그린 원형 셰브론',
+    artBtnCircleRedChevron: '레드 원형 셰브론',
+    artBtnCircleBlueArrow: '블루 원형 화살표',
+    artBtnCircleLink: '블루 링크 버튼',
+    artBtnSquareBlueChevron: '블루 사각 셰브론',
+    artBtnDoubleCircleBlue: '이중링 블루 셰브론',
+    artBtnPillBlueChevron: '블루 캡슐 바로가기',
+    artBtnPillDarkChevron: '다크 캡슐 바로가기',
+    artBtnPillOrangeChevron: '오렌지 캡슐 바로가기',
+
     patternStripesH: '가로 줄무늬', patternStripesV: '세로 줄무늬',
     patternStripesD: '대각 줄무늬', patternDots: '물방울무늬', patternGrid: '격자무늬',
     patternChecks: '체크무늬', patternWaves: '물결무늬', patternTriangles: '삼각무늬',
@@ -6775,6 +7943,10 @@ window.IE = window.IE || {};
     decoBlob: '블롭', decoBlobSoft: '블롭 (겹침)', decoWaveBand: '물결 띠',
     decoDiagonalBand: '비스듬 띠', decoCircleCluster: '겹친 원',
     decoTriangleMosaic: '삼각 모자이크',
+    decoCornerWave: '코너 물결 (2단)', decoCornerHills: '코너 언덕',
+    decoCornerStripes: '사선 줄무늬 원', decoQuarterStripes: '모서리 빗금',
+    decoDotMatrix: '도트 매트릭스', decoWaveFooter: '하단 물결 띠',
+    decoCornerBlob: '코너 블롭',
     decoDividerWave: '물결 구분선', decoDividerPeak: '산 구분선', decoDividerCurve: '곡선 구분선',
     decoDividerDots: '점 구분선', decoDividerDiamond: '다이아 구분선',
     decoDividerRibbon: '배지 구분선',
@@ -6786,6 +7958,29 @@ window.IE = window.IE || {};
     decoQuote: '인용 따옴표', decoSparkBurst: '폭발 강조', decoFocusLines: '집중선',
     decoChevron3: '쉐브론 3단', decoSteps: '계단 상승', decoArrowRibbon: '화살표 리본',
     decoCycle: '순환 화살표', decoRibbonArrow: '오름 화살표',
+
+    artCornerWave: '파스텔 코너 물결', artCornerHills: '파스텔 코너 언덕',
+    artCornerStripes: '사선 줄무늬 원', artQuarterStripes: '모서리 빗금',
+    artDotMatrix: '도트 매트릭스', artWaveFooter: '하단 안내 물결',
+    artCornerBlob: '파스텔 코너 블롭', artSystemNotice: '시스템 점검 안내',
+    artServicePause: '서비스 일시중지',
+    decoFluffyCloud: '부드러운 뭉게구름', decoCloudCluster: '우상단 뭉게구름',
+    artFluffyCloud: '부드러운 뭉게구름', artCloudCluster: '우상단 뭉게구름',
+    artSkyClouds: '푸른 하늘과 구름', artKoreanMilitaryBadge: '태극기 와펜 패치',
+    decoFestiveBurstLeft: '좌측 축하 폭죽', decoFestiveBurstRight: '우측 축하 폭죽',
+    decoScallopPill: '물결 테두리 배지',
+    artFestiveBurstLeft: '좌측 축하 폭죽', artFestiveBurstRight: '우측 축하 폭죽',
+    artScallopPill: '물결 테두리 배지',
+    decoRisingArrow3D: '우상향 3D 성장 화살표', decoPaperPlaneFlight: '종이비행기와 비행 궤적',
+    decoFolderStack: '서류 폴더 묶음', decoFlightTrailLoop: '곡선 비행 점선 궤적',
+    artRisingArrow3D: '우상향 3D 성장 화살표', artPaperPlaneFlight: '종이비행기와 비행 궤적',
+    artFolderStack: '서류 폴더 묶음', artFlightTrailLoop: '곡선 비행 점선 궤적',
+    artPersonPhoneSmile: '스마트폰 터치 청년', artPersonLaptopWork: '노트북 작업 청년',
+    artPersonWelcomeGuide: '친절 안내·환영 상담관', artPersonThumbsUp: '엄지척 안심 청년',
+    artPersonTabletIdea: '태블릿 기획 청년', artPersonTrustHeart: '안심 서비스·신뢰 매니저',
+    artPersonCoffeeBreak: '커피 텀블러 청년', artPersonChartReport: '보고서 차트 기획관',
+    artPersonSmartPhone: '스마트폰 방문예약 청년', artPersonConsultant: '클립보드 상담·안내관',
+    artPersonVR: '첨단 VR 체험 청년', artDisplayBrochure: '3단 곡면 병풍 전시대',
 
     artGarland: '가랜드', artConfetti: '색종이', artBalloons: '풍선',
     artPartyHat: '파티 모자', artBunting: '둥근 깃발 줄', artCurtain: '리본 커튼',

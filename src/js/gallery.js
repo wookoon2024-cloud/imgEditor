@@ -71,9 +71,19 @@ window.IE = window.IE || {};
     '과업': ['과업지시서', 'rfp', '제안요약', '규격서', 'doc-rfp-summary'],
     '과업지시서': ['과업', 'rfp', '제안요약', '규격서', 'doc-rfp-summary'],
     'rfp': ['과업지시서', '제안요약', '제안요청', '규격서', 'doc-rfp-summary'],
-    '제안': ['과업지시서', 'rfp', '제안요청', 'doc-rfp-summary'],
-    '사업계획': ['사업계획서', '제안서', 'ppt-deck-biz-plan'],
-    '제안서': ['사업계획서', '기획서', 'ppt-deck-biz-plan', 'doc-rfp-summary'],
+    '제안': ['과업지시서', 'rfp', '제안요청', 'doc-rfp-summary', 'ppt-deck-smart-dx-white', 'ppt-deck-strategic-proposal', 'ppt-deck-public-service'],
+    '사업계획': ['사업계획서', '제안서', 'ppt-deck-biz-plan', 'ppt-deck-smart-dx-white', 'ppt-deck-strategic-proposal', 'ppt-deck-public-service'],
+    '제안서': ['사업계획서', '기획서', 'ppt-deck-biz-plan', 'doc-rfp-summary', 'ppt-deck-smart-dx-white', 'ppt-deck-strategic-proposal', 'ppt-deck-public-service'],
+    '공공': ['공공기관', '정부', '행정', '지자체', '정책', 'ppt-deck-public-service', 'doc-official'],
+    '공공기관': ['공공', '정부', '행정', '지자체', '정책', 'ppt-deck-public-service'],
+    '정부': ['공공', '공공기관', '행정', '지자체', '정책', 'ppt-deck-public-service'],
+    '행정': ['공공', '공공기관', '정부', '지자체', '정책', '공문서', '기안문', 'ppt-deck-public-service', 'doc-official'],
+    '지자체': ['공공', '공공기관', '정부', '행정', '정책', 'ppt-deck-public-service'],
+    '정책': ['공공', '공공기관', '정부', '행정', '지자체', '추진계획', 'ppt-deck-public-service'],
+    '화이트': ['화이트', '화이트덱', 'ppt-deck-smart-dx-white', '스마트', 'dx', '일러스트'],
+    '일러스트': ['일러스트', '삽화', '벡터', 'ppt-deck-smart-dx-white', 'ppt-deck-public-service', '스마트', 'dx', '화이트'],
+    'dx': ['dx', '스마트', '화이트', '솔루션', 'ppt-deck-smart-dx-white'],
+    '스마트': ['dx', '스마트', '화이트', '솔루션', 'ppt-deck-smart-dx-white', 'ppt-deck-public-service'],
     '공문': ['공문서', '기안문', '결재', '행정', '시행', 'doc-official'],
     '기안': ['공문서', '기안문', '결재', 'doc-official'],
     '결재': ['공문서', '기안문', 'doc-official'],
@@ -173,7 +183,49 @@ window.IE = window.IE || {};
     '창립기념': ['창립', '기념식', '비전선포', '장기근속', 'promo-anniversary-corp'],
     '홍보': ['홍보물', '포스터', '배너', '공고', '이벤트'],
     '홍보물': ['홍보', '포스터', '배너', '전시회', '축제'],
-    '행사': ['축제', '체육대회', '세미나', '워크숍', '콘서트', '바자회', '명찰', '기념식']
+    '행사': ['축제', '체육대회', '세미나', '워크숍', '콘서트', '바자회', '명찰', '기념식'],
+    '동아리': ['크루', '학생회', '박람회', '모집', 'promo-campus-crew', 'promo-club-expo'],
+    '크루': ['동아리', '학생회', '모집', '캠퍼스', '신입', 'promo-campus-crew'],
+    '학생회': ['동아리', '캠퍼스', '축제', '페스티벌', 'promo-campus-crew', 'promo-campus-festival', 'promo-club-expo'],
+    '캠퍼스': ['동아리', '크루', '축제', '페스티벌', '박람회', 'promo-campus-crew', 'promo-campus-festival', 'promo-club-expo'],
+    '축제': ['페스티벌', '버스킹', '공연', '푸드트럭', '봄축제', 'promo-campus-festival'],
+    '페스티벌': ['축제', '버스킹', '공연', '음악', 'promo-campus-festival'],
+    '버스킹': ['음악', '공연', '밴드', '축제', 'promo-campus-festival'],
+    '박람회': ['동아리', '부스', '엑스포', '스탬프', 'promo-club-expo'],
+    '모집': ['크루', '신입', '동아리', '지원', 'promo-campus-crew'],
+    '컨퍼런스': ['세미나', '심포지엄', '서밋', '테크', 'ai', 'promo-tech-conference'],
+    '세미나': ['컨퍼런스', '학술대회', '강연', '포럼', 'promo-tech-conference'],
+    '인공지능': ['ai', '테크', '컨퍼런스', '기술', 'promo-tech-conference'],
+    'ai': ['인공지능', '테크', '기술', '서밋', 'promo-tech-conference'],
+    '전시': ['전시회', '미술전', '기획전', '갤러리', '팝업', 'promo-aesthetic-exhibition'],
+    '전시회': ['전시', '미술관', '아트', '도슨트', '팝업스토어', 'promo-aesthetic-exhibition'],
+    '아트': ['전시', '미술', '예술', '갤러리', 'promo-aesthetic-exhibition'],
+    '팝업': ['팝업스토어', '기획전', '전시', '브랜드', 'promo-aesthetic-exhibition'],
+    '세일': ['할인', '특가', '클리어런스', '프로모션', '쇼핑', 'promo-season-sale'],
+    '할인': ['세일', '특가', '쿠폰', '이벤트', 'promo-season-sale'],
+    '특가': ['세일', '할인', '타임어택', '쇼핑', 'promo-season-sale'],
+    '맥킨지': ['컨설팅', '경영전략', '전략', '이사회', '피라미드', '매트릭스', 'ppt-deck-mckinsey-strategy'],
+    '컨설팅': ['맥킨지', '경영전략', '전략보고', '이사회', 'ppt-deck-mckinsey-strategy'],
+    '경영전략': ['맥킨지', '전략', '컨설팅', '이사회', 'ppt-deck-mckinsey-strategy'],
+    '전략': ['경영전략', '맥킨지', '컨설팅', '이사회', '로드맵', 'ppt-deck-mckinsey-strategy'],
+    '애플': ['키노트', '벤토', '다크', '발표', '테크', 'ppt-flagship-clean-keynote', 'ppt-deck-apple-keynote'],
+    '키노트': ['애플', '순수', '잡스', '기조강연', '컨퍼런스', '플래그십', 'ppt-flagship-clean-keynote', 'ppt-flagship-neo-bento', 'ppt-deck-apple-keynote'],
+    '순수': ['키노트', '잡스', '미니멀', 'ppt-flagship-clean-keynote'],
+    '잡스': ['키노트', '애플', '순수', '스티브잡스', 'ppt-flagship-clean-keynote'],
+    '벤토': ['bento', '애플', '그리드', '플래그십', '네오', 'ppt-flagship-neo-bento', 'ppt-deck-apple-keynote', 'ppt-deck-linear-saas'],
+    '플래그십': ['네오', '벤토', '키노트', '목업', 'ppt-flagship-neo-bento'],
+    '네오': ['플래그십', '벤토', '키노트', 'ppt-flagship-neo-bento'],
+    '목업': ['맥os', '윈도우', '모바일', '플래그십', 'ppt-flagship-neo-bento', 'ppt-deck-apple-keynote'],
+    '피치': ['피치덱', '투자유치', 'ir', '스타트업', 'yc', 'ppt-deck-yc-pitch', 'ppt-deck-ir-pitch'],
+    '피치덱': ['피치', '투자유치', 'ir', 'yc', '스타트업', '시드', 'ppt-deck-yc-pitch', 'ppt-deck-ir-pitch'],
+    'yc': ['와이콤비네이터', '실리콘밸리', '시드', '피치덱', '스타트업', '투자유치', 'ppt-deck-yc-pitch'],
+    '와이콤비네이터': ['yc', '실리콘밸리', '시드', '피치덱', '스타트업', 'ppt-deck-yc-pitch'],
+    '투자유치': ['피치덱', 'ir', 'vc', '스타트업', 'yc', 'ppt-deck-yc-pitch', 'ppt-deck-ir-pitch'],
+    'saas': ['소프트웨어', 'b2b', '리니어', '프로덕트', '솔루션', 'ppt-deck-linear-saas'],
+    '제안서': ['사업계획서', '기획서', '프로젝트', '전략', '덱', 'ppt-deck-strategic-proposal'],
+    '사업계획서': ['제안서', '기획서', '프로젝트', '전략', '비즈니스', 'ppt-deck-strategic-proposal'],
+    '기획서': ['사업계획서', '제안서', '프로젝트', '전략', 'ppt-deck-strategic-proposal'],
+    '프로젝트': ['제안서', '사업계획서', '기획서', '로드맵', 'ppt-deck-strategic-proposal']
   };
 
   function matchTemplate(template, query) {
@@ -242,20 +294,90 @@ window.IE = window.IE || {};
     return (template.pages && template.pages.length) ? template.pages.length : 1;
   }
 
+  var PLACEHOLDER = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+  var _thumbCanvas = null;
+
+  function getThumbCanvas(w, h) {
+    if (!_thumbCanvas) {
+      var el = document.createElement('canvas');
+      _thumbCanvas = new fabric.StaticCanvas(el, {
+        enableRetinaScaling: false,
+        renderOnAddRemove: false
+      });
+    }
+    _thumbCanvas.clear();
+    _thumbCanvas.backgroundColor = '#ffffff';
+    _thumbCanvas.setDimensions({ width: w, height: h });
+    return _thumbCanvas;
+  }
+
+  function areTemplateImagesLoaded(template) {
+    var cover = firstPage(template);
+    var images = (cover.objects || []).filter(function (def) {
+      return def && (def.type === 'image' || def.type === 'img') && (def.src || def._elementSrc);
+    });
+    if (!images.length) return true;
+    if (!IE.canvas || !IE.canvas._imgCache) return false;
+    for (var i = 0; i < images.length; i++) {
+      var src = images[i].src || images[i]._elementSrc;
+      var cached = IE.canvas._imgCache[src];
+      if (!cached || (!cached.complete && cached.naturalWidth === 0)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function preloadImages(template, callback) {
+    var cover = firstPage(template);
+    var images = (cover.objects || []).filter(function (def) {
+      return def && (def.type === 'image' || def.type === 'img') && (def.src || def._elementSrc);
+    });
+    if (!images.length) {
+      if (callback) callback();
+      return;
+    }
+    if (!IE.canvas) return;
+    if (!IE.canvas._imgCache) IE.canvas._imgCache = {};
+    var pending = images.length;
+    var done = false;
+    function checkDone() {
+      if (done) return;
+      pending--;
+      if (pending <= 0) {
+        done = true;
+        if (callback) callback();
+      }
+    }
+    images.forEach(function (def) {
+      var src = def.src || def._elementSrc;
+      var cached = IE.canvas._imgCache[src];
+      if (cached && (cached.complete || cached.naturalWidth > 0)) {
+        checkDone();
+      } else {
+        var img = cached || fabric.util.createImage();
+        img.crossOrigin = 'anonymous';
+        IE.canvas._imgCache[src] = img;
+        img.addEventListener('load', checkDone, { once: true });
+        img.addEventListener('error', checkDone, { once: true });
+        if (!cached || !img.src) img.src = src;
+      }
+    });
+  }
+
   function thumbnail(template, maxW, maxH) {
     var key = template.id + '@' + maxW + 'x' + maxH;
-    if (cache[key]) return cache[key];
+    var imgsLoaded = areTemplateImagesLoaded(template);
+    if (imgsLoaded && cache[key]) return cache[key];
 
     var cover = firstPage(template);
     var zoom = Math.min(maxW / cover.width, maxH / cover.height);
-    var element = document.createElement('canvas');
+    var destW = Math.max(1, Math.round(cover.width * zoom));
+    var destH = Math.max(1, Math.round(cover.height * zoom));
 
-    var preview = new fabric.StaticCanvas(element, {
-      width: cover.width,
-      height: cover.height,
-      backgroundColor: cover.background || '#ffffff',
-      enableRetinaScaling: false
-    });
+    var preview = getThumbCanvas(destW, destH);
+    preview.backgroundColor = cover.background || '#ffffff';
+    preview.setZoom(zoom);
 
     (cover.objects || []).forEach(function (def) {
       var obj = null;
@@ -267,17 +389,23 @@ window.IE = window.IE || {};
       if (obj) preview.add(obj);
     });
 
-    preview.setDimensions({
-      width: Math.max(1, Math.round(cover.width * zoom)),
-      height: Math.max(1, Math.round(cover.height * zoom))
-    });
-    preview.setZoom(zoom);
     preview.renderAll();
-
     var url = preview.toDataURL({ format: 'png', multiplier: 1 });
-    preview.dispose();
 
-    cache[key] = url;
+    if (imgsLoaded) {
+      cache[key] = url;
+    } else {
+      preloadImages(template, function () {
+        invalidate(template.id);
+        var freshUrl = thumbnail(template, maxW, maxH);
+        var thumbEls = document.querySelectorAll('.tpl-thumb[data-thumb-id="' + template.id + '"] .tpl-thumb-img');
+        Array.prototype.forEach.call(thumbEls, function (el) {
+          el.src = freshUrl;
+          el.removeAttribute('data-loading');
+        });
+      });
+    }
+
     return url;
   }
 
@@ -287,34 +415,131 @@ window.IE = window.IE || {};
     });
   }
 
+  var thumbObserver = null;
+  var thumbQueue = [];
+  var isProcessingQueue = false;
+
+  function processThumbQueue() {
+    if (isProcessingQueue || !thumbQueue.length) return;
+    isProcessingQueue = true;
+
+    setTimeout(function () {
+      var task = thumbQueue.shift();
+      if (task && task.img && task.img.isConnected) {
+        var tpl = IE.store.byId(task.id);
+        if (tpl) {
+          var maxW = task.wide ? 560 : 360;
+          var maxH = task.wide ? 320 : 260;
+          var url = thumbnail(tpl, maxW, maxH);
+          task.img.src = url;
+          task.img.removeAttribute('data-loading');
+        }
+      }
+      isProcessingQueue = false;
+      if (thumbQueue.length) {
+        processThumbQueue();
+      }
+    }, 4);
+  }
+
+  function setupLazyThumbnails(scope) {
+    if (thumbObserver) {
+      thumbObserver.disconnect();
+    }
+
+    var targets = scope.querySelectorAll('.tpl-thumb[data-thumb-id]');
+    if (!targets.length) return;
+
+    if (!window.IntersectionObserver) {
+      Array.prototype.forEach.call(targets, function (el) {
+        var id = el.getAttribute('data-thumb-id');
+        var wide = el.getAttribute('data-thumb-wide') === '1';
+        var img = el.querySelector('.tpl-thumb-img');
+        var tpl = IE.store.byId(id);
+        if (tpl && img) {
+          var url = thumbnail(tpl, wide ? 560 : 360, wide ? 320 : 260);
+          img.src = url;
+          img.removeAttribute('data-loading');
+        }
+      });
+      return;
+    }
+
+    var flyoutBody = document.getElementById('flyout-body');
+
+    thumbObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var thumbEl = entry.target;
+          thumbObserver.unobserve(thumbEl);
+
+          var id = thumbEl.getAttribute('data-thumb-id');
+          var wide = thumbEl.getAttribute('data-thumb-wide') === '1';
+          var img = thumbEl.querySelector('.tpl-thumb-img');
+          if (!img) return;
+
+          var maxW = wide ? 560 : 360;
+          var maxH = wide ? 320 : 260;
+          var key = id + '@' + maxW + 'x' + maxH;
+
+          if (cache[key]) {
+            img.src = cache[key];
+            img.removeAttribute('data-loading');
+          } else {
+            thumbQueue.push({ id: id, wide: wide, img: img });
+            processThumbQueue();
+          }
+        }
+      });
+    }, {
+      root: flyoutBody,
+      rootMargin: '300px 0px 300px 0px'
+    });
+
+    Array.prototype.forEach.call(targets, function (el) {
+      var id = el.getAttribute('data-thumb-id');
+      var wide = el.getAttribute('data-thumb-wide') === '1';
+      var maxW = wide ? 560 : 360;
+      var maxH = wide ? 320 : 260;
+      if (cache[id + '@' + maxW + 'x' + maxH]) {
+        var img = el.querySelector('.tpl-thumb-img');
+        if (img && img.hasAttribute('data-loading')) {
+          img.src = cache[id + '@' + maxW + 'x' + maxH];
+          img.removeAttribute('data-loading');
+        }
+      } else {
+        thumbObserver.observe(el);
+      }
+    });
+  }
+
   /* ------------------------------------------------------------- 카드 */
 
   function cardHtml(template, isUser) {
     var wide = isWide(template);
-    var thumb = wide ? thumbnail(template, 560, 300) : thumbnail(template, 260, 200);
+    var maxW = wide ? 560 : 360;
+    var maxH = wide ? 320 : 260;
+    var key = template.id + '@' + maxW + 'x' + maxH;
+    var hasThumb = !!cache[key];
+    var thumb = hasThumb ? cache[key] : PLACEHOLDER;
     var pages = pageCount(template);
 
     return '' +
-      '<div class="tpl-card" data-template="' + template.id + '">' +
-        '<div class="tpl-thumb">' +
-          '<img alt="" src="' + thumb + '">' +
+      '<div class="tpl-card" data-template="' + template.id + '" title="' + util.escapeHtml(template.name) + '">' +
+        '<div class="tpl-thumb" data-thumb-id="' + template.id + '" data-thumb-wide="' + (wide ? '1' : '0') + '">' +
+          '<img alt="" class="tpl-thumb-img"' +
+            (hasThumb ? '' : ' data-loading="1"') +
+            ' src="' + thumb + '">' +
           (pages > 1 ? '<span class="tpl-pages">' + pages + '장</span>' : '') +
           (isUser ? '<span class="tpl-tag">내 템플릿</span>' : '') +
+          (isUser ? '<button type="button" class="tpl-del-btn" data-delete="' + template.id + '" title="삭제">&#10005;</button>' : '') +
         '</div>' +
-        '<div>' +
-          '<div class="tpl-name">' + util.escapeHtml(template.name) + '</div>' +
-          '<div class="tpl-size">' +
-            util.escapeHtml(template.note || (template.width + ' × ' + template.height)) +
-          '</div>' +
-        '</div>' +
-        '<div class="tpl-actions">' +
-          '<button type="button" data-export="' + template.id + '">내보내기</button>' +
-          (isUser ? '<button type="button" class="danger" data-delete="' + template.id + '">삭제</button>' : '') +
-        '</div>' +
+        '<div class="tpl-name">' + util.escapeHtml(template.name) + '</div>' +
+        (isUser ? '<div class="tpl-actions"><button type="button" class="danger" data-delete="' + template.id + '">삭제</button></div>' : '') +
       '</div>';
   }
 
-  /** 가로로 긴 템플릿(PPT·배너 등)은 한 줄에 하나씩 크게 보여준다 */
+  /** 템플릿 그리드 */
   function isWide(template) {
     return template.width > template.height * 1.3;
   }
@@ -322,12 +547,9 @@ window.IE = window.IE || {};
   function groupHtml(title, templates, isUser) {
     if (!templates.length) return '';
 
-    var wideCount = templates.filter(isWide).length;
-    var wide = wideCount > templates.length / 2;
-
     return '<div class="fo-section">' +
       '<h3 class="fo-title">' + util.escapeHtml(title) + ' · ' + templates.length + '</h3>' +
-      '<div class="tpl-grid' + (wide ? ' wide' : '') + '">' +
+      '<div class="tpl-grid">' +
         templates.map(function (tpl) { return cardHtml(tpl, isUser); }).join('') +
       '</div></div>';
   }
@@ -461,13 +683,21 @@ window.IE = window.IE || {};
     var grid = '<div id="template-grid">';
 
     if (currentCategory === 'all') {
-      categories.forEach(function (category) {
-        grid += groupHtml(category.name, IE.templates.byCategory(category.id), false);
-      });
+      grid += '<div class="tpl-grid">' +
+        IE.templates.all.map(function (tpl) { return cardHtml(tpl, false); }).join('') +
+        '</div>';
     } else {
       var picked = categories.filter(function (c) { return c.id === currentCategory; })[0];
-      if (picked) grid += groupHtml(picked.name, IE.templates.byCategory(picked.id), false);
-      else currentCategory = 'all';
+      if (picked) {
+        grid += '<div class="tpl-grid">' +
+          IE.templates.byCategory(picked.id).map(function (tpl) { return cardHtml(tpl, false); }).join('') +
+          '</div>';
+      } else {
+        currentCategory = 'all';
+        grid += '<div class="tpl-grid">' +
+          IE.templates.all.map(function (tpl) { return cardHtml(tpl, false); }).join('') +
+          '</div>';
+      }
     }
 
     return chips + grid + '</div>';
@@ -492,6 +722,8 @@ window.IE = window.IE || {};
   /* ---------------------------------------------------------- 이벤트 */
 
   function bindCardsAndActions(scope) {
+    setupLazyThumbnails(scope);
+
     Array.prototype.forEach.call(scope.querySelectorAll('[data-tpl-cat]'), function (button) {
       button.addEventListener('click', function () {
         currentCategory = button.getAttribute('data-tpl-cat');
@@ -700,9 +932,11 @@ window.IE = window.IE || {};
 
       all.forEach(function (tpl) {
         invalidate(tpl.id);
-        IE.store.remove(tpl.id);
       });
-      util.toast('내 템플릿을 모두 삭제했습니다.');
+      IE.store.clear(function () {
+        util.toast('내 템플릿을 모두 삭제했습니다.');
+        IE.panel.refresh();
+      });
       IE.panel.refresh();
     }
   }

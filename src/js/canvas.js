@@ -14,6 +14,9 @@ window.IE = window.IE || {};
 
   var GRADIENT_PRESETS = [
     { id: 'none', label: '없음' },
+    { id: 'sky', label: '맑은 하늘', angle: 180, stops: [{ offset: 0, color: '#38bdf8' }, { offset: 0.55, color: '#bae6fd' }, { offset: 1, color: '#f0f9ff' }] },
+    { id: 'sky_soft', label: '소프트 하늘', angle: 180, stops: [{ offset: 0, color: '#7dd3fc' }, { offset: 0.7, color: '#e0f2fe' }, { offset: 1, color: '#ffffff' }] },
+    { id: 'sky_clouds', label: '구름 하늘', angle: 135, stops: [{ offset: 0, color: '#0284c7' }, { offset: 0.45, color: '#38bdf8' }, { offset: 0.85, color: '#e0f2fe' }, { offset: 1, color: '#ffffff' }] },
     { id: 'blue', label: '파랑', angle: 90, stops: [{ offset: 0, color: '#1d4ed8' }, { offset: 1, color: '#3b82f6' }] },
     { id: 'deep', label: '남색', angle: 120, stops: [{ offset: 0, color: '#0f172a' }, { offset: 1, color: '#1e3a8a' }] },
     { id: 'warm', label: '주황', angle: 120, stops: [{ offset: 0, color: '#f97316' }, { offset: 1, color: '#db2777' }] },
@@ -97,9 +100,11 @@ window.IE = window.IE || {};
 
     var rect = new fabric.Rect({
       left: 0, top: 0, width: w, height: h,
-      fill: 'rgba(100, 116, 139, 0.10)',
-      stroke: '#94a3b8', strokeWidth: 2, strokeDashArray: [10, 7],
-      rx: 3, ry: 3,
+      fill: def.fill || 'rgba(100, 116, 139, 0.10)',
+      stroke: def.stroke || '#94a3b8',
+      strokeWidth: def.strokeWidth != null ? def.strokeWidth : 2,
+      strokeDashArray: def.strokeDashArray || [10, 7],
+      rx: def.rx || 3, ry: def.ry || 3,
       originX: 'left', originY: 'top'
     });
 
@@ -109,13 +114,17 @@ window.IE = window.IE || {};
     var label = new fabric.Text('▣  ' + labelText, {
       left: w / 2, top: h / 2,
       originX: 'center', originY: 'center',
-      fontSize: fontSize, fill: '#64748b', fontFamily: FONT,
+      fontSize: fontSize,
+      fill: def.labelColor || '#64748b',
+      fontFamily: FONT,
       selectable: false, evented: false
     });
 
     var group = new fabric.Group([rect, label], {
       left: def.left || 0,
       top: def.top || 0,
+      originX: def.originX || 'left',
+      originY: def.originY || 'top',
       angle: def.angle || 0,
       opacity: def.opacity == null ? 1 : def.opacity,
       isSlot: true,
@@ -133,30 +142,100 @@ window.IE = window.IE || {};
     return group;
   }
 
+  function resolveShadow(def) {
+    if (!def) return null;
+    if (def.shadow) {
+      if (typeof def.shadow === 'object' && !(def.shadow instanceof fabric.Shadow)) {
+        return new fabric.Shadow(def.shadow);
+      }
+      return def.shadow;
+    }
+    if (IE.properties && IE.properties.shadowFromDef) {
+      return IE.properties.shadowFromDef(def);
+    }
+    return null;
+  }
+
   api.makeObject = function (def) {
+    if (!def) return null;
     var obj = null;
     var opacity = def.opacity == null ? 1 : def.opacity;
 
     switch (def.type) {
       case 'text':
-        obj = new fabric.Textbox(def.text || '텍스트', {
+      case 'textbox':
+      case 'i-text':
+        var textContent = def.text != null ? def.text : (def.type === 'text' ? '텍스트' : '');
+        obj = new fabric.Textbox(textContent, {
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
           width: def.width || 400,
           fontFamily: def.fontFamily || FONT,
           fontSize: def.fontSize || 40,
           fontWeight: def.fontWeight || 'normal',
           fontStyle: def.fontStyle || 'normal',
           underline: !!def.underline,
+          overline: !!def.overline,
+          linethrough: !!def.linethrough,
           fill: def.fill || '#111827',
           textAlign: def.textAlign || 'left',
           lineHeight: def.lineHeight || 1.35,
           charSpacing: def.charSpacing || 0,
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           angle: def.angle || 0,
           opacity: opacity,
-          splitByGrapheme: true,
-          editable: true
+          splitByGrapheme: def.splitByGrapheme !== false,
+          editable: true,
+          shadow: resolveShadow(def)
         });
+        if (def.styles) {
+          try {
+            obj.styles = JSON.parse(JSON.stringify(def.styles));
+          } catch (e) {
+            obj.styles = def.styles;
+          }
+        }
+        break;
+
+      case 'image':
+        var imgSrc = def.src || def._elementSrc || '';
+        if (imgSrc) {
+          if (!api._imgCache) api._imgCache = {};
+          var imgEl = null;
+          if (def._element && (def._element.complete || def._element.naturalWidth > 0)) {
+            imgEl = def._element;
+          } else if (api._imgCache[imgSrc] && (api._imgCache[imgSrc].complete || api._imgCache[imgSrc].naturalWidth > 0)) {
+            imgEl = api._imgCache[imgSrc];
+          } else {
+            imgEl = api._imgCache[imgSrc] || fabric.util.createImage();
+            imgEl.crossOrigin = 'anonymous';
+            imgEl.onload = function () {
+              if (IE.state && IE.state.canvas) {
+                IE.state.canvas.requestRenderAll();
+              }
+            };
+            if (!imgEl.src) imgEl.src = imgSrc;
+            api._imgCache[imgSrc] = imgEl;
+          }
+          obj = new fabric.Image(imgEl, {
+            left: def.left || 0,
+            top: def.top || 0,
+            originX: def.originX || 'left',
+            originY: def.originY || 'top',
+            width: def.width,
+            height: def.height,
+            cropX: def.cropX || 0,
+            cropY: def.cropY || 0,
+            scaleX: def.scaleX == null ? 1 : def.scaleX,
+            scaleY: def.scaleY == null ? 1 : def.scaleY,
+            angle: def.angle || 0,
+            opacity: opacity,
+            shadow: resolveShadow(def)
+          });
+        }
         break;
 
       case 'rect':
@@ -166,8 +245,12 @@ window.IE = window.IE || {};
         obj = new fabric.Rect({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
           width: def.width || 100,
           height: def.height || 100,
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           fill: rectFill,
           stroke: def.stroke || null,
           strokeWidth: def.strokeWidth || 0,
@@ -180,7 +263,7 @@ window.IE = window.IE || {};
           selectable: !def.isGuide,
           evented: !def.isGuide,
           gradientPreset: def.gradientPreset || null,
-          shadow: IE.properties && IE.properties.shadowFromDef ? IE.properties.shadowFromDef(def) : null
+          shadow: resolveShadow(def)
         });
         break;
 
@@ -190,8 +273,13 @@ window.IE = window.IE || {};
         obj.set({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           angle: def.angle || 0,
-          opacity: opacity
+          opacity: opacity,
+          shadow: resolveShadow(def)
         });
         break;
 
@@ -201,8 +289,13 @@ window.IE = window.IE || {};
         obj.set({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           angle: def.angle || 0,
-          opacity: opacity
+          opacity: opacity,
+          shadow: resolveShadow(def)
         });
         break;
 
@@ -211,8 +304,13 @@ window.IE = window.IE || {};
         obj.set({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           angle: def.angle || 0,
-          opacity: opacity
+          opacity: opacity,
+          shadow: resolveShadow(def)
         });
         break;
 
@@ -221,8 +319,13 @@ window.IE = window.IE || {};
         obj.set({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           angle: def.angle || 0,
-          opacity: opacity
+          opacity: opacity,
+          shadow: resolveShadow(def)
         });
         break;
 
@@ -230,12 +333,18 @@ window.IE = window.IE || {};
         obj = new fabric.Circle({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
           radius: def.radius || Math.min(def.width || 100, def.height || 100) / 2,
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           fill: def.fill || '#dbeafe',
           stroke: def.stroke || null,
           strokeWidth: def.strokeWidth || 0,
+          strokeDashArray: def.strokeDashArray || null,
           angle: def.angle || 0,
-          opacity: opacity
+          opacity: opacity,
+          shadow: resolveShadow(def)
         });
         break;
 
@@ -243,13 +352,19 @@ window.IE = window.IE || {};
         obj = new fabric.Triangle({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
           width: def.width || 120,
           height: def.height || 120,
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           fill: def.fill || '#dbeafe',
           stroke: def.stroke || null,
           strokeWidth: def.strokeWidth || 0,
+          strokeDashArray: def.strokeDashArray || null,
           angle: def.angle || 0,
-          opacity: opacity
+          opacity: opacity,
+          shadow: resolveShadow(def)
         });
         break;
 
@@ -257,8 +372,12 @@ window.IE = window.IE || {};
         obj = new fabric.Rect({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
           width: def.width || 200,
           height: def.height || 6,
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           fill: def.fill || '#2563eb',
           angle: def.angle || 0,
           opacity: opacity
@@ -266,8 +385,17 @@ window.IE = window.IE || {};
         break;
 
       case 'table':
-        var tableData = def.tableData || IE.table.create(def);
-        obj = IE.table.build(tableData, def.left || 0, def.top || 0);
+        var tableData = def.tableData || (IE.table && IE.table.create(def));
+        if (tableData && IE.table) {
+          obj = IE.table.build(tableData, def.left || 0, def.top || 0);
+          if (obj && (def.scaleX != null || def.scaleY != null)) {
+            obj.set({
+              scaleX: def.scaleX == null ? 1 : def.scaleX,
+              scaleY: def.scaleY == null ? 1 : def.scaleY,
+              angle: def.angle || 0
+            });
+          }
+        }
         break;
 
       case 'decor':
@@ -275,6 +403,10 @@ window.IE = window.IE || {};
         obj.set({
           left: def.left || 0,
           top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
           angle: def.angle || 0,
           opacity: opacity
         });
@@ -284,11 +416,104 @@ window.IE = window.IE || {};
         obj = makeSlot(def);
         break;
 
+      case 'path':
+        obj = new fabric.Path(def.path || def.d, {
+          left: def.left || 0,
+          top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
+          fill: def.fill || 'transparent',
+          stroke: def.stroke || null,
+          strokeWidth: def.strokeWidth || 0,
+          strokeLineCap: def.strokeLineCap || 'round',
+          strokeLineJoin: def.strokeLineJoin || 'round',
+          strokeDashArray: def.strokeDashArray || null,
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
+          angle: def.angle || 0,
+          opacity: opacity,
+          selectable: def.selectable !== false,
+          evented: def.evented !== false,
+          shadow: resolveShadow(def)
+        });
+        break;
+
+      case 'group':
+        if (def.kind === 'table' && def.tableData && IE.table) {
+          obj = IE.table.build(def.tableData, def.left || 0, def.top || 0);
+          if (obj && (def.scaleX != null || def.scaleY != null)) {
+            obj.set({
+              scaleX: def.scaleX == null ? 1 : def.scaleX,
+              scaleY: def.scaleY == null ? 1 : def.scaleY,
+              angle: def.angle || 0
+            });
+          }
+          break;
+        }
+        var subObjs = (def.objects || []).map(function (subDef) {
+          return api.makeObject(subDef);
+        }).filter(Boolean);
+        obj = new fabric.Group(subObjs, {
+          left: def.left || 0,
+          top: def.top || 0,
+          originX: def.originX || 'left',
+          originY: def.originY || 'top',
+          scaleX: def.scaleX == null ? 1 : def.scaleX,
+          scaleY: def.scaleY == null ? 1 : def.scaleY,
+          angle: def.angle || 0,
+          opacity: opacity,
+          selectable: def.selectable !== false,
+          evented: def.evented !== false,
+          shadow: resolveShadow(def)
+        });
+        break;
+
       default:
-        obj = null;
+        var klassName = fabric.util.string.capitalize(def.type || '');
+        if (klassName && typeof fabric[klassName] === 'function') {
+          try {
+            obj = new fabric[klassName](def);
+          } catch (e) {
+            obj = null;
+          }
+        } else {
+          obj = null;
+        }
     }
 
-    if (obj) obj.set('kind', def.kind || def.type);
+    if (obj) {
+      if (def.kind) obj.set('kind', def.kind);
+      else if (!obj.kind) obj.set('kind', def.type);
+      if (def.name) obj.set('name', def.name);
+      if (def.isSlot) obj.set('isSlot', true);
+      if (def.slotLabel) obj.set('slotLabel', def.slotLabel);
+      if (def.tableData) obj.tableData = def.tableData;
+
+      if (def.flipX) obj.set('flipX', true);
+      if (def.flipY) obj.set('flipY', true);
+
+      if (def.isLocked || def.lockMovementX) {
+        obj.set({
+          isLocked: true,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockRotation: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          hasControls: false
+        });
+      }
+
+      if (util.EXTRA_PROPS && Array.isArray(util.EXTRA_PROPS)) {
+        util.EXTRA_PROPS.forEach(function (prop) {
+          if (def[prop] !== undefined) {
+            obj.set(prop, def[prop]);
+          }
+        });
+      }
+
+      obj.setCoords();
+    }
     return obj;
   };
 
@@ -316,7 +541,23 @@ window.IE = window.IE || {};
     state.pages = null;
     state.pageIndex = 0;
 
-    canvas.on('object:modified', function () {
+    canvas.on('object:modified', function (opt) {
+      var target = (opt && opt.target) ? opt.target : canvas.getActiveObject();
+      if (target && (target.type === 'rect' || target.kind === 'rect' || target.kind === 'roundrect' || target.kind === 'bg')) {
+        if (target.scaleX !== 1 || target.scaleY !== 1) {
+          var w = Math.round(target.width * Math.abs(target.scaleX));
+          var h = Math.round(target.height * Math.abs(target.scaleY));
+          target.set({
+            width: Math.max(1, w),
+            height: Math.max(1, h),
+            scaleX: target.scaleX < 0 ? -1 : 1,
+            scaleY: target.scaleY < 0 ? -1 : 1
+          });
+          var maxR = Math.floor(Math.min(w, h) / 2);
+          if (target.rx > maxR) target.set({ rx: maxR, ry: maxR });
+          target.setCoords();
+        }
+      }
       state.history.snapshot();
       notifyPanels();
       notifyStatus();
@@ -327,12 +568,42 @@ window.IE = window.IE || {};
       notifyPanels();
     });
 
+    canvas.on('text:selection:changed', function (opt) {
+      var target = (opt && opt.target) ? opt.target : canvas.getActiveObject();
+      if (target && target.isEditing) {
+        target._lastSelection = {
+          start: target.selectionStart,
+          end: target.selectionEnd
+        };
+        notifyPanels();
+      }
+    });
+
     canvas.on('selection:created', function () { notifyPanels(); notifyStatus(); });
     canvas.on('selection:updated', function () { notifyPanels(); notifyStatus(); });
     canvas.on('selection:cleared', function () { notifyPanels(); notifyStatus(); });
 
     canvas.on('mouse:dblclick', function (opt) {
       var target = opt.target || canvas.findTarget(opt.e);
+
+      if (target && (target.kind === 'text' || target.type === 'textbox')) {
+        var corner = target._findTargetCorner ? target._findTargetCorner(opt.e) : null;
+        var isRightHandle = (corner === 'mr');
+        if (!isRightHandle && opt.e && target.getBoundingRect) {
+          var pointer = canvas.getPointer(opt.e);
+          var bound = target.getBoundingRect();
+          // 오른쪽 끝 조절점 근처 (우측 26px 이내) 더블클릭 시 텍스트 너비 맞춤
+          if (pointer.x >= (bound.left + bound.width - 26)) {
+            isRightHandle = true;
+          }
+        }
+        if (isRightHandle) {
+          if (opt.e && opt.e.preventDefault) opt.e.preventDefault();
+          if (opt.e && opt.e.stopPropagation) opt.e.stopPropagation();
+          api.fitTextboxWidth(target);
+          return;
+        }
+      }
 
       if (target && target.isSlot) {
         IE.app.pickImageForSlot(target);
@@ -349,6 +620,51 @@ window.IE = window.IE || {};
 
     canvas.on('object:added', function () { notifyStatus(); });
     canvas.on('object:removed', function () { notifyStatus(); });
+
+    if (canvas.upperCanvasEl && typeof canvas.upperCanvasEl.addEventListener === 'function') {
+      canvas.upperCanvasEl.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault();
+        if (ev.stopPropagation) ev.stopPropagation();
+
+        var target = canvas.findTarget ? canvas.findTarget(ev) : null;
+        var active = canvas.getActiveObject();
+
+        if (target) {
+          if (!active) {
+            canvas.setActiveObject(target);
+            canvas.requestRenderAll();
+            notifyPanels();
+            notifyStatus();
+          } else if (active !== target && active.type !== 'activeSelection') {
+            canvas.setActiveObject(target);
+            canvas.requestRenderAll();
+            notifyPanels();
+            notifyStatus();
+          } else if (active.type === 'activeSelection') {
+            if (typeof active.getObjects === 'function' && active.getObjects().indexOf(target) === -1) {
+              canvas.setActiveObject(target);
+              canvas.requestRenderAll();
+              notifyPanels();
+              notifyStatus();
+            }
+          }
+        }
+
+        api.showContextMenu(ev.clientX, ev.clientY);
+      });
+    }
+
+    if (typeof document !== 'undefined' && document.getElementById) {
+      var canvasHost = document.getElementById('canvas-host') || (canvas.upperCanvasEl && canvas.upperCanvasEl.parentElement);
+      if (canvasHost && typeof canvasHost.addEventListener === 'function') {
+        canvasHost.addEventListener('contextmenu', function (ev) {
+          if (ev.target !== canvas.upperCanvasEl && !(ev.target.closest && ev.target.closest('.canvas-context-menu'))) {
+            ev.preventDefault();
+            api.showContextMenu(ev.clientX, ev.clientY);
+          }
+        });
+      }
+    }
 
     return canvas;
   };
@@ -376,7 +692,7 @@ window.IE = window.IE || {};
     return zoom;
   };
 
-  api.zoomToFit = function () {
+  api.zoomToFit = function (allowUpscale) {
     var stage = util.$('stage');
     if (!stage) return IE.state.zoom;
 
@@ -384,6 +700,12 @@ window.IE = window.IE || {};
     var availW = Math.max(120, stage.clientWidth - padding);
     var availH = Math.max(120, stage.clientHeight - padding);
     var zoom = Math.min(availW / IE.state.docW, availH / IE.state.docH);
+
+    // 100% 미만일 때는 화면에 맞추어 축소하고, 100% 이상일 때는 100%로 고정
+    if (!allowUpscale && zoom > 1) {
+      zoom = 1;
+    }
+
     zoom = util.clamp(zoom, 0.05, 4);
 
     IE.state.autoFit = true;
@@ -392,6 +714,7 @@ window.IE = window.IE || {};
     stage.scrollLeft = 0;
     return res;
   };
+
 
   /* ------------------------------------------------------------ 문서 관리 */
 
@@ -404,10 +727,12 @@ window.IE = window.IE || {};
     canvas.backgroundColor = background || '#ffffff';
     api.setDocSize(width, height);
 
+    canvas.renderOnAddRemove = false;
     (objects || []).forEach(function (def) {
       var obj = api.makeObject(def);
       if (obj) canvas.add(obj);
     });
+    canvas.renderOnAddRemove = true;
 
     canvas.discardActiveObject();
     canvas.requestRenderAll();
@@ -500,6 +825,46 @@ window.IE = window.IE || {};
     return obj;
   };
 
+  /**
+   * 텍스트박스의 너비를 내용 글자 길이에 딱 맞추어 오른쪽 공백을 제거한다.
+   * 오른쪽 가운데 조절점(mr) 더블클릭 또는 패널 버튼 클릭으로 실행된다.
+   */
+  api.fitTextboxWidth = function (textbox) {
+    if (!textbox || !textbox.text) return;
+
+    var maxW = 0;
+    if (textbox._textLines && textbox._textLines.length) {
+      for (var i = 0; i < textbox._textLines.length; i++) {
+        var w = textbox.getLineWidth(i);
+        if (w > maxW) maxW = w;
+      }
+    } else if (textbox.calcTextWidth) {
+      maxW = textbox.calcTextWidth();
+    }
+
+    if (maxW <= 0) {
+      var lines = (textbox.text || '').split('\n');
+      var probe = document.createElement('canvas');
+      var ctx = probe.getContext('2d');
+      ctx.font = (textbox.fontStyle || 'normal') + ' ' + (textbox.fontWeight || 'normal') + ' ' + (textbox.fontSize || 24) + 'px ' + (textbox.fontFamily || 'sans-serif');
+      lines.forEach(function (line) {
+        maxW = Math.max(maxW, ctx.measureText(line).width);
+      });
+    }
+
+    if (maxW > 0) {
+      textbox.set({
+        width: Math.ceil(maxW) + 12,
+        scaleX: 1
+      });
+      textbox.setCoords();
+      canvas.requestRenderAll();
+      state.history.snapshot();
+      notifyPanels();
+      notifyStatus();
+    }
+  };
+
   /** 텍스트 스타일 프리셋 — 제목/부제목/본문/작은 글씨 */
   var TEXT_PRESETS = {
     title: {
@@ -580,6 +945,7 @@ window.IE = window.IE || {};
       fill: color || '#bfdbfe',
       stroke: color ? null : '#2563eb',
       strokeWidth: 0,
+      strokeUniform: true,
       opacity: 1, kind: kind
     };
 
@@ -593,6 +959,67 @@ window.IE = window.IE || {};
         width: size, height: Math.max(4, Math.round(size * 0.04)),
         fill: paint, opacity: 1, kind: 'line'
       });
+    } else if (kind === 'pill') {
+      var pillW = Math.round(size * 1.6);
+      var pillH = Math.round(size * 0.45);
+      var pillR = Math.round(pillH / 2);
+      obj = new fabric.Rect(Object.assign({}, base, {
+        width: pillW, height: pillH, rx: pillR, ry: pillR,
+        fill: paint, kind: 'roundrect'
+      }));
+    } else if (kind === 'btn-circle-chevron') {
+      var btnSize = Math.max(48, Math.round(size * 0.55));
+      obj = IE.shapes.makeFigure('btnCircleChevron', btnSize, [paint, '#ffffff']);
+      obj.set({
+        left: Math.round(w / 2),
+        top: Math.round(h / 2)
+      });
+      addAndSelect(obj);
+      return obj;
+    } else if (kind === 'btn-circle-arrow') {
+      var btnSize = Math.max(48, Math.round(size * 0.55));
+      obj = IE.shapes.makeFigure('btnCircleArrow', btnSize, [paint, '#ffffff']);
+      obj.set({
+        left: Math.round(w / 2),
+        top: Math.round(h / 2)
+      });
+      addAndSelect(obj);
+      return obj;
+    } else if (kind === 'btn-pill-cta') {
+      var pillW = Math.max(160, Math.round(size * 1.85));
+      var pillH = Math.max(44, Math.round(size * 0.52));
+      var pillR = Math.round(pillH / 2);
+      var bg = new fabric.Rect({
+        width: pillW, height: pillH, rx: pillR, ry: pillR,
+        fill: paint, originX: 'left', originY: 'top', left: 0, top: 0
+      });
+      var badgeR = Math.round(pillH * 0.35);
+      var badgeCircle = new fabric.Circle({
+        radius: badgeR, fill: '#ffffff',
+        originX: 'center', originY: 'center',
+        left: pillW - pillR, top: pillH / 2
+      });
+      var chevScale = (badgeR * 1.05) / 24;
+      var chevron = new fabric.Path('M17 12a2.6 2.6 0 0 1 3.7 0l12 10.6a2 2 0 0 1 0 2.8l-12 10.6a2.6 2.6 0 0 1-3.7-3.6l10-8.4-10-8.4a2.6 2.6 0 0 1 0-3.6z', {
+        fill: paint, originX: 'center', originY: 'center',
+        left: pillW - pillR + 1, top: pillH / 2,
+        scaleX: chevScale, scaleY: chevScale
+      });
+      var text = new fabric.Text('바로가기', {
+        fontSize: Math.round(pillH * 0.38),
+        fontFamily: 'Pretendard',
+        fontWeight: '700',
+        fill: '#ffffff',
+        originX: 'left', originY: 'center',
+        left: Math.round(pillR * 0.8), top: pillH / 2
+      });
+      obj = new fabric.Group([bg, text, badgeCircle, chevron], {
+        left: Math.round(w / 2 - pillW / 2),
+        top: Math.round(h / 2 - pillH / 2),
+        kind: 'button'
+      });
+      addAndSelect(obj);
+      return obj;
     } else if (kind === 'roundrect') {
       obj = new fabric.Rect(Object.assign({}, base, {
         width: size, height: size, rx: Math.round(size * 0.16), ry: Math.round(size * 0.16)
@@ -607,6 +1034,13 @@ window.IE = window.IE || {};
 
   /** 면 도형(별·하트·다각형·블롭 등)을 문서 가운데에 놓는다 */
   api.addFigure = function (key, color, style) {
+    if (key === 'roundSquare') {
+      return api.addShape('roundrect', color);
+    }
+    if (key === 'square') {
+      return api.addShape('rect', color);
+    }
+
     var w = IE.state.docW;
     var h = IE.state.docH;
     var size = Math.round(Math.min(w, h) * 0.22);
@@ -618,6 +1052,82 @@ window.IE = window.IE || {};
 
     addAndSelect(obj);
     return obj;
+  };
+
+  /**
+   * figure(SVG 경로 기반 사각형/둥근 사각형)를 fabric.Rect(스마트 사각형)로 변환한다.
+   * 가로/세로 비율을 늘려도 모서리가 왜곡되지 않고 rx 곡률을 자유롭게 조절할 수 있다.
+   */
+  api.convertFigureToRect = function (obj, targetRx) {
+    if (!obj) return null;
+    var canvas = IE.state.canvas;
+    if (!canvas) return null;
+
+    var effW = Math.round((obj.width || 0) * (obj.scaleX == null ? 1 : Math.abs(obj.scaleX)));
+    var effH = Math.round((obj.height || 0) * (obj.scaleY == null ? 1 : Math.abs(obj.scaleY)));
+    effW = Math.max(10, effW);
+    effH = Math.max(10, effH);
+    var maxR = Math.floor(Math.min(effW, effH) / 2);
+
+    var r;
+    if (targetRx === 'pill') {
+      r = maxR;
+    } else if (targetRx != null) {
+      r = Math.min(maxR, Math.max(0, parseInt(targetRx, 10) || 0));
+    } else {
+      r = (obj.figureName === 'square') ? 0 : Math.min(maxR, 16);
+    }
+
+    if (obj.kind === 'rect' || obj.kind === 'roundrect') {
+      obj.set({ rx: r, ry: r, scaleX: 1, scaleY: 1, width: effW, height: effH });
+      obj.setCoords();
+      canvas.requestRenderAll();
+      IE.state.history.snapshot();
+      return obj;
+    }
+
+    var center = (typeof obj.getCenterPoint === 'function') ? obj.getCenterPoint() : { x: obj.left, y: obj.top };
+
+    var fill = obj.fill;
+    if (!fill || typeof fill !== 'string' || fill === 'none') {
+      var colors = (IE.shapes && typeof IE.shapes.figureColorsOf === 'function')
+        ? IE.shapes.figureColorsOf(obj) : null;
+      fill = (colors && colors[0]) ? colors[0] : '#2563eb';
+    }
+
+    var rect = new fabric.Rect({
+      left: center.x,
+      top: center.y,
+      originX: 'center',
+      originY: 'center',
+      width: effW,
+      height: effH,
+      scaleX: 1,
+      scaleY: 1,
+      angle: obj.angle || 0,
+      fill: fill,
+      stroke: obj.stroke || null,
+      strokeWidth: obj.strokeWidth || 0,
+      strokeUniform: true,
+      opacity: obj.opacity == null ? 1 : obj.opacity,
+      shadow: obj.shadow || null,
+      rx: r,
+      ry: r,
+      kind: 'roundrect'
+    });
+
+    var idx = canvas.getObjects().indexOf(obj);
+    canvas.remove(obj);
+    if (idx !== -1) {
+      canvas.insertAt(rect, idx, false);
+    } else {
+      canvas.add(rect);
+    }
+    rect.setCoords();
+    canvas.setActiveObject(rect);
+    canvas.requestRenderAll();
+    IE.state.history.snapshot();
+    return rect;
   };
 
   api.addIcon = function (name, colors, style) {
@@ -1233,6 +1743,33 @@ window.IE = window.IE || {};
     var target = canvas.getActiveObject();
     if (!target) return false;
 
+    if (target.type === 'activeSelection') {
+      target.clone(function (cloned) {
+        cloned.canvas = canvas;
+        var added = [];
+        cloned.forEachObject(function (obj) {
+          obj.set({
+            left: (obj.left || 0) + 24,
+            top: (obj.top || 0) + 24
+          });
+          obj.setCoords();
+          canvas.add(obj);
+          added.push(obj);
+        });
+        canvas.discardActiveObject();
+        if (added.length > 1) {
+          canvas.setActiveObject(new fabric.ActiveSelection(added, { canvas: canvas }));
+        } else if (added.length === 1) {
+          canvas.setActiveObject(added[0]);
+        }
+        canvas.requestRenderAll();
+        IE.state.history.snapshot();
+        notifyPanels();
+        notifyStatus();
+      }, util.EXTRA_PROPS);
+      return true;
+    }
+
     target.clone(function (clone) {
       clone.set({
         left: (target.left || 0) + 24,
@@ -1250,15 +1787,111 @@ window.IE = window.IE || {};
     return true;
   };
 
+  /** 다중 선택된 객체들을 하나의 그룹으로 묶는다 (Ctrl+G) */
+  api.groupActive = function () {
+    var canvas = IE.state.canvas;
+    var active = canvas.getActiveObject();
+    if (!active || active.type !== 'activeSelection') {
+      util.toast('그룹화하려면 2개 이상의 객체를 선택해 주세요.');
+      return null;
+    }
+
+    var group = active.toGroup();
+    group.kind = 'group';
+    group.name = '그룹 (' + group.getObjects().length + '개)';
+    canvas.setActiveObject(group);
+    canvas.requestRenderAll();
+    IE.state.history.snapshot();
+    notifyPanels();
+    notifyStatus();
+    util.toast('선택한 ' + group.getObjects().length + '개 객체를 그룹화했습니다. (Ctrl+Shift+G 로 해제)');
+    return group;
+  };
+
+  /** 그룹 객체를 개별 객체들로 분리한다 (Ctrl+Shift+G) */
+  api.ungroupActive = function () {
+    var canvas = IE.state.canvas;
+    var active = canvas.getActiveObject();
+    if (!active) {
+      util.toast('그룹 해제할 그룹 객체를 선택해 주세요.');
+      return null;
+    }
+
+    if (active.type === 'group' && typeof active.toActiveSelection === 'function') {
+      var count = active.getObjects().length;
+      var activeSelection = active.toActiveSelection();
+      canvas.setActiveObject(activeSelection);
+      canvas.requestRenderAll();
+      IE.state.history.snapshot();
+      notifyPanels();
+      notifyStatus();
+      util.toast('그룹을 해제했습니다. (' + count + '개 분리)');
+      return activeSelection;
+    } else {
+      util.toast('선택된 객체가 그룹이 아닙니다.');
+      return null;
+    }
+  };
+
+  /** 선택된 객체(들)의 이동 및 크기 조절을 잠그거나 해제한다 (Ctrl+L) */
+  api.toggleLockActive = function () {
+    var canvas = IE.state.canvas;
+    var active = canvas.getActiveObject();
+    if (!active) return;
+
+    var multi = active.type === 'activeSelection';
+    var objects = multi ? active.getObjects() : [active];
+    if (!objects.length) return;
+
+    var currentlyLocked = objects.some(function (obj) { return obj.isLocked || obj.lockMovementX; });
+    var newLockState = !currentlyLocked;
+
+    objects.forEach(function (obj) {
+      obj.isLocked = newLockState;
+      obj.lockMovementX = newLockState;
+      obj.lockMovementY = newLockState;
+      obj.lockRotation = newLockState;
+      obj.lockScalingX = newLockState;
+      obj.lockScalingY = newLockState;
+      obj.hasControls = !newLockState;
+    });
+
+    if (multi) {
+      active.lockMovementX = newLockState;
+      active.lockMovementY = newLockState;
+      active.lockRotation = newLockState;
+      active.lockScalingX = newLockState;
+      active.lockScalingY = newLockState;
+      active.hasControls = !newLockState;
+    }
+
+    canvas.requestRenderAll();
+    IE.state.history.snapshot();
+    notifyPanels();
+    notifyStatus();
+    util.toast(newLockState ? '선택한 객체를 잠갔습니다. (Ctrl+L 로 해제)' : '선택한 객체의 잠금을 해제했습니다.');
+  };
+
   api.reorder = function (direction) {
     var canvas = IE.state.canvas;
     var target = canvas.getActiveObject();
     if (!target) return;
 
-    if (direction === 'up') canvas.bringForward(target);
-    else if (direction === 'down') canvas.sendBackwards(target);
-    else if (direction === 'front') canvas.bringToFront(target);
-    else if (direction === 'back') canvas.sendToBack(target);
+    if (target.type === 'activeSelection') {
+      var objs = target.getObjects().slice();
+      if (direction === 'down' || direction === 'back') objs.reverse();
+      objs.forEach(function (obj) {
+        if (direction === 'up') canvas.bringForward(obj);
+        else if (direction === 'down') canvas.sendBackwards(obj);
+        else if (direction === 'front') canvas.bringToFront(obj);
+        else if (direction === 'back') canvas.sendToBack(obj);
+      });
+    } else {
+      if (direction === 'up') canvas.bringForward(target);
+      else if (direction === 'down') canvas.sendBackwards(target);
+      else if (direction === 'front') canvas.bringToFront(target);
+      else if (direction === 'back') canvas.sendToBack(target);
+    }
 
     canvas.requestRenderAll();
     IE.state.history.snapshot();
@@ -1316,6 +1949,10 @@ window.IE = window.IE || {};
     if (obj.kind === 'arrow') return '화살표';
     if (obj.kind === 'icon') return '요소 · ' + (obj.iconName || '');
     if (obj.kind === 'figure') return '도형 · ' + IE.shapes.figureLabel(obj.figureName || '');
+    if (obj.type === 'group' || obj.kind === 'group') {
+      var count = obj.getObjects ? obj.getObjects().length : 0;
+      return obj.name || ('그룹 (' + count + '개)');
+    }
     if (obj.kind === 'table') {
       var t = obj.tableData;
       return '표 ' + (t ? t.rows + '×' + t.cols : '');
@@ -1328,6 +1965,7 @@ window.IE = window.IE || {};
     if (obj.isSlot) return '▣';
     if (obj.kind === 'text') return 'T';
     if (obj.kind === 'image') return '▤';
+    if (obj.type === 'group' || obj.kind === 'group') return '⧉';
     if (obj.kind === 'bg') return '▦';
     if (obj.kind === 'circle') return '○';
     if (obj.kind === 'triangle') return '△';
@@ -1353,6 +1991,311 @@ window.IE = window.IE || {};
       return { selection: true, objects: active.getObjects(), ref: active };
     }
     return { selection: false, objects: [active], ref: active };
+  };
+
+  /* ------------------------------------------------ 캔버스 우클릭 메뉴 */
+
+  var activeContextMenu = null;
+
+  api.closeContextMenu = function () {
+    if (activeContextMenu && activeContextMenu.parentNode) {
+      activeContextMenu.parentNode.removeChild(activeContextMenu);
+    }
+    activeContextMenu = null;
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('click', api.closeContextMenu);
+      window.removeEventListener('keydown', onMenuKey);
+    }
+  };
+
+  function onMenuKey(ev) {
+    if (ev.key === 'Escape') api.closeContextMenu();
+  }
+
+  api.showContextMenu = function (clientX, clientY) {
+    api.closeContextMenu();
+
+    if (typeof document === 'undefined') return;
+
+    var canvas = IE.state.canvas;
+    if (!canvas) return;
+
+    var active = canvas.getActiveObject();
+    var menu = document.createElement('div');
+    menu.className = 'canvas-context-menu';
+
+    var items = [];
+
+    if (active && active.type === 'activeSelection') {
+      var count = typeof active.getObjects === 'function' ? active.getObjects().length : 2;
+      var multiLocked = typeof active.getObjects === 'function' && active.getObjects().some(function (o) { return o.isLocked || o.lockMovementX; });
+      items.push({
+        id: 'group',
+        label: '그룹화 (' + count + '개)',
+        shortcut: 'Ctrl+G',
+        icon: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke-dasharray="2 2"/></svg>',
+        isPrimary: true,
+        action: function () { api.groupActive(); }
+      });
+      items.push({
+        id: 'lock',
+        label: multiLocked ? '선택 잠금 해제' : '선택 잠금',
+        shortcut: 'Ctrl+L',
+        icon: '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        action: function () { api.toggleLockActive(); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'dup',
+        label: '복제',
+        shortcut: 'Ctrl+D',
+        icon: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+        action: function () { api.duplicateActive(); }
+      });
+      items.push({
+        id: 'copy',
+        label: '복사',
+        shortcut: 'Ctrl+C',
+        icon: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+        action: function () { api.copy(); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'front',
+        label: '맨 앞으로',
+        shortcut: 'Ctrl+]',
+        icon: '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+        action: function () { api.reorder('front'); }
+      });
+      items.push({
+        id: 'back',
+        label: '맨 뒤로',
+        shortcut: 'Ctrl+[',
+        icon: '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2" opacity="0.4"/><polyline points="2 12 12 17 22 12" opacity="0.4"/><polyline points="2 17 12 22 22 17"/></svg>',
+        action: function () { api.reorder('back'); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'del',
+        label: '삭제',
+        shortcut: 'Delete',
+        icon: '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+        danger: true,
+        action: function () { api.deleteActive(); }
+      });
+    } else if (active && (active.type === 'group' || active.kind === 'group')) {
+      var isGroupLocked = active.isLocked || active.lockMovementX;
+      items.push({
+        id: 'ungroup',
+        label: '그룹 해제',
+        shortcut: 'Ctrl+Shift+G',
+        icon: '<svg viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/><path d="M7 17l10-10M13 7h4v4M11 17H7v-4"/></svg>',
+        isPrimary: true,
+        action: function () { api.ungroupActive(); }
+      });
+      items.push({
+        id: 'lock',
+        label: isGroupLocked ? '잠금 해제' : '잠금',
+        shortcut: 'Ctrl+L',
+        icon: '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        action: function () { api.toggleLockActive(); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'dup',
+        label: '복제',
+        shortcut: 'Ctrl+D',
+        icon: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+        action: function () { api.duplicateActive(); }
+      });
+      items.push({
+        id: 'copy',
+        label: '복사',
+        shortcut: 'Ctrl+C',
+        icon: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+        action: function () { api.copy(); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'front',
+        label: '맨 앞으로',
+        shortcut: 'Ctrl+]',
+        icon: '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+        action: function () { api.reorder('front'); }
+      });
+      items.push({
+        id: 'back',
+        label: '맨 뒤로',
+        shortcut: 'Ctrl+[',
+        icon: '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2" opacity="0.4"/><polyline points="2 12 12 17 22 12" opacity="0.4"/><polyline points="2 17 12 22 22 17"/></svg>',
+        action: function () { api.reorder('back'); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'del',
+        label: '삭제',
+        shortcut: 'Delete',
+        icon: '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+        danger: true,
+        action: function () { api.deleteActive(); }
+      });
+    } else if (active) {
+      var isSingleLocked = active.isLocked || active.lockMovementX;
+      items.push({
+        id: 'lock',
+        label: isSingleLocked ? '잠금 해제' : '잠금',
+        shortcut: 'Ctrl+L',
+        icon: '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        action: function () { api.toggleLockActive(); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'dup',
+        label: '복제',
+        shortcut: 'Ctrl+D',
+        icon: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+        action: function () { api.duplicateActive(); }
+      });
+      items.push({
+        id: 'copy',
+        label: '복사',
+        shortcut: 'Ctrl+C',
+        icon: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+        action: function () { api.copy(); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'up',
+        label: '한 단계 앞으로',
+        shortcut: ']',
+        icon: '<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>',
+        action: function () { api.reorder('up'); }
+      });
+      items.push({
+        id: 'down',
+        label: '한 단계 뒤로',
+        shortcut: '[',
+        icon: '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>',
+        action: function () { api.reorder('down'); }
+      });
+      items.push({
+        id: 'front',
+        label: '맨 앞으로',
+        shortcut: 'Ctrl+]',
+        icon: '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+        action: function () { api.reorder('front'); }
+      });
+      items.push({
+        id: 'back',
+        label: '맨 뒤로',
+        shortcut: 'Ctrl+[',
+        icon: '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2" opacity="0.4"/><polyline points="2 12 12 17 22 12" opacity="0.4"/><polyline points="2 17 12 22 22 17"/></svg>',
+        action: function () { api.reorder('back'); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'centerH',
+        label: '가로 중앙 정렬',
+        icon: '<svg viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><rect x="6" y="7" width="12" height="10" rx="1"/></svg>',
+        action: function () { api.align('center-h'); }
+      });
+      items.push({
+        id: 'centerV',
+        label: '세로 중앙 정렬',
+        icon: '<svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><rect x="7" y="6" width="10" height="12" rx="1"/></svg>',
+        action: function () { api.align('center-v'); }
+      });
+      items.push('sep');
+      items.push({
+        id: 'del',
+        label: '삭제',
+        shortcut: 'Delete',
+        icon: '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+        danger: true,
+        action: function () { api.deleteActive(); }
+      });
+    } else {
+      // 빈 캔버스 바탕
+      items.push({
+        id: 'paste',
+        label: '붙여넣기',
+        shortcut: 'Ctrl+V',
+        icon: '<svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>',
+        action: function () { api.paste(); }
+      });
+      items.push({
+        id: 'selectAll',
+        label: '모든 객체 선택',
+        shortcut: 'Ctrl+A',
+        icon: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/></svg>',
+        action: function () {
+          var objects = canvas.getObjects().filter(function (o) { return o.selectable && o.visible !== false; });
+          if (objects.length) {
+            canvas.setActiveObject(new fabric.ActiveSelection(objects, { canvas: canvas }));
+            canvas.requestRenderAll();
+            notifyPanels();
+            notifyStatus();
+          }
+        }
+      });
+      items.push('sep');
+      items.push({
+        id: 'zoomFit',
+        label: '화면에 맞춤',
+        shortcut: '0',
+        icon: '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+        action: function () { api.zoomFit(); }
+      });
+    }
+
+    var html = '';
+    items.forEach(function (item, idx) {
+      if (item === 'sep') {
+        html += '<div class="page-context-sep"></div>';
+        return;
+      }
+      var cls = 'canvas-context-item' + (item.danger ? ' danger' : '') + (item.isPrimary ? ' is-primary' : '');
+      html += '<button type="button" class="' + cls + '" data-act-idx="' + idx + '">' +
+        item.icon +
+        '<span>' + item.label + '</span>' +
+        (item.shortcut ? '<span class="canvas-context-shortcut">' + item.shortcut + '</span>' : '') +
+        '</button>';
+    });
+
+    menu.innerHTML = html;
+
+    menu.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.canvas-context-item');
+      if (!btn) return;
+      var idx = parseInt(btn.getAttribute('data-act-idx'), 10);
+      var item = items[idx];
+      if (item && typeof item.action === 'function') {
+        api.closeContextMenu();
+        item.action();
+      }
+    });
+
+    document.body.appendChild(menu);
+    activeContextMenu = menu;
+
+    var posX = clientX;
+    var posY = clientY;
+    var rect = menu.getBoundingClientRect();
+    if (typeof window !== 'undefined') {
+      if (posX + rect.width > window.innerWidth - 8) posX = window.innerWidth - rect.width - 8;
+      if (posY + rect.height > window.innerHeight - 8) posY = window.innerHeight - rect.height - 8;
+      if (posX < 8) posX = 8;
+      if (posY < 8) posY = 8;
+    }
+    menu.style.left = posX + 'px';
+    menu.style.top = posY + 'px';
+
+    if (typeof window !== 'undefined') {
+      setTimeout(function () {
+        window.addEventListener('click', api.closeContextMenu);
+        window.addEventListener('keydown', onMenuKey);
+      }, 10);
+    }
   };
 
   IE.canvas = api;

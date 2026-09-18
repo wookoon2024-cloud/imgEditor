@@ -22,6 +22,8 @@ window.IE = window.IE || {};
   var elFigureStyle = 'fill';
   var elTab = 'figure';
   var elSearch = '';
+  var cartoonCat = 'all';
+  var cartoonSearch = '';
 
   /** 요소를 넣기 **전에** 색을 고른다 — 넣고 나서 속성까지 갈 일이 없다 */
   function colorRowHtml() {
@@ -150,13 +152,14 @@ window.IE = window.IE || {};
     return total;
   }
 
-  /** 큰 탭 — 도형 · 아이콘 · 일러스트 · 장식을 나눠 본다 */
+  /** 큰 탭 — 도형 · 아이콘 · 일러스트 · 장식 · 카툰을 나눠 본다 */
   function tabRowHtml() {
     var tabs = [
       ['figure', '도형', shapeCount()],
       ['icon', '아이콘', IE.shapes.iconList.length],
       ['illust', '일러스트', groupItems(illustGroups())],
-      ['deco', '장식', groupItems(decoGroups())]
+      ['deco', '장식', groupItems(decoGroups())],
+      ['cartoon', '이미지·카툰', IE.cartoons ? IE.cartoons.all.length : 10]
     ];
 
     return '<div class="el-tabs">' +
@@ -230,8 +233,21 @@ window.IE = window.IE || {};
           '넣은 뒤 속성 패널에서 색마다 바꿀 수 있습니다.</p>' +
       '</div>' +
       groups +
-      '<button class="fo-btn" data-shape="line" style="margin-top:8px">' +
-        '<svg viewBox="0 0 24 24"><path d="M3.5 12h17"/></svg>가로 선 추가</button>';
+      '<div class="fo-section" style="margin-top:14px;padding-top:10px;border-top:1px solid var(--line);">' +
+        '<h3 class="fo-title">빠른 배너 버튼 삽입</h3>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">' +
+          '<button class="fo-btn" data-shape="btn-circle-chevron" style="margin-top:0" title="원형 화살표(셰브론) 버튼 추가">' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;"><circle cx="12" cy="12" r="10" fill="#2563eb"/><path d="M10.5 7.5l4.5 4.5-4.5 4.5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>원형 화살표 버튼</button>' +
+          '<button class="fo-btn" data-shape="btn-pill-cta" style="margin-top:0" title="배너용 완성형 바로가기 캡슐 버튼 추가">' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;"><rect x="1" y="6" width="22" height="12" rx="6" fill="#2563eb"/><circle cx="18" cy="12" r="4" fill="#ffffff"/><path d="M17 10.5l1.8 1.5-1.8 1.5" stroke="#2563eb" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>바로가기 캡슐</button>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">' +
+          '<button class="fo-btn" data-shape="pill" style="margin-top:0" title="배너 버튼용 알약형 라운드 사각형">' +
+            '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><rect x="2" y="7" width="20" height="10" rx="5"/></svg>캡슐(반원) 도형</button>' +
+          '<button class="fo-btn" data-shape="line" style="margin-top:0">' +
+            '<svg viewBox="0 0 24 24"><path d="M3.5 12h17"/></svg>가로 선 추가</button>' +
+        '</div>' +
+      '</div>';
   }
 
   function iconsHtml() {
@@ -268,14 +284,83 @@ window.IE = window.IE || {};
       '</div>';
   }
 
+  function cartoonGridHtml(items) {
+    if (!items.length) {
+      return '<div style="grid-column:1/-1;padding:28px 0;text-align:center;color:var(--ink-3);font-size:12px;">일치하는 캐릭터 이미지가 없습니다.</div>';
+    }
+    return items.map(function (it) {
+      return '<button type="button" class="el-cartoon-card" data-cartoon-id="' + it.id + '" title="' + it.title + ' — 클릭하여 캔버스에 추가">' +
+        '<div class="el-cartoon-thumb">' +
+          '<img src="' + it.src + '" alt="' + it.title + '" loading="lazy" />' +
+        '</div>' +
+        '<div class="el-cartoon-info">' +
+          '<div class="el-cartoon-title">' + it.title + '</div>' +
+          '<div class="el-cartoon-sub">' + it.categoryName + '</div>' +
+        '</div>' +
+      '</button>';
+    }).join('');
+  }
+
+  function cartoonHtml() {
+    var categories = (IE.cartoons && IE.cartoons.categories) || [
+      { id: 'all', name: '전체' },
+      { id: 'military', name: '국군 · 병영' },
+      { id: 'gov', name: '공공기관 · 행정' },
+      { id: 'anime', name: '일본 만화풍' }
+    ];
+
+    var chips = '<div class="chip-row" id="el-cartoon-cats" style="margin-bottom:10px;">' +
+      categories.map(function (c) {
+        var count = 0;
+        if (c.id === 'all') count = (IE.cartoons && IE.cartoons.all ? IE.cartoons.all.length : 0);
+        else count = (IE.cartoons && IE.cartoons.all ? IE.cartoons.all.filter(function (it) { return it.category === c.id; }).length : 0);
+        return '<button type="button" class="chip' + (c.id === cartoonCat && !cartoonSearch ? ' is-active' : '') +
+          '" data-cartoon-cat="' + c.id + '">' + c.name + ' <b>' + count + '</b></button>';
+      }).join('') +
+    '</div>';
+
+    var items = (IE.cartoons && IE.cartoons.all) || [];
+    if (cartoonCat !== 'all') {
+      items = items.filter(function (it) { return it.category === cartoonCat; });
+    }
+    if (cartoonSearch) {
+      var q = cartoonSearch.toLowerCase();
+      items = items.filter(function (it) {
+        return (it.title && it.title.toLowerCase().indexOf(q) !== -1) ||
+               (it.desc && it.desc.toLowerCase().indexOf(q) !== -1) ||
+               (it.tags && it.tags.some(function(t) { return t.toLowerCase().indexOf(q) !== -1; }));
+      });
+    }
+
+    var searchBox = '<label class="el-search" style="margin-bottom:8px;">' +
+      '<svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>' +
+      '<input type="search" id="el-cartoon-search" placeholder="이름으로 찾기 — 군인, 장병, 안내, 응원, 만화…" value="' +
+        cartoonSearch.replace(/"/g, '&quot;') + '">' +
+    '</label>';
+
+    return '<div class="fo-section">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+        '<h3 class="fo-title" style="margin:0;">카툰 · AI 캐릭터 일러스트 <b style="font-weight:400;color:var(--ink-3)">' + items.length + '</b></h3>' +
+        '<span style="font-size:10.5px;color:var(--brand-700);font-weight:600;background:var(--brand-soft);padding:2px 7px;border-radius:10px;border:1px solid rgba(37,99,235,0.2);">투명 배경 Cutout</span>' +
+      '</div>' +
+      searchBox +
+      chips +
+      '<div class="el-cartoon-grid" id="el-cartoon-grid">' + cartoonGridHtml(items) + '</div>' +
+      '<p class="fo-hint" style="margin-top:10px;">' +
+        '모든 캐릭터 이미지는 <b>배경이 투명하게 제거(누끼)</b>되어 있어 배너, 카드뉴스, 보고서 슬라이드 등 어디에나 자연스럽게 얹어 사용할 수 있습니다.' +
+      '</p>' +
+    '</div>';
+  }
+
   function elementsHtml() {
     var body = iconsHtml();
     if (elTab === 'figure') body = figuresHtml();
     else if (elTab === 'illust') body = illustHtml();
     else if (elTab === 'deco') body = decoHtml();
+    else if (elTab === 'cartoon') body = cartoonHtml();
 
-    // 일러스트 · 장식은 색이 미리 정해져 있어 색 팔레트를 보여 주지 않는다
-    if (elTab === 'illust' || elTab === 'deco') return tabRowHtml() + body;
+    // 일러스트 · 장식 · 카툰은 색이 미리 정해져 있어 색 팔레트를 보여 주지 않는다
+    if (elTab === 'illust' || elTab === 'deco' || elTab === 'cartoon') return tabRowHtml() + body;
 
     var colors = '<div class="fo-section">' +
       '<h3 class="fo-title">색</h3>' +
@@ -571,6 +656,7 @@ window.IE = window.IE || {};
 
   var BG_COLORS = [
     '#ffffff', '#f8fafc', '#f1f5f9', '#e2e8f0',
+    '#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc',
     '#fff7ed', '#fef9c3', '#ecfdf5', '#eff6ff',
     '#eef2ff', '#fdf2f8', '#1e293b', '#0f172a'
   ];
@@ -595,6 +681,25 @@ window.IE = window.IE || {};
         '" style="background:linear-gradient(135deg,' + stops + ')"></button>';
     }).join('');
 
+    var skyPhotos = (IE.photos || []).filter(function (p) {
+      return p.cat === '배경' && (p.label.indexOf('하늘') >= 0 || p.label.indexOf('구름') >= 0 || p.label.indexOf('노을') >= 0);
+    });
+
+    var skyPhotoHtml = '';
+    if (skyPhotos.length) {
+      skyPhotoHtml = '<div class="fo-section">' +
+        '<h3 class="fo-title">하늘 · 구름 사진 배경</h3>' +
+        '<div class="el-grid" style="grid-template-columns:repeat(3,1fr);gap:8px">' +
+          skyPhotos.map(function (p) {
+            return '<button class="el-cell" data-bg-photo="' + p.id + '" style="padding:0;overflow:hidden;height:68px;position:relative" title="' + p.label + '">' +
+              '<img src="' + p.src + '" alt="' + p.label + '" style="width:100%;height:100%;object-fit:cover">' +
+              '<span style="position:absolute;bottom:0;left:0;right:0;background:rgba(15,23,42,0.65);color:#fff;font-size:10px;text-align:center;padding:2px 0">' + p.label + '</span>' +
+            '</button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }
+
     var customBg = '<div class="custom-bg-picker-bar">' +
       '<label class="color-picker-box" title="클릭하여 색상 선택">' +
         '<input type="color" id="panel-bg-custom" value="' + activeHex + '">' +
@@ -613,6 +718,7 @@ window.IE = window.IE || {};
       '<h3 class="fo-title">그라데이션</h3>' +
       '<div class="swatch-row">' + gradients + '</div>' +
     '</div>' +
+    skyPhotoHtml +
     '<div class="fo-section">' +
       '<label class="check-row"><input type="checkbox" id="bg-all">' +
       '<span>모든 페이지에 적용</span></label>' +
@@ -626,7 +732,17 @@ window.IE = window.IE || {};
     text: { title: '텍스트', html: textHtml, bind: bindText },
     photo: { title: '사진', html: photoHtml, bind: bindPhoto },
     table: { title: '표', html: tableHtml, bind: bindTable },
-    background: { title: '배경', html: backgroundHtml, bind: bindBackground }
+    background: { title: '배경', html: backgroundHtml, bind: bindBackground },
+    privacy: {
+      title: '개인정보 점검',
+      html: function () { return IE.privacy ? IE.privacy.panelHtml() : ''; },
+      bind: function (h) { if (IE.privacy) IE.privacy.bindPanel(h); }
+    },
+    market: {
+      title: '공유마켓 · 템플릿 나눔',
+      html: function () { return IE.market ? IE.market.panelHtml() : ''; },
+      bind: function (h) { if (IE.market) IE.market.bindPanel(h); }
+    }
   };
 
   /* ============================================================ 열기/닫기 */
@@ -713,7 +829,16 @@ window.IE = window.IE || {};
 
     Array.prototype.forEach.call(scope.querySelectorAll('[data-figure]'), function (button) {
       button.addEventListener('click', function () {
-        IE.canvas.addFigure(button.getAttribute('data-figure'), elColor, elFigureStyle);
+        var figName = button.getAttribute('data-figure');
+        if (figName === 'roundSquare') {
+          IE.canvas.addShape('roundrect', elColor);
+          return;
+        }
+        if (figName === 'square') {
+          IE.canvas.addShape('rect', elColor);
+          return;
+        }
+        IE.canvas.addFigure(figName, elColor, elFigureStyle);
       });
     });
   }
@@ -888,6 +1013,57 @@ window.IE = window.IE || {};
         repaint();
       });
     });
+
+    // 카툰 카드 클릭 이벤트 바인딩
+    function bindCartoonCards(scope) {
+      Array.prototype.forEach.call(scope.querySelectorAll('[data-cartoon-id]'), function (btn) {
+        btn.addEventListener('click', function () {
+          var cid = btn.getAttribute('data-cartoon-id');
+          var item = IE.cartoons ? IE.cartoons.get(cid) : null;
+          if (item && item.src) {
+            IE.canvas.addImage(item.src);
+          }
+        });
+      });
+    }
+
+    bindCartoonCards(host);
+
+    // 카툰 카테고리 칩 클릭
+    Array.prototype.forEach.call(host.querySelectorAll('[data-cartoon-cat]'), function (btn) {
+      btn.addEventListener('click', function () {
+        cartoonCat = btn.getAttribute('data-cartoon-cat');
+        var searchIn = host.querySelector('#el-cartoon-search');
+        if (searchIn) searchIn.value = '';
+        cartoonSearch = '';
+        render();
+      });
+    });
+
+    // 카툰 검색 입력
+    var cSearch = host.querySelector('#el-cartoon-search');
+    if (cSearch) {
+      cSearch.addEventListener('input', function () {
+        cartoonSearch = cSearch.value.trim();
+        var grid = host.querySelector('#el-cartoon-grid');
+        if (grid && IE.cartoons) {
+          var items = IE.cartoons.all;
+          if (cartoonCat !== 'all') {
+            items = items.filter(function (it) { return it.category === cartoonCat; });
+          }
+          if (cartoonSearch) {
+            var q = cartoonSearch.toLowerCase();
+            items = items.filter(function (it) {
+              return (it.title && it.title.toLowerCase().indexOf(q) !== -1) ||
+                     (it.desc && it.desc.toLowerCase().indexOf(q) !== -1) ||
+                     (it.tags && it.tags.some(function(t) { return t.toLowerCase().indexOf(q) !== -1; }));
+            });
+          }
+          grid.innerHTML = cartoonGridHtml(items);
+          bindCartoonCards(grid);
+        }
+      });
+    }
   }
 
   function bindText(host) {
@@ -1186,6 +1362,17 @@ window.IE = window.IE || {};
       button.addEventListener('click', function () {
         IE.doc.setBackgroundGradient(button.getAttribute('data-bg-gradient'), applyAll());
         refresh();
+      });
+    });
+
+    Array.prototype.forEach.call(host.querySelectorAll('[data-bg-photo]'), function (button) {
+      button.addEventListener('click', function () {
+        var id = button.getAttribute('data-bg-photo');
+        var photo = null;
+        (IE.photos || []).forEach(function (p) { if (p.id === id) photo = p; });
+        if (!photo) return;
+        IE.canvas.addImage(photo.src, null, { cover: true, back: true });
+        util.toast('「' + photo.label + '」 사진 배경을 적용했습니다.');
       });
     });
 

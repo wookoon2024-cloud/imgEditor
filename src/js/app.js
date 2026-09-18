@@ -99,6 +99,53 @@ window.IE = window.IE || {};
     openImagePicker(null, target || IE.state.canvas.getActiveObject());
   }
 
+  /**
+   * 외부 이미지 파일을 불러오기 전 저작권·초상권 안심 확인 플로팅 팝업을 띄운다.
+   * 사용자가 [확인하고 불러오기]를 눌러야만 진행된다.
+   */
+  function confirmCopyrightAndProceed(onConfirm, onCancel) {
+    var modal = util.$('modal-copyright-confirm');
+    if (!modal) {
+      if (typeof onConfirm === 'function') onConfirm();
+      return;
+    }
+
+    var btnProceed = util.$('btn-copyright-proceed');
+    var btnCancel = util.$('btn-copyright-cancel');
+    var btnClose = util.$('btn-copyright-cancel-x');
+    var chkAgree = util.$('chk-copyright-agree');
+
+    modal.hidden = false;
+    if (chkAgree) {
+      chkAgree.checked = true;
+      chkAgree.onchange = function () {
+        if (btnProceed) btnProceed.disabled = !chkAgree.checked;
+      };
+    }
+    if (btnProceed) btnProceed.disabled = false;
+
+    function cleanup() {
+      modal.hidden = true;
+      if (btnProceed) btnProceed.removeEventListener('click', handleProceed);
+      if (btnCancel) btnCancel.removeEventListener('click', handleCancel);
+      if (btnClose) btnClose.removeEventListener('click', handleCancel);
+    }
+
+    function handleProceed() {
+      cleanup();
+      if (typeof onConfirm === 'function') onConfirm();
+    }
+
+    function handleCancel() {
+      cleanup();
+      if (typeof onCancel === 'function') onCancel();
+    }
+
+    if (btnProceed) btnProceed.addEventListener('click', handleProceed);
+    if (btnCancel) btnCancel.addEventListener('click', handleCancel);
+    if (btnClose) btnClose.addEventListener('click', handleCancel);
+  }
+
   function onImagesChosen(files) {
     var list = Array.prototype.slice.call(files || []).filter(function (file) {
       return /^image\//.test(file.type);
@@ -109,31 +156,36 @@ window.IE = window.IE || {};
       return;
     }
 
-    // 영역 채우기 / 이미지 교체는 첫 파일만 사용한다
-    if (pendingSlot || pendingReplaceTarget) {
-      var target = pendingSlot;
-      var replace = pendingReplaceTarget;
+    confirmCopyrightAndProceed(function () {
+      // 영역 채우기 / 이미지 교체는 첫 파일만 사용한다
+      if (pendingSlot || pendingReplaceTarget) {
+        var target = pendingSlot;
+        var replace = pendingReplaceTarget;
+        pendingSlot = null;
+        pendingReplaceTarget = null;
+
+        util.readAsDataURL(list[0], function (err, dataURL) {
+          if (err) {
+            util.toast('이미지를 읽지 못했습니다.');
+            return;
+          }
+          IE.panel.addRecent(dataURL);
+
+          if (target) IE.canvas.fillSlot(target, dataURL);
+          else if (replace) IE.canvas.replaceImage(replace, dataURL);
+        });
+        return;
+      }
+
+      addImageFilesInternal(list);
+    }, function () {
       pendingSlot = null;
       pendingReplaceTarget = null;
-
-      util.readAsDataURL(list[0], function (err, dataURL) {
-        if (err) {
-          util.toast('이미지를 읽지 못했습니다.');
-          return;
-        }
-        IE.panel.addRecent(dataURL);
-
-        if (target) IE.canvas.fillSlot(target, dataURL);
-        else if (replace) IE.canvas.replaceImage(replace, dataURL);
-      });
-      return;
-    }
-
-    addImageFiles(list);
+      util.toast('이미지 불러오기가 취소되었습니다.');
+    });
   }
 
-  /** 여러 장을 순서대로 추가 */
-  function addImageFiles(list) {
+  function addImageFilesInternal(list) {
     var queue = Array.prototype.slice.call(list || []);
     if (!queue.length) return;
 
@@ -155,6 +207,20 @@ window.IE = window.IE || {};
     };
 
     step();
+  }
+
+  /** 여러 장을 순서대로 추가 (저작권 확인 거침) */
+  function addImageFiles(list) {
+    var files = Array.prototype.slice.call(list || []).filter(function (file) {
+      return /^image\//.test(file.type);
+    });
+    if (!files.length) return;
+
+    confirmCopyrightAndProceed(function () {
+      addImageFilesInternal(files);
+    }, function () {
+      util.toast('이미지 불러오기가 취소되었습니다.');
+    });
   }
 
   /* ---------------------------------------------------------------- 배선 */
@@ -186,10 +252,63 @@ window.IE = window.IE || {};
     });
   }
 
-  function runFileAction(action) {
-    if (action === 'new') {
+  function openNewDocModal() {
+    var modal = util.$('modal-new-doc');
+    if (!modal) {
       IE.doc.newDocument(IE.state.docW, IE.state.docH, '#ffffff', []);
       util.toast('새 문서를 만들었습니다.');
+      return;
+    }
+    modal.hidden = false;
+  }
+
+  function initNewDocModal() {
+    var modal = util.$('modal-new-doc');
+    if (!modal) return;
+    var closeBtn = util.$('modal-new-doc-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        modal.hidden = true;
+      });
+    }
+    modal.addEventListener('mousedown', function (ev) {
+      if (ev.target === modal) modal.hidden = true;
+    });
+
+    var SPECS = {
+      'web-banner': { w: 1200, h: 400, name: '홈페이지 배너 (1200×400)' },
+      'sub-banner': { w: 1200, h: 200, name: '홈페이지 띠배너 (1200×200)' },
+      'popup-small': { w: 400, h: 400, name: '홈페이지 작은 팝업 (400×400)' },
+      'popup-medium': { w: 500, h: 650, name: '홈페이지 레이어 팝업 (500×650)' },
+      banner: { w: 2400, h: 800, name: '현수막 / 와이드 배너 (2400×800)' },
+      poster: { w: 1240, h: 1754, name: '홍보물 / 안내 포스터 (A4 1240×1754)' },
+      sns: { w: 1080, h: 1080, name: 'SNS / 카드뉴스 (1080×1080)' },
+      doc: { w: 1240, h: 1754, name: '공문서 / 보고서 (A4 1240×1754)' },
+      ppt: { w: 1920, h: 1080, name: '발표자료 (PPT 1920×1080)' },
+      photo: { w: 413, h: 531, name: '증명사진 (3.5×4.5cm)' },
+      card: { w: 1063, h: 591, name: '명함 (90×50mm)' }
+    };
+
+    Array.prototype.forEach.call(modal.querySelectorAll('[data-new-type]'), function (btn) {
+      btn.addEventListener('click', function () {
+        var type = btn.getAttribute('data-new-type');
+        modal.hidden = true;
+        if (type === 'custom') {
+          IE.pagesettings.open();
+          return;
+        }
+        var spec = SPECS[type];
+        if (spec) {
+          IE.doc.newDocument(spec.w, spec.h, '#ffffff', []);
+          util.toast(spec.name + ' 규격으로 새 문서를 시작합니다.');
+        }
+      });
+    });
+  }
+
+  function runFileAction(action) {
+    if (action === 'new') {
+      openNewDocModal();
       return;
     }
     if (action === 'open') {
@@ -407,6 +526,30 @@ window.IE = window.IE || {};
           }
           return;
         }
+        if (key === 'g' && !inField && !editing) {
+          ev.preventDefault();
+          if (ev.shiftKey) {
+            IE.canvas.ungroupActive();
+          } else {
+            IE.canvas.groupActive();
+          }
+          return;
+        }
+        if (key === 'l' && !inField && !editing) {
+          ev.preventDefault();
+          IE.canvas.toggleLockActive();
+          return;
+        }
+        if (key === ']' && !inField && !editing) {
+          ev.preventDefault();
+          IE.canvas.reorder(ev.shiftKey ? 'front' : 'up');
+          return;
+        }
+        if (key === '[' && !inField && !editing) {
+          ev.preventDefault();
+          IE.canvas.reorder(ev.shiftKey ? 'back' : 'down');
+          return;
+        }
         if (key === 'o') {
           ev.preventDefault();
           runFileAction('open');
@@ -595,14 +738,26 @@ window.IE = window.IE || {};
     initZoomPan();
     initStageDrop();
     initShortcutModal();
+    initNewDocModal();
     initResize();
 
-    var starter = IE.templates.byId('notice-a4');
+    var starter = IE.templates.byId('notice-a4') || {
+      id: 'blank-a4',
+      width: 1240,
+      height: 1754,
+      background: '#ffffff',
+      objects: []
+    };
     IE.state.docName = starter.id;
     IE.doc.newDocument(starter.width, starter.height, starter.background, starter.objects);
 
-    IE.pages.setVisible(true);
+    IE.pages.setVisible(false);
     updateStatus();
+
+    // 처음 실행 시 템플릿 패널 기본 열기
+    IE.panel.open('templates');
+
+
   }
 
   IE.app = {
@@ -614,6 +769,7 @@ window.IE = window.IE || {};
     pickImageForReplace: pickImageForReplace,
     openImagePicker: openImagePicker,
     addImageFiles: addImageFiles,
+    confirmCopyrightAndProceed: confirmCopyrightAndProceed,
     closeMenus: closeMenus,
     runFileAction: runFileAction,
     /* 이전 API 호환 */

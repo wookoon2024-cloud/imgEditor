@@ -191,7 +191,30 @@ window.IE = window.IE || {};
     html += row('선 두께', numberInput('strokeWidth', obj.strokeWidth || 0, { min: 0, max: 200, step: 0.5 }));
 
     if (obj.kind === 'rect' || obj.kind === 'roundrect' || obj.kind === 'bg') {
-      html += row('모서리', numberInput('rx', obj.rx || 0, { min: 0, max: 600 }));
+      var effW = Math.round((obj.width || 0) * (obj.scaleX == null ? 1 : Math.abs(obj.scaleX)));
+      var effH = Math.round((obj.height || 0) * (obj.scaleY == null ? 1 : Math.abs(obj.scaleY)));
+      var maxRadius = Math.max(10, Math.floor(Math.min(effW, effH) / 2));
+      var curRx = Math.round(obj.rx || 0);
+      var isPill = curRx >= maxRadius && maxRadius > 0;
+
+      html += '<div class="field stack" style="margin-bottom:12px;">' +
+        '<div class="rx-head">' +
+          '<label>모서리 곡률</label>' +
+          '<span class="rx-val-badge">' +
+            curRx + 'px' + (isPill ? ' (캡슐)' : '') +
+          '</span>' +
+        '</div>' +
+        '<div class="rx-row">' +
+          '<input type="range" data-prop="rx" min="0" max="' + maxRadius + '" step="1" value="' + curRx + '" title="모서리 곡률">' +
+          '<input type="number" data-prop="rx" min="0" max="' + maxRadius + '" step="1" value="' + curRx + '" class="prop-num" title="모서리 곡률(px)">' +
+        '</div>' +
+        '<div class="seg cols-2">' +
+          '<button type="button" data-corner="0"' + (curRx === 0 ? ' class="is-active"' : '') + ' title="직각 모서리 (0px)">직각</button>' +
+          '<button type="button" data-corner="8"' + (curRx === 8 && !isPill ? ' class="is-active"' : '') + ' title="약간 둥글게 (8px)">약간 8</button>' +
+          '<button type="button" data-corner="16"' + (curRx === 16 && !isPill ? ' class="is-active"' : '') + ' title="중간 둥글게 (16px)">중간 16</button>' +
+          '<button type="button" data-corner="pill"' + (isPill ? ' class="is-active"' : '') + ' title="알약/캡슐형 완전 둥근 버튼 모서리">캡슐(반원)</button>' +
+        '</div>' +
+      '</div>';
     }
 
     html += shadowRow(obj);
@@ -200,17 +223,36 @@ window.IE = window.IE || {};
   }
 
   function textPanel(obj) {
-    return '<div class="prop-group">' +
-      '<div class="prop-title">텍스트</div>' +
-      row('내용', '<textarea data-prop="text">' + util.escapeHtml(obj.text || '') + '</textarea>', 'stack') +
+    var hasPartial = (obj._lastSelection && obj._lastSelection.start !== obj._lastSelection.end) ||
+                     (obj.isEditing && obj.selectionStart !== obj.selectionEnd);
+
+    var html = '<div class="prop-group">' +
+      '<div class="prop-title">텍스트</div>';
+
+    if (hasPartial) {
+      html += '<div style="font-size:11px;color:var(--brand-700);background:var(--brand-soft);border:1px solid var(--brand-line);padding:6px 8px;border-radius:var(--r-sm);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">' +
+        '<span>✏️ <b>선택한 글자 서식 변경</b></span>' +
+        '<button type="button" class="btn-mini" data-action="clear-text-styles" style="font-size:10px;padding:2px 6px;">전체 서식으로 통일</button>' +
+      '</div>';
+    }
+
+    html += row('내용', '<textarea data-prop="text">' + util.escapeHtml(obj.text || '') + '</textarea>', 'stack') +
       row('글꼴', fontSelect(obj.fontFamily)) +
-      row('크기', numberInput('fontSize', obj.fontSize, { min: 1, max: 1200 })) +
+      row('크기', '<div style="display:flex;gap:6px;align-items:center;">' +
+        numberInput('fontSize', obj.fontSize, { min: 1, max: 1200 }) +
+        '<button type="button" class="btn-mini btn-mini-solid" data-action="fit-text-width" title="글자 길이에 딱 맞게 오른쪽 공백 제거 (우측 조절점 더블클릭과 동일)">↔ 너비 맞춤</button>' +
+      '</div>') +
       row('색상', colorInput('fill', obj.fill)) +
-      row('스타일', '<div class="seg">' +
-        '<button type="button" data-toggle="fontWeight" class="' + (obj.fontWeight === 'bold' ? 'is-active' : '') + '"><b>B</b></button>' +
+      row('스타일', '<div class="seg" style="display:flex;gap:2px;">' +
+        '<button type="button" data-toggle="fontWeight" class="' + ((obj.fontWeight === 'bold' || obj.fontWeight === '900') ? 'is-active' : '') + '"><b>B</b></button>' +
         '<button type="button" data-toggle="fontStyle" class="' + (obj.fontStyle === 'italic' ? 'is-active' : '') + '"><i>I</i></button>' +
         '<button type="button" data-toggle="underline" class="' + (obj.underline ? 'is-active' : '') + '"><u>U</u></button>' +
       '</div>') +
+      row('굵기', segButtons([
+        { prop: 'fontWeight', value: 'normal', label: '보통' },
+        { prop: 'fontWeight', value: 'bold', label: '굵게' },
+        { prop: 'fontWeight', value: '900', label: '초굵게' }
+      ], String(obj.fontWeight || 'normal'))) +
       row('정렬', segButtons([
         { prop: 'textAlign', value: 'left', label: '좌' },
         { prop: 'textAlign', value: 'center', label: '중' },
@@ -226,6 +268,7 @@ window.IE = window.IE || {};
       row('외곽선 두께', numberInput('strokeWidth', obj.strokeWidth || 0, { min: 0, max: 60, step: 0.5 })) +
       shadowRow(obj) +
       '</div>';
+    return html;
   }
 
   function gradientSeg(obj) {
@@ -631,7 +674,40 @@ window.IE = window.IE || {};
       '</button>';
     }).join('');
 
-    var html = '<div class="prop-group">' +
+    var html = '';
+
+    if (key === 'roundSquare' || key === 'square') {
+      var effW = Math.round((obj.width || 0) * (obj.scaleX == null ? 1 : Math.abs(obj.scaleX)));
+      var effH = Math.round((obj.height || 0) * (obj.scaleY == null ? 1 : Math.abs(obj.scaleY)));
+      var maxRadius = Math.max(10, Math.floor(Math.min(effW, effH) / 2));
+      var curRx = (key === 'square') ? 0 : Math.min(16, maxRadius);
+
+      html += '<div class="prop-callout">' +
+        '<div class="prop-callout-head">' +
+          '<b>' +
+            '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>' +
+            '모서리 곡률' +
+          '</b>' +
+          '<span class="prop-callout-tag">스마트 사각형</span>' +
+        '</div>' +
+        '<div class="prop-callout-note">가로로 길게 늘려도 모서리가 왜곡되지 않는 사각형으로 변환하여 곡률(둥글기)을 자유롭게 조절합니다.</div>' +
+        '<div class="field">' +
+          '<input type="range" data-action="figure-rx-slider" min="0" max="' + maxRadius + '" step="1" value="' + curRx + '" title="모서리 둥글기">' +
+          '<input type="number" data-action="figure-rx-num" min="0" max="' + maxRadius + '" step="1" value="' + curRx + '" class="prop-num">' +
+        '</div>' +
+        '<div class="seg cols-2">' +
+          '<button type="button" data-corner-figure="0" title="직각 모서리 (0px)">직각</button>' +
+          '<button type="button" data-corner-figure="8" title="약간 둥글게 (8px)">약간 8</button>' +
+          '<button type="button" data-corner-figure="16" title="중간 둥글게 (16px)">중간 16</button>' +
+          '<button type="button" data-corner-figure="pill" title="알약/캡슐형 완전 둥근 버튼 모서리">캡슐(반원)</button>' +
+        '</div>' +
+        '<button type="button" class="prop-action prop-action-solid" data-action="convert-figure-to-rect" title="곡률을 자유롭게 조절할 수 있는 사각형으로 변환">' +
+          '<span>곡률 조절 사각형으로 변환</span>' +
+        '</button>' +
+      '</div>';
+    }
+
+    html += '<div class="prop-group">' +
       '<div class="prop-title">' + (isIllust ? '일러스트' : '도형') + '</div>';
 
     if (!layered) {
@@ -752,14 +828,44 @@ window.IE = window.IE || {};
   function actionsPanel(multi, obj) {
     var html = '<div class="prop-group"><div class="prop-title">동작</div><div class="layer-actions">';
 
-    html += '<button type="button" class="btn-mini" data-action="dup">복제</button>';
-    html += '<button type="button" class="btn-mini" data-action="del">삭제</button>';
+    var icoGroup = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke-dasharray="2 2"/></svg>';
+    var icoUngroup = '<svg viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/><path d="M7 17l10-10M13 7h4v4M11 17H7v-4"/></svg>';
+    var icoLock = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="16" r="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+    var icoDup = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    var icoDel = '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+    var icoFront = '<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/><line x1="6" y1="5" x2="18" y2="5"/></svg>';
+    var icoBack = '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/><line x1="6" y1="19" x2="18" y2="19"/></svg>';
+    var icoUp = '<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>';
+    var icoDown = '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+    var icoCenterH = '<svg viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><rect x="6" y="7" width="12" height="10" rx="1.5"/></svg>';
+    var icoCenterV = '<svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><rect x="7" y="6" width="10" height="12" rx="1.5"/></svg>';
 
-    if (!multi) {
-      html += '<button type="button" class="btn-mini" data-action="front">맨앞</button>';
-      html += '<button type="button" class="btn-mini" data-action="back">맨뒤</button>';
-      html += '<button type="button" class="btn-mini" data-action="center-h">가로 중앙</button>';
-      html += '<button type="button" class="btn-mini" data-action="center-v">세로 중앙</button>';
+    if (multi) {
+      var multiLocked = obj && (obj.isLocked || obj.lockMovementX);
+      html += '<button type="button" class="btn-mini btn-mini-solid" data-action="group" title="선택 객체 그룹화 (Ctrl+G)">' + icoGroup + '그룹화</button>';
+      html += '<button type="button" class="btn-mini' + (multiLocked ? ' btn-mini-solid' : '') + '" data-action="lock" title="선택 객체 잠금/해제 (Ctrl+L)">' +
+        icoLock + (multiLocked ? '잠금 해제' : '잠금') + '</button>';
+      html += '<button type="button" class="btn-mini" data-action="dup" title="복제 (Ctrl+D)">' + icoDup + '복제</button>';
+      html += '<button type="button" class="btn-mini" data-action="front" title="맨앞으로 (Ctrl+])">' + icoFront + '맨앞</button>';
+      html += '<button type="button" class="btn-mini" data-action="back" title="맨뒤로 (Ctrl+[)">' + icoBack + '맨뒤</button>';
+      html += '<button type="button" class="btn-mini btn-mini-danger" data-action="del" title="삭제 (Delete)">' + icoDel + '삭제</button>';
+    } else {
+      var isGroup = obj && (obj.type === 'group' || obj.kind === 'group');
+      var isLocked = obj && (obj.isLocked || obj.lockMovementX);
+
+      if (isGroup) {
+        html += '<button type="button" class="btn-mini btn-mini-solid" data-action="ungroup" title="그룹 해제 (Ctrl+Shift+G)">' + icoUngroup + '그룹 해제</button>';
+      }
+      html += '<button type="button" class="btn-mini' + (isLocked ? ' btn-mini-solid' : '') + '" data-action="lock" title="잠금/해제 (Ctrl+L)">' +
+        icoLock + (isLocked ? '잠금 해제' : '잠금') + '</button>';
+      html += '<button type="button" class="btn-mini" data-action="dup" title="복제 (Ctrl+D)">' + icoDup + '복제</button>';
+      html += '<button type="button" class="btn-mini btn-mini-danger" data-action="del" title="삭제 (Delete)">' + icoDel + '삭제</button>';
+      html += '<button type="button" class="btn-mini" data-action="up" title="한 단계 앞으로 (])">' + icoUp + '앞으로</button>';
+      html += '<button type="button" class="btn-mini" data-action="down" title="한 단계 뒤로 ([)">' + icoDown + '뒤로</button>';
+      html += '<button type="button" class="btn-mini" data-action="front" title="맨앞으로 (Ctrl+])">' + icoFront + '맨앞</button>';
+      html += '<button type="button" class="btn-mini" data-action="back" title="맨뒤로 (Ctrl+[)">' + icoBack + '맨뒤</button>';
+      html += '<button type="button" class="btn-mini" data-action="center-h" title="가로 중앙 정렬">' + icoCenterH + '가로 중앙</button>';
+      html += '<button type="button" class="btn-mini" data-action="center-v" title="세로 중앙 정렬">' + icoCenterV + '세로 중앙</button>';
     }
 
     html += '</div></div>';
@@ -771,6 +877,23 @@ window.IE = window.IE || {};
       '<span class="prop-kind">' + IE.canvas.iconOf(obj) + '</span>' +
       '<span class="prop-name">' + util.escapeHtml(IE.canvas.labelOf(obj)) + '</span>' +
     '</div>';
+
+    if (obj && (obj.type === 'group' || obj.kind === 'group')) {
+      var childCount = typeof obj.getObjects === 'function' ? obj.getObjects().length : '';
+      html += '<div class="prop-callout">' +
+        '<div class="prop-callout-head">' +
+          '<b>' +
+            '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke-dasharray="2 2"/></svg>' +
+            '묶인 그룹' +
+          '</b>' +
+          '<span class="prop-callout-tag">' + (childCount ? childCount + '개' : '그룹') + '</span>' +
+        '</div>' +
+        '<button type="button" class="prop-action prop-action-solid" data-action="ungroup" title="그룹 해제 (Ctrl+Shift+G)">' +
+          '<svg viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/><path d="M7 17l10-10M13 7h4v4M11 17H7v-4"/></svg>' +
+          '<span>그룹 해제 (Ctrl+Shift+G)</span>' +
+        '</button>' +
+      '</div>';
+    }
 
     if (obj.kind === 'text') html += textPanel(obj);
     if (obj.kind === 'image') html += imagePanel(obj);
@@ -798,6 +921,21 @@ window.IE = window.IE || {};
       '<span class="prop-name">' + objects.length + '개 객체 선택됨</span>' +
     '</div>';
 
+    // 다중 선택 시 가장 많이 찾는 '그룹화' 기능을 패널 맨 위에 강조 배치
+    html += '<div class="prop-callout">' +
+      '<div class="prop-callout-head">' +
+        '<b>' +
+          '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke-dasharray="2 2"/></svg>' +
+          '선택 객체 그룹화' +
+        '</b>' +
+        '<span class="prop-callout-tag">' + objects.length + '개 선택</span>' +
+      '</div>' +
+      '<button type="button" class="prop-action prop-action-solid" data-action="group" title="선택 객체 그룹화 (Ctrl+G)">' +
+        '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke-dasharray="2 2"/></svg>' +
+        '<span>하나의 그룹으로 묶기 (Ctrl+G)</span>' +
+      '</button>' +
+    '</div>';
+
     if (allText) html += textPanel(objects[0]);
     else if (allShape) html += shapePanel(objects[0]);
 
@@ -806,7 +944,7 @@ window.IE = window.IE || {};
       '</div>';
 
     html += alignPanel(true);
-    html += actionsPanel(true, null);
+    html += actionsPanel(true, selection.ref);
     return html;
   }
 
@@ -881,11 +1019,39 @@ window.IE = window.IE || {};
   }
 
   function setProp(obj, prop, value) {
+    if (obj.kind === 'text' || obj.type === 'textbox') {
+      var lastSel = (obj.isEditing && obj.selectionStart !== obj.selectionEnd)
+        ? { start: obj.selectionStart, end: obj.selectionEnd }
+        : obj._lastSelection;
+
+      if (lastSel && lastSel.start !== lastSel.end &&
+          (prop === 'fill' || prop === 'fontSize' || prop === 'fontFamily' ||
+           prop === 'fontWeight' || prop === 'fontStyle' || prop === 'underline' ||
+           prop === 'stroke' || prop === 'strokeWidth')) {
+        var stylePatch = {};
+        stylePatch[prop] = value;
+        obj.setSelectionStyles(stylePatch, lastSel.start, lastSel.end);
+        if (obj.canvas) obj.canvas.requestRenderAll();
+        return;
+      }
+    }
+
     switch (prop) {
       case 'text': obj.set('text', String(value)); break;
       case 'fontSize': obj.set('fontSize', util.clamp(value, 1, 2000)); break;
       case 'strokeWidth': obj.set('strokeWidth', Math.max(0, value)); break;
-      case 'rx': obj.set({ rx: Math.max(0, value), ry: Math.max(0, value) }); break;
+      case 'rx':
+        var effW = Math.round((obj.width || 0) * (obj.scaleX == null ? 1 : Math.abs(obj.scaleX)));
+        var effH = Math.round((obj.height || 0) * (obj.scaleY == null ? 1 : Math.abs(obj.scaleY)));
+        var maxRadius = Math.max(0, Math.floor(Math.min(effW, effH) / 2));
+        var safeR = Math.min(maxRadius, Math.max(0, value));
+        obj.set({
+          width: effW, height: effH,
+          scaleX: 1, scaleY: 1,
+          rx: safeR, ry: safeR
+        });
+        obj.setCoords();
+        break;
       case 'lineHeight': obj.set('lineHeight', util.clamp(value, 0.5, 5)); break;
       case 'opacity': obj.set('opacity', util.clamp(value, 0, 1)); break;
       case 'left': obj.set('left', value); obj.setCoords(); break;
@@ -1051,8 +1217,32 @@ window.IE = window.IE || {};
     if (!sel) return;
 
     sel.objects.forEach(function (obj) {
+      if (obj.kind === 'text' || obj.type === 'textbox') {
+        var lastSel = (obj.isEditing && obj.selectionStart !== obj.selectionEnd)
+          ? { start: obj.selectionStart, end: obj.selectionEnd }
+          : obj._lastSelection;
+
+        if (lastSel && lastSel.start !== lastSel.end) {
+          var patch = {};
+          if (prop === 'fontWeight') {
+            var cur = (obj.getSelectionStyles && obj.getSelectionStyles(lastSel.start, lastSel.start + 1)[0]) || {};
+            var curWeight = cur.fontWeight || obj.fontWeight || 'normal';
+            patch.fontWeight = (curWeight === 'bold' || curWeight === '700' || curWeight === '900') ? 'normal' : 'bold';
+          } else if (prop === 'fontStyle') {
+            var cur2 = (obj.getSelectionStyles && obj.getSelectionStyles(lastSel.start, lastSel.start + 1)[0]) || {};
+            patch.fontStyle = ((cur2.fontStyle || obj.fontStyle) === 'italic') ? 'normal' : 'italic';
+          } else if (prop === 'underline') {
+            var cur3 = (obj.getSelectionStyles && obj.getSelectionStyles(lastSel.start, lastSel.start + 1)[0]) || {};
+            var curUnder = (cur3.underline !== undefined) ? cur3.underline : obj.underline;
+            patch.underline = !curUnder;
+          }
+          obj.setSelectionStyles(patch, lastSel.start, lastSel.end);
+          return;
+        }
+      }
+
       if (prop === 'fontWeight') {
-        obj.set('fontWeight', obj.fontWeight === 'bold' ? 'normal' : 'bold');
+        obj.set('fontWeight', (obj.fontWeight === 'bold' || obj.fontWeight === '900') ? 'normal' : 'bold');
       } else if (prop === 'fontStyle') {
         obj.set('fontStyle', obj.fontStyle === 'italic' ? 'normal' : 'italic');
       } else if (prop === 'underline') {
@@ -1085,8 +1275,45 @@ window.IE = window.IE || {};
   function runAction(action) {
     var sel = selection();
 
-    if (action === 'dup') IE.canvas.duplicateActive();
+    if (action === 'convert-figure-to-rect' && sel) {
+      sel.objects.forEach(function (obj) {
+        if (obj.kind === 'figure' || obj.kind === 'rect' || obj.kind === 'roundrect') {
+          IE.canvas.convertFigureToRect(obj);
+        }
+      });
+      refresh(true);
+      return;
+    }
+
+    if (action === 'fit-text-width' && sel) {
+      sel.objects.forEach(function (obj) {
+        if (obj.kind === 'text' || obj.type === 'textbox') {
+          IE.canvas.fitTextboxWidth(obj);
+        }
+      });
+      refresh(true);
+      return;
+    }
+    if (action === 'clear-text-styles' && sel) {
+      sel.objects.forEach(function (obj) {
+        if (obj.kind === 'text' || obj.type === 'textbox') {
+          obj.styles = {};
+          obj._lastSelection = null;
+        }
+      });
+      IE.state.canvas.requestRenderAll();
+      IE.state.history.snapshot();
+      refresh(true);
+      return;
+    }
+
+    if (action === 'group') IE.canvas.groupActive();
+    else if (action === 'ungroup') IE.canvas.ungroupActive();
+    else if (action === 'lock') IE.canvas.toggleLockActive();
+    else if (action === 'dup') IE.canvas.duplicateActive();
     else if (action === 'del') IE.canvas.deleteActive();
+    else if (action === 'up') IE.canvas.reorder('up');
+    else if (action === 'down') IE.canvas.reorder('down');
     else if (action === 'front') IE.canvas.reorder('front');
     else if (action === 'back') IE.canvas.reorder('back');
     else if (action === 'center-h') center('h');
@@ -1154,6 +1381,7 @@ window.IE = window.IE || {};
     while (el && el !== document.body) {
       if (el.hasAttribute && (el.hasAttribute('data-set') || el.hasAttribute('data-toggle') ||
         el.hasAttribute('data-action') || el.hasAttribute('data-fill') ||
+        el.hasAttribute('data-corner') || el.hasAttribute('data-corner-figure') ||
         el.hasAttribute('data-align') || el.hasAttribute('data-gradient') ||
         el.hasAttribute('data-shadow') || el.hasAttribute('data-table') ||
         el.hasAttribute('data-icon-style') || el.hasAttribute('data-icon-combo') ||
@@ -1190,6 +1418,18 @@ window.IE = window.IE || {};
         else IE.canvas.setCropOffset(obj, obj.cropOffsetX || 0, offset);
       });
       syncOutput('crop' + cropAxis, el);
+      return;
+    }
+
+    // 도형(roundSquare) 곡률 슬라이더/숫자 입력 실시간 반응
+    var figAction = el.getAttribute('data-action');
+    if (figAction === 'figure-rx-slider' || figAction === 'figure-rx-num') {
+      var fSel = selection();
+      if (fSel && fSel.objects[0]) {
+        var rxVal = parseInt(el.value, 10) || 0;
+        IE.canvas.convertFigureToRect(fSel.objects[0], rxVal);
+        refresh(true);
+      }
       return;
     }
 
@@ -1243,6 +1483,31 @@ window.IE = window.IE || {};
 
     apply(prop, el);
     syncOutput(prop, el);
+
+    if (prop === 'rx') {
+      var panel = util.$('props-body');
+      if (panel) {
+        var numIn = panel.querySelector('input[type="number"][data-prop="rx"]');
+        var rangeIn = panel.querySelector('input[type="range"][data-prop="rx"]');
+        var badge = panel.querySelector('.rx-val-badge');
+        var v = Math.round(parseFloat(el.value) || 0);
+        if (el === rangeIn && numIn) numIn.value = v;
+        if (el === numIn && rangeIn) rangeIn.value = v;
+        var selObj = selection() && selection().objects[0];
+        var maxR = selObj ? Math.floor(Math.min((selObj.width || 0) * Math.abs(selObj.scaleX || 1), (selObj.height || 0) * Math.abs(selObj.scaleY || 1)) / 2) : 9999;
+        var isPillActive = (v >= maxR && maxR > 0);
+        if (badge) {
+          badge.textContent = v + 'px' + (isPillActive ? ' (캡슐)' : '');
+        }
+        var btns = panel.querySelectorAll('button[data-corner]');
+        for (var bi = 0; bi < btns.length; bi++) {
+          var cVal = btns[bi].getAttribute('data-corner');
+          var isActive = (cVal === 'pill') ? isPillActive : (parseInt(cVal, 10) === v && !isPillActive);
+          if (isActive) btns[bi].classList.add('is-active');
+          else btns[bi].classList.remove('is-active');
+        }
+      }
+    }
   }
 
   function handleClick(ev) {
@@ -1255,6 +1520,41 @@ window.IE = window.IE || {};
     if (setPropName) {
       apply(setPropName, el.getAttribute('data-value'));
       refresh(true);
+      return;
+    }
+
+    var cornerFig = el.getAttribute('data-corner-figure');
+    if (cornerFig != null) {
+      var cfSel = selection();
+      if (cfSel && cfSel.objects[0]) {
+        IE.canvas.convertFigureToRect(cfSel.objects[0], cornerFig);
+        refresh(true);
+      }
+      return;
+    }
+
+    var cornerVal = el.getAttribute('data-corner');
+    if (cornerVal) {
+      var cornerSel = selection();
+      if (cornerSel) {
+        cornerSel.objects.forEach(function (obj) {
+          if (obj.kind === 'rect' || obj.kind === 'roundrect' || obj.kind === 'bg') {
+            var effW = Math.round((obj.width || 0) * (obj.scaleX == null ? 1 : Math.abs(obj.scaleX)));
+            var effH = Math.round((obj.height || 0) * (obj.scaleY == null ? 1 : Math.abs(obj.scaleY)));
+            var maxR = Math.floor(Math.min(effW, effH) / 2);
+            var r = (cornerVal === 'pill') ? maxR : Math.min(maxR, Math.max(0, parseInt(cornerVal, 10) || 0));
+            obj.set({
+              width: effW, height: effH,
+              scaleX: 1, scaleY: 1,
+              rx: r, ry: r
+            });
+            obj.setCoords();
+          }
+        });
+        IE.state.canvas.requestRenderAll();
+        IE.state.history.snapshot();
+        refresh(true);
+      }
       return;
     }
 
