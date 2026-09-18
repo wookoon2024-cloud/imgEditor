@@ -333,6 +333,15 @@ window.IE = window.IE || {};
     }
     if (action === 'shortcuts') {
       util.$('modal-shortcuts').hidden = false;
+      return;
+    }
+    if (action === 'beta-notice') {
+      util.$('modal-beta-notice').hidden = false;
+      return;
+    }
+    if (action === 'about-license') {
+      util.$('modal-about-license').hidden = false;
+      return;
     }
   }
 
@@ -450,7 +459,7 @@ window.IE = window.IE || {};
       if (ev.key === 'Escape') {
         if (IE.imgedit && IE.imgedit.isOpen()) { IE.imgedit.close(false); ev.preventDefault(); return; }
 
-        var openModal = ['modal-table', 'modal-page', 'modal-shortcuts'].filter(function (id) {
+        var openModal = ['modal-table', 'modal-page', 'modal-shortcuts', 'modal-about-license'].filter(function (id) {
           var el = util.$(id);
           return el && !el.hidden;
         })[0];
@@ -704,6 +713,51 @@ window.IE = window.IE || {};
     });
   }
 
+  function initAboutLicenseModal() {
+    util.on('btn-about-license', 'click', function () { util.$('modal-about-license').hidden = false; });
+    util.on('modal-about-license-close', 'click', function () { util.$('modal-about-license').hidden = true; });
+    util.on('modal-about-license-ok', 'click', function () { util.$('modal-about-license').hidden = true; });
+    util.on('modal-about-license', 'mousedown', function (ev) {
+      if (ev.target === util.$('modal-about-license')) util.$('modal-about-license').hidden = true;
+    });
+  }
+
+  function initBetaNoticeModal() {
+    var modal = util.$('modal-beta-notice');
+    if (!modal) return;
+
+    var btnOk = util.$('btn-beta-notice-confirm');
+    var btnX = util.$('btn-beta-notice-x');
+    var chkToday = util.$('chk-beta-notice-today');
+
+    function closeModal() {
+      if (chkToday && chkToday.checked) {
+        try {
+          var expire = Date.now() + 24 * 60 * 60 * 1000;
+          localStorage.setItem('hide_beta_notice_until', String(expire));
+        } catch (e) {}
+      }
+      modal.hidden = true;
+    }
+
+    if (btnOk) btnOk.addEventListener('click', closeModal);
+    if (btnX) btnX.addEventListener('click', closeModal);
+    util.on('btn-beta-notice', 'click', function () { modal.hidden = false; });
+    modal.addEventListener('mousedown', function (ev) {
+      if (ev.target === modal) closeModal();
+    });
+
+    // 실행 즉시 팝업 오픈 (오늘 하루 보지 않기 여부 체크)
+    var hideUntil = 0;
+    try {
+      hideUntil = parseInt(localStorage.getItem('hide_beta_notice_until') || '0', 10);
+    } catch (e) {}
+
+    if (Date.now() > hideUntil) {
+      modal.hidden = false;
+    }
+  }
+
   function initResize() {
     window.addEventListener('resize', function () {
       if (IE.state.autoFit) IE.canvas.zoomToFit();
@@ -738,6 +792,8 @@ window.IE = window.IE || {};
     initZoomPan();
     initStageDrop();
     initShortcutModal();
+    initAboutLicenseModal();
+    initBetaNoticeModal();
     initNewDocModal();
     initResize();
 

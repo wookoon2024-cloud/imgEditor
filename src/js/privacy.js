@@ -404,15 +404,19 @@ window.IE = window.IE || {};
         }
       }
 
-      // 사진 내 얼굴 탐지
+      // 사진 내 얼굴 탐지 (일러스트/그림 및 저신뢰도 검출 제외)
       if (options.face && (obj.kind === 'image' || obj.type === 'image') && obj._element) {
         try {
+          if (obj.isIllustration || obj.isCartoon || obj.isDrawing || (obj.data && (obj.data.isIllustration || obj.data.isDrawing))) {
+            return;
+          }
           var imgEl = obj._element;
           var nw = imgEl.naturalWidth || imgEl.width || 0;
           var nh = imgEl.naturalHeight || imgEl.height || 0;
           if (nw > 40 && nh > 40 && IE.facedet && IE.facedet.isReady()) {
             var hit = IE.facedet.detect(imgEl, nw, nh);
-            if (hit && hit.found) {
+            // 그림/일러스트 오탐 방지: 실제 인물 사진 기준 score >= 4.0 이상만 감지
+            if (hit && hit.found && (typeof hit.score !== 'number' || hit.score >= 4.0)) {
               results.push({
                 id: 'face_' + results.length + '_' + Date.now(),
                 type: 'face',
@@ -529,6 +533,193 @@ window.IE = window.IE || {};
     return count;
   }
 
+  /* ============================================================ 캔버스 시각적 표기 (Overlay) */
+
+  var overlayEl = null;
+  var overlayEnabled = true;
+  var overlayVisible = false;
+  var activeGroups = [];
+
+  function getCanvasContainer() {
+    var canvas = IE.state.canvas;
+    if (!canvas) return null;
+    return (canvas.upperCanvasEl && canvas.upperCanvasEl.parentElement) ||
+      document.querySelector('.canvas-container') ||
+      document.getElementById('canvas-host');
+  }
+
+  function ensureOverlay() {
+    var container = getCanvasContainer();
+    if (!container) return null;
+    if (!overlayEl || overlayEl.parentElement !== container) {
+      if (overlayEl && overlayEl.parentElement) {
+        overlayEl.parentElement.removeChild(overlayEl);
+      }
+      overlayEl = document.createElement('div');
+      overlayEl.className = 'priv-canvas-overlay';
+      overlayEl.id = 'priv-canvas-overlay';
+      container.appendChild(overlayEl);
+    }
+    return overlayEl;
+  }
+
+  function clearMarkers() {
+    activeGroups = [];
+    if (overlayEl) {
+      overlayEl.innerHTML = '';
+    }
+  }
+
+  function hideOverlay() {
+    overlayVisible = false;
+    if (overlayEl) {
+      overlayEl.style.display = 'none';
+    }
+  }
+
+  function showOverlay() {
+    overlayVisible = true;
+    if (overlayEl) {
+      overlayEl.style.display = overlayEnabled ? '' : 'none';
+      updateMarkerPositions();
+    }
+  }
+
+  function findMarkerByPrivId(privId) {
+    for (var i = 0; i < activeGroups.length; i++) {
+      var g = activeGroups[i];
+      var match = g.items.some(function (it) { return it.id === privId; });
+      if (match && g.el) return g.el;
+    }
+    return null;
+  }
+
+  function focusCard(privId) {
+    var card = document.querySelector('.priv-item-card[data-priv-id="' + privId + '"]');
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      card.classList.add('is-highlighted');
+      setTimeout(function () { card.classList.remove('is-highlighted'); }, 1400);
+    }
+  }
+
+  function updateMarkerPositions() {
+    if (!overlayVisible || !overlayEnabled || !activeGroups.length) return;
+    var canvas = IE.state.canvas;
+    if (!canvas) return;
+
+    var container = ensureOverlay();
+    if (!container) return;
+
+    activeGroups.forEach(function (g) {
+      if (!g.el || !g.obj) return;
+      if (!g.obj.canvas && canvas.getObjects().indexOf(g.obj) === -1) {
+        g.el.style.display = 'none';
+        return;
+      }
+      g.el.style.display = '';
+
+      var rect = g.obj.getBoundingRect ? g.obj.getBoundingRect() : { left: 0, top: 0, width: 0, height: 0 };
+      var fx = rect.left;
+      var fy = rect.top;
+      var fw = rect.width;
+      var fh = rect.height;
+
+      if (g.isFace && g.faceBox && g.obj._element) {
+        var el = g.obj._element;
+        var nw = el.naturalWidth || g.obj.width || 1;
+        var nh = el.naturalHeight || g.obj.height || 1;
+        fx = rect.left + (g.faceBox.x / nw) * rect.width;
+        fy = rect.top + (g.faceBox.y / nh) * rect.height;
+        fw = (g.faceBox.w / nw) * rect.width;
+        fh = (g.faceBox.h / nh) * rect.height;
+      }
+
+      g.el.style.left = Math.round(fx) + 'px';
+      g.el.style.top = Math.round(fy) + 'px';
+      g.el.style.width = Math.max(20, Math.round(fw)) + 'px';
+      g.el.style.height = Math.max(16, Math.round(fh)) + 'px';
+    });
+  }
+
+  function bindCanvasEvents() {
+    var canvas = IE.state.canvas;
+    if (!canvas || canvas._privEventsBound) return;
+    canvas._privEventsBound = true;
+    canvas.on('after:render', updateMarkerPositions);
+    canvas.on('object:moving', updateMarkerPositions);
+    canvas.on('object:scaling', updateMarkerPositions);
+    canvas.on('object:rotating', updateMarkerPositions);
+  }
+
+  function renderMarkers(results) {
+    bindCanvasEvents();
+    var host = ensureOverlay();
+    if (!host) return;
+
+    clearMarkers();
+
+    if (!results || !results.length) return;
+
+    var groups = [];
+    results.forEach(function (item) {
+      if (item.type === 'face' && item.faceBox) {
+        groups.push({
+          key: item.id,
+          obj: item.obj,
+          isFace: true,
+          faceBox: item.faceBox,
+          items: [item]
+        });
+      } else {
+        var found = groups.filter(function (g) { return !g.isFace && g.obj === item.obj; })[0];
+        if (found) {
+          found.items.push(item);
+        } else {
+          groups.push({
+            key: 'obj_' + (item.obj.id || ('k_' + Math.random().toString(36).slice(2))),
+            obj: item.obj,
+            isFace: false,
+            faceBox: null,
+            items: [item]
+          });
+        }
+      }
+    });
+
+    activeGroups = groups;
+
+    groups.forEach(function (g) {
+      var primaryColor = g.items[0].badgeColor || '#dc2626';
+
+      var markerEl = document.createElement('div');
+      markerEl.className = 'priv-marker';
+      markerEl.setAttribute('data-group-key', g.key);
+      markerEl.style.setProperty('--badge-color', primaryColor);
+
+      // 박스 테두리선만 표시 (부가설명은 좌측 패널에 기재됨)
+      var boxEl = document.createElement('div');
+      boxEl.className = 'priv-marker-box';
+      boxEl.title = '클릭하여 해당 객체 선택';
+      boxEl.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (g.obj && IE.state.canvas) {
+          IE.state.canvas.setActiveObject(g.obj);
+          IE.state.canvas.requestRenderAll();
+        }
+        if (g.items[0]) focusCard(g.items[0].id);
+      });
+
+      markerEl.appendChild(boxEl);
+      host.appendChild(markerEl);
+      g.el = markerEl;
+    });
+
+    overlayVisible = true;
+    host.style.display = overlayEnabled ? '' : 'none';
+    updateMarkerPositions();
+  }
+
   function panelHtml() {
     var itemsHtml = TARGET_DEFS.map(function (t) {
       return '<label class="priv-target-label" title="' + t.label + '">' +
@@ -539,7 +730,7 @@ window.IE = window.IE || {};
 
     return '<div class="fo-section">' +
       '<div style="background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;">' +
-        '<b style="display:block;color:var(--brand-700);font-size:12.5px;margin-bottom:4px;">개인정보 안심 점검</b>' +
+        '<span style="display:block;color:var(--brand-700);font-size:12.5px;font-weight:500;margin-bottom:4px;">개인정보 안심 점검</span>' +
         '<div class="fo-hint" style="color:var(--ink-2);font-size:11px;line-height:1.5;">' +
           '문서 내 민감정보 및 사진 속 얼굴을 외부 유출 없이 로컬 브라우저에서 안전하게 탐지하여 마스킹합니다.' +
         '</div>' +
@@ -548,7 +739,7 @@ window.IE = window.IE || {};
 
     '<div class="fo-section">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
-        '<h3 class="fo-title" style="margin:0;">점검 대상 항목 (<span id="priv-target-count">' + TARGET_DEFS.length + '</span>/' + TARGET_DEFS.length + ')</h3>' +
+        '<h3 class="fo-title" style="margin:0;font-weight:500;">점검 대상 항목 (<span id="priv-target-count">' + TARGET_DEFS.length + '</span>/' + TARGET_DEFS.length + ')</h3>' +
         '<button type="button" class="btn-mini" id="btn-priv-target-toggle-all" style="font-size:11px;padding:2px 8px;">전체 해제</button>' +
       '</div>' +
 
@@ -561,7 +752,7 @@ window.IE = window.IE || {};
 
     '<div class="fo-section" id="privacy-results-host">' +
       '<p class="fo-hint" style="text-align:center;margin-top:10px;">' +
-        '위 항목을 선택한 후 <b>[화면 개인정보 검사 시작]</b> 버튼을 누르면<br>캔버스의 모든 텍스트와 사진을 점검합니다.' +
+        '위 항목을 선택한 후 [화면 개인정보 검사 시작] 버튼을 누르면<br>캔버스의 모든 텍스트와 사진을 점검합니다.' +
       '</p>' +
     '</div>';
   }
@@ -569,7 +760,7 @@ window.IE = window.IE || {};
   function renderResultsHtml(results) {
     if (!results || !results.length) {
       return '<div style="background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:var(--r-md);padding:16px;text-align:center;">' +
-        '<div style="font-size:13px;font-weight:700;color:var(--brand-700);margin-bottom:4px;">' +
+        '<div style="font-size:13px;font-weight:500;color:var(--brand-700);margin-bottom:4px;">' +
           '개인정보 안심 인증 완료' +
         '</div>' +
         '<div class="fo-hint" style="font-size:11.5px;color:var(--ink-2);line-height:1.5;">' +
@@ -579,29 +770,34 @@ window.IE = window.IE || {};
     }
 
     var listHtml = results.map(function (item, idx) {
-      return '<div class="priv-item-card" style="border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;background:var(--surface);font-size:11.5px;margin-bottom:6px;transition:border-color 0.12s;">' +
+      return '<div class="priv-item-card" data-priv-idx="' + idx + '" data-priv-id="' + item.id + '" style="border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;background:var(--surface);font-size:11.5px;margin-bottom:6px;cursor:pointer;transition:all 0.12s;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
-          '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:700;color:var(--ink-1);margin:0;">' +
+          '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;color:var(--ink-1);margin:0;">' +
             '<input type="checkbox" class="chk-priv-item" data-priv-idx="' + idx + '" ' + (item.selected ? 'checked' : '') + ' style="accent-color:var(--brand);width:14px;height:14px;cursor:pointer;">' +
             '<span>' + item.typeLabel + '</span>' +
           '</label>' +
-          '<span style="font-size:10px;color:#fff;background:' + item.badgeColor + ';padding:1px 6px;border-radius:3px;font-weight:600;">주의</span>' +
+          '<span style="font-size:10px;color:#fff;background:' + item.badgeColor + ';padding:1px 6px;border-radius:3px;font-weight:400;">주의</span>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:6px;padding-left:20px;color:var(--ink-3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
           '<span style="text-decoration:line-through;color:#e11d48;max-width:110px;overflow:hidden;text-overflow:ellipsis;" title="' + escapeHtml(item.original) + '">' + escapeHtml(item.original) + '</span>' +
           '<span>➔</span>' +
-          '<span style="font-weight:700;color:#2563eb;max-width:110px;overflow:hidden;text-overflow:ellipsis;" title="' + escapeHtml(item.masked) + '">' + escapeHtml(item.masked) + '</span>' +
+          '<span style="font-weight:400;color:#2563eb;max-width:110px;overflow:hidden;text-overflow:ellipsis;" title="' + escapeHtml(item.masked) + '">' + escapeHtml(item.masked) + '</span>' +
         '</div>' +
       '</div>';
     }).join('');
 
     return '<div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">' +
-      '<span style="font-size:12px;font-weight:700;color:#e11d48;">' +
-        '감지된 민감 정보: <b>' + results.length + '건</b>' +
+      '<span style="font-size:12px;font-weight:400;color:#e11d48;">' +
+        '감지된 민감 정보: ' + results.length + '건' +
       '</span>' +
       '<button type="button" class="btn-mini" id="btn-priv-toggle-all" style="font-size:10.5px;padding:2px 6px;">전체 선택/해제</button>' +
     '</div>' +
-    '<div class="priv-list" style="max-height:260px;overflow-y:auto;margin-bottom:10px;padding-right:2px;">' +
+    '<label class="priv-overlay-toggle-bar" style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding:6px 9px;background:var(--surface-2);border-radius:var(--r-sm);border:1px solid var(--line);font-size:11.5px;cursor:pointer;user-select:none;">' +
+      '<input type="checkbox" id="chk-priv-show-overlay" ' + (overlayEnabled ? 'checked' : '') + ' style="width:14px;height:14px;accent-color:var(--brand);cursor:pointer;">' +
+      '<span style="font-weight:400;color:var(--ink-1);">편집창에 위치 표시 (선)</span>' +
+      '<span style="color:var(--brand-700);font-size:10px;margin-left:auto;font-weight:400;">' + (overlayEnabled ? 'ON' : 'OFF') + '</span>' +
+    '</label>' +
+    '<div class="priv-list" style="max-height:240px;overflow-y:auto;margin-bottom:10px;padding-right:2px;">' +
       listHtml +
     '</div>' +
     '<button type="button" class="fo-btn solid" id="btn-priv-apply-mask" style="background:#e11d48;border-color:#be123c;">선택 항목 마스킹 일괄 적용</button>';
@@ -667,6 +863,7 @@ window.IE = window.IE || {};
       }
       var results = scan(opts);
       resultsHost.innerHTML = renderResultsHtml(results);
+      renderMarkers(results);
       bindResults();
     }
 
@@ -680,8 +877,24 @@ window.IE = window.IE || {};
               IE.util.toast(count + '개 개인정보 항목이 안전하게 마스킹되었습니다.');
             }
           }
-          // 재검사 진행
+          // 재검사 및 마커 갱신
           doScan();
+        });
+      }
+
+      var chkOverlay = resultsHost.querySelector('#chk-priv-show-overlay');
+      if (chkOverlay) {
+        chkOverlay.addEventListener('change', function () {
+          overlayEnabled = chkOverlay.checked;
+          if (overlayEl) {
+            overlayEl.style.display = overlayEnabled ? '' : 'none';
+            if (overlayEnabled) updateMarkerPositions();
+          }
+          var statusSpan = chkOverlay.parentElement.querySelector('span:last-child');
+          if (statusSpan) {
+            statusSpan.textContent = overlayEnabled ? 'ON' : 'OFF';
+            statusSpan.style.color = overlayEnabled ? 'var(--brand-700)' : 'var(--ink-4)';
+          }
         });
       }
 
@@ -704,6 +917,36 @@ window.IE = window.IE || {};
           }
         });
       });
+
+      // 카드 호버 및 클릭 연동
+      Array.prototype.forEach.call(resultsHost.querySelectorAll('.priv-item-card'), function (card) {
+        var privId = card.getAttribute('data-priv-id');
+        var idx = parseInt(card.getAttribute('data-priv-idx'), 10);
+
+        card.addEventListener('mouseenter', function () {
+          var marker = findMarkerByPrivId(privId);
+          if (marker) marker.classList.add('is-hovered');
+        });
+
+        card.addEventListener('mouseleave', function () {
+          var marker = findMarkerByPrivId(privId);
+          if (marker) marker.classList.remove('is-hovered');
+        });
+
+        card.addEventListener('click', function (ev) {
+          if (ev.target && ev.target.type === 'checkbox') return;
+          var item = currentResults[idx];
+          if (item && item.obj && IE.state.canvas) {
+            IE.state.canvas.setActiveObject(item.obj);
+            IE.state.canvas.requestRenderAll();
+            var marker = findMarkerByPrivId(privId);
+            if (marker) {
+              marker.classList.add('is-focused');
+              setTimeout(function () { marker.classList.remove('is-focused'); }, 1400);
+            }
+          }
+        });
+      });
     }
 
     if (btnScan) {
@@ -716,7 +959,12 @@ window.IE = window.IE || {};
     applyMask: applyMask,
     panelHtml: panelHtml,
     bindPanel: bindPanel,
-    TARGET_DEFS: TARGET_DEFS
+    TARGET_DEFS: TARGET_DEFS,
+    showOverlay: showOverlay,
+    hideOverlay: hideOverlay,
+    clearMarkers: clearMarkers,
+    renderMarkers: renderMarkers,
+    updateMarkerPositions: updateMarkerPositions
   };
 
 })(window.IE);

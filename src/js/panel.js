@@ -157,9 +157,9 @@ window.IE = window.IE || {};
     var tabs = [
       ['figure', '도형', shapeCount()],
       ['icon', '아이콘', IE.shapes.iconList.length],
-      ['illust', '일러스트', groupItems(illustGroups())],
+      ['illust', '일러스트', groupItems(illustGroups()) + (IE.mascots ? IE.mascots.all.length : 0)],
       ['deco', '장식', groupItems(decoGroups())],
-      ['cartoon', '이미지·카툰', IE.cartoons ? IE.cartoons.all.length : 10]
+      ['cartoon', '이미지·카툰', IE.cartoons ? IE.cartoons.all.length : 21]
     ];
 
     return '<div class="el-tabs">' +
@@ -183,11 +183,38 @@ window.IE = window.IE || {};
     }).join('');
   }
 
-  /** 일러스트 — 부품마다 색이 정해져 있어 크게 보여 준다 */
+  /** 마스코트 캐릭터 일러스트 (SVG 벡터 마스코트) */
+  function mascotIllustHtml() {
+    var items = (IE.mascots && IE.mascots.all) || [];
+    if (!items.length) return '';
+    return '<div class="fo-section">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+        '<h3 class="fo-title" style="margin:0;">마스코트 캐릭터 일러스트 <b style="font-weight:400;color:var(--ink-3)">' + items.length + '</b></h3>' +
+        '<span style="font-size:10.5px;color:var(--brand-700);font-weight:600;background:var(--brand-soft);padding:2px 7px;border-radius:10px;border:1px solid rgba(37,99,235,0.2);">SVG 벡터 마스코트</span>' +
+      '</div>' +
+      '<div class="el-cartoon-grid">' +
+        items.map(function (it) {
+          return '<button type="button" class="el-cartoon-card" data-mascot-id="' + it.id + '" title="' + it.title + ' — 클릭하여 캔버스에 추가">' +
+            '<div class="el-cartoon-thumb">' +
+              '<img src="' + it.src + '" alt="' + it.title + '" loading="lazy" />' +
+            '</div>' +
+            '<div class="el-cartoon-info">' +
+              '<div class="el-cartoon-title">' + it.title + '</div>' +
+              '<div class="el-cartoon-sub">' + (it.categoryName || 'SVG 캐릭터') + '</div>' +
+            '</div>' +
+          '</button>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+
+  /** 일러스트 — 마스코트 캐릭터 및 부품별 컬러 일러스트 */
   function illustHtml() {
-    return bigGroupsHtml(illustGroups(), 'el-grid-illust') +
-      '<p class="fo-hint">일러스트 <b>' + groupItems(illustGroups()) +
-        '종</b> — 부품마다 색이 미리 정해져 있습니다. ' +
+    var total = groupItems(illustGroups()) + (IE.mascots ? IE.mascots.all.length : 0);
+    return mascotIllustHtml() +
+      bigGroupsHtml(illustGroups(), 'el-grid-illust') +
+      '<p class="fo-hint">일러스트 <b>' + total +
+        '종</b> — 마스코트 캐릭터 및 부품마다 색이 미리 정해진 일러스트 에셋입니다. ' +
         '누르면 <b>그 배색 그대로</b> 들어가고, 넣은 뒤 속성 패널에서 잎·기둥처럼 ' +
         '<b>부품별로 색을 바꿀 수 있습니다.</b></p>';
   }
@@ -304,9 +331,12 @@ window.IE = window.IE || {};
   function cartoonHtml() {
     var categories = (IE.cartoons && IE.cartoons.categories) || [
       { id: 'all', name: '전체' },
+      { id: 'animal', name: 'AI 동물 · 슬라임' },
+      { id: 'webtoon', name: '한국 웹툰풍' },
       { id: 'military', name: '국군 · 병영' },
       { id: 'gov', name: '공공기관 · 행정' },
-      { id: 'anime', name: '일본 만화풍' }
+      { id: 'anime', name: '일본 만화풍' },
+      { id: 'chibi', name: 'AI 귀여운 캐릭터' }
     ];
 
     var chips = '<div class="chip-row" id="el-cartoon-cats" style="margin-bottom:10px;">' +
@@ -340,14 +370,14 @@ window.IE = window.IE || {};
 
     return '<div class="fo-section">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
-        '<h3 class="fo-title" style="margin:0;">카툰 · AI 캐릭터 일러스트 <b style="font-weight:400;color:var(--ink-3)">' + items.length + '</b></h3>' +
-        '<span style="font-size:10.5px;color:var(--brand-700);font-weight:600;background:var(--brand-soft);padding:2px 7px;border-radius:10px;border:1px solid rgba(37,99,235,0.2);">투명 배경 Cutout</span>' +
+        '<h3 class="fo-title" style="margin:0;">순수 AI 생성 캐릭터·카툰 <b style="font-weight:400;color:var(--ink-3)">' + items.length + '</b></h3>' +
+        '<span style="font-size:10.5px;color:var(--brand-700);font-weight:600;background:var(--brand-soft);padding:2px 7px;border-radius:10px;border:1px solid rgba(37,99,235,0.2);">100% AI 누끼 이미지</span>' +
       '</div>' +
       searchBox +
       chips +
       '<div class="el-cartoon-grid" id="el-cartoon-grid">' + cartoonGridHtml(items) + '</div>' +
       '<p class="fo-hint" style="margin-top:10px;">' +
-        '모든 캐릭터 이미지는 <b>배경이 투명하게 제거(누끼)</b>되어 있어 배너, 카드뉴스, 보고서 슬라이드 등 어디에나 자연스럽게 얹어 사용할 수 있습니다.' +
+        '모든 캐릭터 이미지는 <b>100% AI 모델로 생성</b>되었으며 <b>배경이 투명하게 제거(누끼)</b>되어 있어 배너, 카드뉴스, 보고서 슬라이드 등 어디에나 자연스럽게 얹어 사용할 수 있습니다.' +
       '</p>' +
     '</div>';
   }
@@ -761,10 +791,17 @@ window.IE = window.IE || {};
   function open(id) {
     if (!SECTIONS[id]) return;
 
+    var prev = current;
     current = id;
     util.$('flyout').hidden = false;
     setRailActive();
     render();
+
+    if (id === 'privacy' && IE.privacy && IE.privacy.showOverlay) {
+      IE.privacy.showOverlay();
+    } else if (prev === 'privacy' && IE.privacy && IE.privacy.hideOverlay) {
+      IE.privacy.hideOverlay();
+    }
 
     if (IE.state.autoFit && IE.canvas) {
       setTimeout(function () { IE.canvas.zoomToFit(); }, 0);
@@ -772,6 +809,9 @@ window.IE = window.IE || {};
   }
 
   function close() {
+    if (current === 'privacy' && IE.privacy && IE.privacy.hideOverlay) {
+      IE.privacy.hideOverlay();
+    }
     current = null;
     iconCallback = null;
     util.$('flyout').hidden = true;
@@ -1017,6 +1057,17 @@ window.IE = window.IE || {};
     }
 
     bindCartoonCards(host);
+
+    // 마스코트 카드 클릭 이벤트 바인딩 (일러스트 탭 내 SVG 마스코트)
+    Array.prototype.forEach.call(host.querySelectorAll('[data-mascot-id]'), function (btn) {
+      btn.addEventListener('click', function () {
+        var mid = btn.getAttribute('data-mascot-id');
+        var item = IE.mascots ? IE.mascots.get(mid) : null;
+        if (item && item.src) {
+          IE.canvas.addImage(item.src);
+        }
+      });
+    });
 
     // 카툰 카테고리 칩 클릭
     Array.prototype.forEach.call(host.querySelectorAll('[data-cartoon-cat]'), function (btn) {

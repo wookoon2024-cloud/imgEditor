@@ -1326,11 +1326,14 @@ svg { display: block; }
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   user-select: none;
   color: var(--ink-1);
   transition: all 0.12s;
+}
+.priv-target-label span {
+  font-weight: 400;
 }
 .priv-target-label:hover {
   border-color: var(--brand-line);
@@ -1343,6 +1346,461 @@ svg { display: block; }
   accent-color: var(--brand);
   cursor: pointer;
   flex-shrink: 0;
+}
+
+/* 개인정보 점검 캔버스 오버레이 & 마커 */
+.priv-canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 25;
+  overflow: visible;
+}
+
+.priv-marker {
+  position: absolute;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.priv-marker-box {
+  position: absolute;
+  inset: -3px;
+  border: 1.5px dashed #dc2626;
+  background: transparent !important;
+  border-radius: 2px;
+  box-shadow: none !important;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: none !important;
+}
+
+.priv-marker.is-hovered .priv-marker-box,
+.priv-marker.is-focused .priv-marker-box {
+  border: 2px dashed #b91c1c;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.priv-marker-badge {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--badge-color, #e11d48);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  z-index: 30;
+  transform-origin: bottom left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.priv-marker-badge:hover,
+.priv-marker.is-hovered .priv-marker-badge,
+.priv-marker.is-focused .priv-marker-badge {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  border-color: #ffffff;
+}
+
+.priv-marker-badge.pos-below {
+  bottom: auto;
+  top: calc(100% + 6px);
+  transform-origin: top left;
+}
+
+.priv-badge-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.priv-badge-orig {
+  color: #fca5a5;
+  text-decoration: line-through;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.priv-badge-arrow {
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+.priv-badge-masked {
+  color: #93c5fd;
+  font-weight: 700;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 멀티 항목 뱃지 */
+.priv-marker-badge-multi {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding: 6px 9px;
+  min-width: 190px;
+}
+
+.priv-badge-multi-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+}
+
+.priv-badge-count-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.priv-badge-hint {
+  font-size: 9.5px;
+  color: #94a3b8;
+}
+
+.priv-badge-subrow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2.5px 4px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.1s ease;
+}
+.priv-badge-subrow:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.priv-item-card.is-highlighted {
+  border-color: #e11d48 !important;
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.35) !important;
+  background: #fff1f2 !important;
+}
+
+/* 오픈소스 라이선스 모달 — 스위스 인터내셔널 / 탈(脫) AI 디자인 */
+.license-modal {
+  width: min(680px, 94vw);
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg, 10px);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.license-modal-head {
+  padding: 18px 22px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.license-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink-1);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.license-modal-sub {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 3px;
+  font-family: var(--font-mono, monospace);
+}
+.license-sec-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-1);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0 0 8px 0;
+}
+.license-security-box {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand);
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.license-security-box b {
+  color: var(--ink-1);
+  font-size: 12.5px;
+}
+.license-security-box p {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.license-table {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+.license-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  gap: 16px;
+}
+.license-row:last-child {
+  border-bottom: none;
+}
+.license-col-main {
+  flex: 1;
+}
+.license-item-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-1);
+  letter-spacing: -0.01em;
+}
+.license-item-desc {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 2px;
+  line-height: 1.45;
+}
+.license-tag {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--ink-1);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+.license-modal details summary {
+  cursor: pointer;
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 600;
+  outline: none;
+  margin-top: 6px;
+  list-style: none;
+}
+.license-modal details summary::-webkit-details-marker {
+  display: none;
+}
+.license-modal details summary::before {
+  content: '▶ ';
+  font-size: 9px;
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.license-modal details[open] summary::before {
+  transform: rotate(90deg);
+}
+.license-modal pre {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-height: 110px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+.license-modal pre::-webkit-scrollbar {
+  width: 5px;
+}
+.license-modal pre::-webkit-scrollbar-thumb {
+  background: var(--ink-4);
+  border-radius: 3px;
+}
+.license-disclaimer-box {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px 16px;
+}
+.license-disclaimer-box ul {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+/* 공공기관 누리집 알림 팝업 스타일 (사용자 레퍼런스 스타일) */
+.gov-notice-modal {
+  width: min(530px, 94vw);
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+  border: 1px solid #1e293b;
+  overflow: hidden;
+  position: relative;
+}
+.gov-notice-topbar {
+  background: #243653;
+  height: 34px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+}
+.gov-notice-topbar-deco {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.gov-notice-topbar-deco span {
+  width: 2px;
+  height: 12px;
+  background: #64748b;
+  border-radius: 1px;
+}
+.gov-notice-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.gov-notice-close:hover {
+  color: #ffffff;
+}
+.gov-notice-body {
+  padding: 22px 20px 16px;
+  background: #ffffff;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 100% 0%, rgba(219, 234, 254, 0.55) 0%, rgba(219, 234, 254, 0) 140px),
+    radial-gradient(circle at 0% 100%, rgba(219, 234, 254, 0.55) 0%, rgba(219, 234, 254, 0) 140px);
+}
+.gov-notice-title-box {
+  text-align: center;
+  margin-bottom: 11px;
+}
+.gov-notice-title-1 {
+  font-size: 19px;
+  font-weight: 800;
+  color: #1e3a5f;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+.gov-notice-title-2 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  margin-top: 3px;
+}
+.gov-notice-title-coral {
+  color: #e1523d;
+}
+.gov-notice-title-navy {
+  color: #1e3a5f;
+}
+.gov-notice-intro {
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.55;
+  margin: 0 0 16px;
+  word-break: keep-all;
+}
+.gov-notice-items {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 0 4px;
+}
+.gov-notice-sec-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: -0.02em;
+}
+.gov-notice-sec-title svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.gov-notice-sec-content {
+  margin-top: 3px;
+  padding-left: 21px;
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.55;
+  white-space: nowrap;
+}
+.gov-notice-foot {
+  background: #e2e8f0;
+  height: 38px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  border-top: 1px solid #cbd5e1;
+}
+.gov-notice-foot-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  user-select: none;
+}
+.gov-notice-btn-close {
+  background: none;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: color 0.15s;
+}
+.gov-notice-btn-close:hover {
+  color: #0f172a;
+  text-decoration: underline;
 }
 
 /* 업로드 드롭존 */

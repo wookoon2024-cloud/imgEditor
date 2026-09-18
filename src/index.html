@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>안심 디자인 v@@VERSION@@</title>
+<title>안심 디자인 (Beta) v@@VERSION@@</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="ImgEditor @@VERSION@@ (built @@BUILD_DATE@@)">
 <meta name="description" content="폐쇄 행정망 전용 안심 시각화 웹 플랫폼 안심 디자인">
@@ -15,7 +15,7 @@
 <header class="topbar">
   <div class="brand">
     <span class="brand-mark" style="background:#1e3a8a;">안심</span>
-    <span class="brand-text">안심 디자인</span>
+    <span class="brand-text">안심 디자인 <span style="font-size: 11px; font-weight: 700; color: #1d4ed8; background: #eff6ff; padding: 1px 6px; border-radius: 4px; border: 1px solid #bfdbfe; margin-left: 2px;">Beta</span></span>
   </div>
 
   <div class="menu" id="file-menu-wrap">
@@ -29,6 +29,8 @@
       <button type="button" data-file="page-settings"><span>페이지 설정</span></button>
       <div class="menu-sep"></div>
       <button type="button" data-file="shortcuts"><span>단축키</span><kbd>?</kbd></button>
+      <button type="button" data-file="beta-notice"><span>이용 안내 및 면책 고지 (Beta)</span></button>
+      <button type="button" data-file="about-license"><span>오픈소스 및 라이선스 고지</span></button>
     </div>
   </div>
 
@@ -266,6 +268,8 @@
   <span class="status-chip" id="status-sel">선택 없음</span>
   <span class="spacer"></span>
   <button type="button" class="status-link" id="btn-shortcuts">단축키</button>
+  <button type="button" class="status-link" id="btn-beta-notice">이용 안내 (Beta)</button>
+  <button type="button" class="status-link" id="btn-about-license">오픈소스 라이선스</button>
   <span class="status-note" id="status-note">오프라인 모드 · 모든 처리는 이 PC 안에서만</span>
 </footer>
 
@@ -861,37 +865,34 @@
 </div>
 
 <div class="modal-backdrop" id="modal-copyright-confirm" hidden style="z-index: 9999;">
-  <div class="modal" style="width: min(520px, 92vw); border-radius: 12px; box-shadow: 0 20px 45px rgba(0,0,0,0.3); overflow: hidden;">
-    <div class="modal-head" style="background: var(--surface-1); border-bottom: 1px solid var(--line); padding: 14px 18px;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span style="font-size:20px;">🛡️</span>
-        <h2 style="font-size:15px; font-weight:700; color:var(--ink-1); margin:0;">외부 이미지 저작권·초상권 안심 확인</h2>
-      </div>
+  <div class="modal" style="width: min(520px, 92vw); border-radius: 8px; border: 1px solid var(--line); box-shadow: 0 24px 48px -12px rgba(0,0,0,0.2); overflow: hidden;">
+    <div class="modal-head" style="background: var(--surface-1); border-bottom: 1px solid var(--line); padding: 16px 20px;">
+      <h2 style="font-size: 15px; font-weight: 700; color: var(--ink-1); margin: 0; letter-spacing: -0.02em;">외부 이미지 저작권·초상권 확인</h2>
       <button class="modal-close" id="btn-copyright-cancel-x" title="닫기">&#10005;</button>
     </div>
-    <div class="modal-body" style="padding: 20px 22px;">
-      <div style="background: var(--brand-soft); border: 1px solid var(--brand-line); border-radius: 8px; padding: 13px 15px; margin-bottom: 16px;">
-        <p style="margin: 0 0 6px 0; font-size: 13.5px; font-weight: 700; color: var(--brand-700);">
+    <div class="modal-body" style="padding: 18px 20px;">
+      <div style="background: var(--surface-2); border: 1px solid var(--line); border-left: 3px solid var(--brand); border-radius: 4px; padding: 12px 16px; margin-bottom: 16px;">
+        <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: var(--ink-1);">
           불러오려는 이미지가 저작권 및 초상권에 문제없는 자료가 맞습니까?
         </p>
-        <p style="margin: 0; font-size: 12px; color: var(--ink-2); line-height: 1.55;">
+        <p style="margin: 0; font-size: 11.5px; color: var(--ink-2); line-height: 1.55;">
           공공누리(KOGL) 제1유형, 라이선스 검증 완료 자료 또는 기관 자체 제작 사진만 안전하게 사용하실 수 있습니다.
         </p>
       </div>
 
-      <div style="font-size: 12px; color: var(--ink-3); line-height: 1.6; margin-bottom: 16px;">
-        <div style="display:flex; gap:8px; margin-bottom:6px;">
-          <span style="color:#e11d48; font-weight:bold; font-size:13px;">⚠️</span>
-          <span>포털 검색, SNS 무단 캡처 사진, 비인가 상용 스톡 이미지는 <b>저작권 침해 분쟁 및 내용증명의 원인</b>이 될 수 있습니다.</span>
+      <div style="font-size: 11.5px; color: var(--ink-2); line-height: 1.6; margin-bottom: 16px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+          <span style="font-family: var(--font-mono, monospace); font-weight: 700; color: #e11d48; font-size: 11px;">[주의]</span>
+          <span>포털 검색, SNS 무단 캡처 사진, 비인가 상용 스톡 이미지는 저작권 침해 분쟁 및 내용증명의 원인이 될 수 있습니다.</span>
         </div>
-        <div style="display:flex; gap:8px;">
-          <span style="color:#16a34a; font-weight:bold; font-size:13px;">✔</span>
-          <span>타인의 얼굴이 포함된 경우 초상권 동의 여부를 확인하시거나, 좌측 <b>[개인정보점검]</b> 탭에서 얼굴 모자이크를 적용해 주세요.</span>
+        <div style="display: flex; gap: 8px;">
+          <span style="font-family: var(--font-mono, monospace); font-weight: 700; color: var(--brand); font-size: 11px;">[권장]</span>
+          <span>타인의 얼굴이 포함된 경우 초상권 동의 여부를 확인하시거나, 좌측 [개인정보점검] 탭에서 얼굴 모자이크를 적용해 주세요.</span>
         </div>
       </div>
 
-      <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--ink-1); cursor: pointer; user-select: none; background: var(--surface-2); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--line);">
-        <input type="checkbox" id="chk-copyright-agree" checked style="width: 16px; height: 16px; accent-color: var(--brand);">
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--ink-1); cursor: pointer; user-select: none; background: var(--surface-2); padding: 10px 12px; border-radius: 4px; border: 1px solid var(--line);">
+        <input type="checkbox" id="chk-copyright-agree" checked style="width: 15px; height: 15px; accent-color: var(--brand);">
         <span>위 저작권 및 초상권 준수 의무를 확인했으며, 계속 진행합니다.</span>
       </label>
     </div>
@@ -899,6 +900,230 @@
       <button type="button" class="btn-solid ghost" id="btn-copyright-cancel">취소</button>
       <button type="button" class="btn-solid" id="btn-copyright-proceed">확인하고 불러오기</button>
     </footer>
+  </div>
+</div>
+
+<!-- 오픈소스 라이선스 및 이용 안내 모달 (스위스 인터내셔널 / 탈(脫) AI 디자인) -->
+<div class="modal-backdrop" id="modal-about-license" hidden style="z-index: 9999;">
+  <div class="modal modal-large license-modal" style="width: min(700px, 94vw); max-height: 88vh; display: flex; flex-direction: column;">
+    <header class="modal-head license-modal-head" style="flex-shrink: 0;">
+      <div>
+        <h2 class="license-modal-title">오픈소스 소프트웨어 고지 및 보안 명세</h2>
+        <div class="license-modal-sub">안심 디자인 v@@VERSION@@ · 100% 로컬 오프라인 독립 플랫폼</div>
+      </div>
+      <button class="modal-close" id="modal-about-license-close" title="닫기">&#10005;</button>
+    </header>
+
+    <div class="modal-body license-modal-body" style="flex: 1 1 auto; overflow-y: auto; padding: 18px 22px; font-size: 12px; line-height: 1.6; color: var(--ink-2);">
+      <!-- 1. 보안 및 오프라인 원칙 -->
+      <section class="license-security-box">
+        <b>완전 독립형 로컬 실행 및 개인정보 보호 보증</b>
+        <p>
+          본 프로그램은 일체의 외부 서버(CDN, 원격 API, 클라우드)와 통신하지 않는 순수 클라이언트 전용(No-Server) 아키텍처로 동작합니다.
+          편집 중인 모든 문서, 텍스트, 업로드한 이미지 및 개인정보 검사 결과는 <strong>사용자의 로컬 PC 브라우저 메모리 안에서만 처리</strong>되며 외부로 유출되지 않습니다.
+        </p>
+      </section>
+
+      <!-- 2. 오픈소스 라이선스 고지 -->
+      <section style="margin-bottom: 22px;">
+        <h3 class="license-sec-title">사용된 오픈소스 소프트웨어 라이선스 고지 (Open Source Credits)</h3>
+        <p style="margin: 0 0 12px 0; font-size: 11.5px; color: var(--ink-3);">
+          본 프로그램은 아래의 검증된 오픈소스 라이브러리 및 오픈 폰트 라이선스를 준수하여 제작되었습니다. 관련 라이선스 규정에 따라 각 원작자의 저작권 및 라이선스 전문을 명시합니다.
+        </p>
+
+        <div class="license-table">
+          <!-- Fabric.js -->
+          <div class="license-row">
+            <div class="license-col-main">
+              <div class="license-item-name">Fabric.js <span style="font-weight:400;color:var(--ink-3);font-size:11px;">(v5.3.0)</span></div>
+              <div class="license-item-desc">HTML5 Canvas 기반 2D 그래픽 렌더링 및 인터랙티브 객체 관리 엔진</div>
+              <details>
+                <summary>라이선스 전문 보기 (Copyright &amp; License)</summary>
+                <pre>Copyright (c) 2008-2024 Juriy Zaytsev, Kangax
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</pre>
+              </details>
+            </div>
+            <span class="license-tag">MIT License</span>
+          </div>
+
+          <!-- Pico.js -->
+          <div class="license-row">
+            <div class="license-col-main">
+              <div class="license-item-name">Pico.js &amp; Facefinder</div>
+              <div class="license-item-desc">초경량 고속 로컬 실시간 얼굴 감지 알고리즘 (개인정보 비식별화 및 초상권 보호 모듈)</div>
+              <details>
+                <summary>라이선스 전문 보기 (Copyright &amp; License)</summary>
+                <pre>Copyright (c) 2017, Nenad Markuš. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</pre>
+              </details>
+            </div>
+            <span class="license-tag">BSD 2-Clause</span>
+          </div>
+
+          <!-- Pretendard & Fonts -->
+          <div class="license-row">
+            <div class="license-col-main">
+              <div class="license-item-name">Pretendard, Noto Sans, 배민 주아·도현체, Gmarket Sans</div>
+              <div class="license-item-desc">상업적·비상업적 인쇄, 출판, 웹 및 소프트웨어 임베딩이 전면 허용된 오픈 폰트 라이선스(OFL 1.1) 글꼴</div>
+            </div>
+            <span class="license-tag">SIL OFL 1.1</span>
+          </div>
+
+          <!-- Feather / Lucide Icons -->
+          <div class="license-row">
+            <div class="license-col-main">
+              <div class="license-item-name">Lucide &amp; Feather Icons</div>
+              <div class="license-item-desc">오픈소스 SVG 벡터 아이콘 셋 (Copyright (c) Lucide Contributors / Cole Bemis)</div>
+            </div>
+            <span class="license-tag">MIT License</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 법적 면책 및 저작권 준수 고지 -->
+      <section class="license-disclaimer-box">
+        <h3 class="license-sec-title">이용자 콘텐츠 저작권 안내 및 법적 면책 (Disclaimer)</h3>
+        <ul>
+          <li><strong>기본 제공 에셋 자유 배포:</strong> 본 프로그램에서 기본 제공하는 모든 사진(162종), 일러스트, 폰트, 도형은 출처 표기 없이 인쇄 및 대외 배포(상업적·공공 목적 포함)가 전면 자유롭습니다.</li>
+          <li><strong>외부 추가 파일 유의:</strong> 사용자가 인터넷 등 외부에서 별도로 다운로드하여 에디터에 불러온 사진, 서체, 상표, 인물(초상권) 등은 해당 원작자의 저작권 규정(공공누리 등)을 확인해 주시기 바랍니다.</li>
+          <li><strong>독자적 플랫폼 고지:</strong> 본 프로그램은 오픈소스 기술을 기반으로 자체 제작된 독립 도구이며, 타 상용 서비스(Canva, 미리캔버스, 망고보드 등)와 일체의 제휴 또는 지분 관계가 없습니다.</li>
+        </ul>
+      </section>
+    </div>
+
+    <footer class="modal-foot" style="flex-shrink: 0;">
+      <button type="button" class="btn-solid" id="modal-about-license-ok">확인</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 최초 실행 및 업무 안내 팝업 (한국 공공기관 누리집 알림 팝업 스타일) -->
+<div class="modal-backdrop" id="modal-beta-notice" hidden style="z-index: 10000;">
+  <div class="gov-notice-modal">
+    <!-- 상단 다크네이비 타이틀바 -->
+    <div class="gov-notice-topbar">
+      <div class="gov-notice-topbar-deco">
+        <span></span>
+        <span></span>
+      </div>
+      <button class="gov-notice-close" id="btn-beta-notice-x" title="닫기">&#10005;</button>
+    </div>
+
+    <!-- 본문 영역 (부드러운 곡선 배경) -->
+    <div class="gov-notice-body">
+      <div class="gov-notice-title-box">
+        <div class="gov-notice-title-1">안심 디자인 (Beta)</div>
+        <div class="gov-notice-title-2">
+          <span class="gov-notice-title-coral">업무 이용 및 보안</span>
+          <span class="gov-notice-title-navy">안내</span>
+        </div>
+      </div>
+
+      <p class="gov-notice-intro">
+        외부 서버 통신이 일체 없는 오프라인 전용 에디터로,<br>
+        안전한 공공 업무 지원을 위해 아래 사항을 확인하여 주시기 바랍니다.
+      </p>
+
+      <div class="gov-notice-items">
+        <!-- 1. 오프라인 망분리 -->
+        <div>
+          <div class="gov-notice-sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <polyline points="9 11 12 14 22 4"></polyline>
+            </svg>
+            <span>망분리 오프라인 구동</span>
+          </div>
+          <div class="gov-notice-sec-content">
+            - 외부 통신 원천 차단 (PC 내부 로컬 메모리에서만 독립 처리)
+          </div>
+        </div>
+
+        <!-- 2. 개인정보 최종 확인 -->
+        <div>
+          <div class="gov-notice-sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <polyline points="9 11 12 14 22 4"></polyline>
+            </svg>
+            <span>개인정보 최종 확인 의무</span>
+          </div>
+          <div class="gov-notice-sec-content">
+            - 자동 마스킹은 실무 보조용이며, 대외 배포 전 육안 검토는 사용자 귀속
+          </div>
+        </div>
+
+        <!-- 3. 기본 에셋 자유 배포 -->
+        <div>
+          <div class="gov-notice-sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <polyline points="9 11 12 14 22 4"></polyline>
+            </svg>
+            <span>기본 탑재 에셋 배포 자유</span>
+          </div>
+          <div class="gov-notice-sec-content">
+            - 내장 사진·폰트·도형은 출처 표기 없이 대외 배포 및 인쇄 가능
+          </div>
+        </div>
+
+        <!-- 4. 비영리 시험판 -->
+        <div>
+          <div class="gov-notice-sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <polyline points="9 11 12 14 22 4"></polyline>
+            </svg>
+            <span>비영리 시험판 (AS-IS)</span>
+          </div>
+          <div class="gov-notice-sec-content">
+            - 행정 지원 목적의 무료 도구로 무보증 조건 제공
+          </div>
+        </div>
+
+        <!-- 5. 템플릿·이미지 추가 요청 -->
+        <div>
+          <div class="gov-notice-sec-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <polyline points="9 11 12 14 22 4"></polyline>
+            </svg>
+            <span>템플릿·이미지 지속 추가 안내</span>
+          </div>
+          <div class="gov-notice-sec-content">
+            - 템플릿은 지속 추가 예정이며, 필요한 서식·이미지는 댓글로 요청 바랍니다
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 회색 풋터 바 (오늘하루 그만보기 / 닫기) -->
+    <div class="gov-notice-foot">
+      <label class="gov-notice-foot-label" for="chk-beta-notice-today">
+        <span>오늘하루 그만보기</span>
+        <input type="checkbox" id="chk-beta-notice-today" style="width: 14px; height: 14px; accent-color: #2563eb; cursor: pointer;">
+      </label>
+      <button type="button" class="gov-notice-btn-close" id="btn-beta-notice-confirm">닫기</button>
+    </div>
   </div>
 </div>
 
