@@ -378,7 +378,7 @@ window.IE = window.IE || {};
       caption: { size: 11, weight: 400, text: '작은 글씨' }
     }[kind];
 
-    return '<span style="font-size:' + spec.size + 'px;font-weight:' + spec.weight +
+    return '<span style="font-family:Pretendard,sans-serif;font-size:' + spec.size + 'px;font-weight:' + spec.weight +
       ';line-height:1">' + spec.text + '</span>';
   }
 
@@ -431,25 +431,16 @@ window.IE = window.IE || {};
   function fontBlocksHtml() {
     var data = IE.fonts.all();
     var current = currentFontFamily();
-    var safe = data.safe.filter(fontMatches);
-    var mine = (fontTab === '영문' ? data.latin : data.korean).filter(fontMatches);
+    var list = (fontTab === '영문' ? data.latin : data.korean).filter(fontMatches);
 
-    if (!safe.length && !mine.length) {
+    if (!list.length) {
       return '<p class="fo-hint">맞는 글꼴이 없습니다.</p>';
     }
 
     var blocks = '<div class="font-group">' +
-      '<span class="font-group-name">어디에나 있음</span>' +
-      safe.map(function (f) { return fontRowHtml(f, current); }).join('') +
+      '<span class="font-group-name">' + fontTab + ' 글꼴 <b>' + list.length + '</b></span>' +
+      list.map(function (f) { return fontRowHtml(f, current); }).join('') +
       '</div>';
-
-    if (mine.length) {
-      blocks += '<div class="font-group">' +
-        '<span class="font-group-name">내 PC · ' + fontTab +
-          ' <b>' + mine.length + '</b></span>' +
-        mine.map(function (f) { return fontRowHtml(f, current); }).join('') +
-        '</div>';
-    }
 
     return blocks;
   }
@@ -467,7 +458,7 @@ window.IE = window.IE || {};
 
     return '<div class="fo-section">' +
       '<h3 class="fo-title">글꼴 <b style="font-weight:400;color:var(--ink-3)">' +
-        (counts.safe + counts.korean + counts.latin) + '</b></h3>' +
+        (counts.korean + counts.latin) + '</b></h3>' +
       '<label class="el-search">' +
         '<svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>' +
         '<input type="search" id="font-search" placeholder="글꼴 이름으로 찾기" value="' +
@@ -475,9 +466,7 @@ window.IE = window.IE || {};
       '</label>' +
       '<div class="photo-tabs">' + chips + '</div>' +
       '<div class="font-list" id="font-list">' + fontBlocksHtml() + '</div>' +
-      '<p class="fo-hint">글꼴을 누르면 <b>고른 텍스트</b>에 바로 적용됩니다. ' +
-        '<b>내 PC</b> 묶음은 이 컴퓨터에 설치된 글꼴 ' +
-        (counts.korean + counts.latin) + '개입니다.</p>' +
+      '<p class="fo-hint">글꼴을 누르면 <b>고른 텍스트</b>에 바로 적용됩니다.</p>' +
       '<button class="fo-btn" id="font-apply-all">이 페이지의 모든 텍스트에 적용</button>' +
     '</div>';
   }

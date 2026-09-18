@@ -6,7 +6,7 @@ window.IE = window.IE || {};
   var util = IE.util;
   var api = {};
 
-  var FONT = 'Malgun Gothic';
+  var FONT = 'Pretendard';
 
   api.FONT = FONT;
 

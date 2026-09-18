@@ -16,8 +16,8 @@ window.IE = window.IE || {};
 
   /** 배너 · 홍보물용 대표 굵은 글꼴 (웹폰트 및 표준 볼드 폰트) */
   var BANNER_FONTS = [
+    { value: 'Pretendard', label: '프리텐다드 [기본·상업용 무료]' },
     { value: 'Black Han Sans', label: '검은고딕 [상업용 무료·OFL]' },
-    { value: 'Pretendard', label: '프리텐다드 [상업용 무료·OFL]' },
     { value: 'Gmarket Sans', label: '지마켓 산스 [상업용 무료]' },
     { value: 'Noto Sans KR', label: '본고딕 [상업용 무료·OFL]' },
     { value: 'Do Hyeon', label: '도현체 [상업용 무료·OFL]' },
@@ -30,6 +30,7 @@ window.IE = window.IE || {};
 
   /** 설치 여부와 상관없이 항상 보여 줄 글꼴 (없으면 브라우저가 비슷한 것으로 대체) */
   var SAFE = [
+    { value: 'Pretendard', label: '프리텐다드' },
     { value: 'Malgun Gothic', label: '맑은 고딕' },
     { value: 'Batang', label: '바탕' },
     { value: 'Gungsuh', label: '궁서' },
@@ -42,28 +43,32 @@ window.IE = window.IE || {};
     { value: 'Verdana', label: 'Verdana' }
   ];
 
-  /** 한글 글꼴 — 한글 문서에서 흔히 쓰는 것들 */
+  /** 한글 글꼴 전체 목록 */
   var KOREAN = [
+    ['Pretendard', '프리텐다드'],
+    ['Black Han Sans', '검은고딕'],
+    ['Gmarket Sans', '지마켓 산스'],
+    ['Noto Sans KR', '본고딕 (Noto Sans)'],
+    ['Do Hyeon', '도현체'],
+    ['Jua', '주아체'],
     ['Malgun Gothic', '맑은 고딕'],
-    ['Gulim', '굴림'],
-    ['GulimChe', '굴림체'],
-    ['Dotum', '돋움'],
-    ['DotumChe', '돋움체'],
-    ['Batang', '바탕'],
-    ['BatangChe', '바탕체'],
-    ['Gungsuh', '궁서'],
-    ['GungsuhChe', '궁서체'],
-    ['New Gulim', '새굴림'],
+    ['NanumGothic', '나눔고딕'],
+    ['NanumSquare', '나눔스퀘어'],
+    ['NanumBarunGothic', '나눔바른고딕'],
+    ['NanumMyeongjo', '나눔명조'],
+    ['NanumGothicCoding', '나눔고딕코딩'],
+    ['Noto Serif KR', '본명조 (Noto Serif)'],
     ['Gowun Batang', '고운바탕'],
     ['Gowun Dodum', '고운돋움'],
-
-    ['HCR Batang', '한컴바탕'],
-    ['HCR Dotum', '한컴돋움'],
-    ['HCR Gothic', '한컴고딕'],
-    ['HCR Malgun', '한컴맑은고딕'],
-    ['HCR SunBatang', '한컴순바탕'],
-    ['HCR Jamo', '한컴자모'],
-
+    ['MaruBuri', '마루부리'],
+    ['Cafe24Ssurround', '카페24 써라운드'],
+    ['S-Core Dream', '에스코어 드림'],
+    ['Spoqa Han Sans', '스포카 한 산스'],
+    ['D2Coding', 'D2 코딩'],
+    ['SeoulHangang', '서울한강체'],
+    ['SeoulNamsan', '서울남산체'],
+    ['KoPub Batang', 'KoPub 바탕'],
+    ['KoPub Dotum', 'KoPub 돋움'],
     ['HYHeadLine M', 'HY헤드라인M'],
     ['HYGothic-Medium', 'HY중고딕'],
     ['HYGungSo-Bold', 'HY궁서B'],
@@ -75,25 +80,21 @@ window.IE = window.IE || {};
     ['HYBackJa-Medium', 'HY백자'],
     ['HYStory-Medium', 'HY스토리'],
     ['HYGyeongPil-Medium', 'HY경필'],
-
-    ['NanumGothic', '나눔고딕'],
-    ['NanumMyeongjo', '나눔명조'],
-    ['NanumBarunGothic', '나눔바른고딕'],
-    ['NanumGothicCoding', '나눔고딕코딩'],
-    ['NanumSquare', '나눔스퀘어'],
-    ['Noto Sans KR', '본고딕 (Noto Sans)'],
-    ['Noto Serif KR', '본명조 (Noto Serif)'],
-    ['Pretendard', '프리텐다드'],
-    ['Spoqa Han Sans', '스포카 한 산스'],
-    ['D2Coding', 'D2 코딩'],
-    ['MaruBuri', '마루부리'],
-    ['Gmarket Sans', '지마켓 산스'],
-    ['Cafe24Ssurround', '카페24 써라운드'],
-    ['S-Core Dream', '에스코어 드림'],
-    ['SeoulHangang', '서울한강체'],
-    ['SeoulNamsan', '서울남산체'],
-    ['KoPub Batang', 'KoPub 바탕'],
-    ['KoPub Dotum', 'KoPub 돋움'],
+    ['HCR Batang', '한컴바탕'],
+    ['HCR Dotum', '한컴돋움'],
+    ['HCR Gothic', '한컴고딕'],
+    ['HCR Malgun', '한컴맑은고딕'],
+    ['HCR SunBatang', '한컴순바탕'],
+    ['HCR Jamo', '한컴자모'],
+    ['Gulim', '굴림'],
+    ['GulimChe', '굴림체'],
+    ['Dotum', '돋움'],
+    ['DotumChe', '돋움체'],
+    ['Batang', '바탕'],
+    ['BatangChe', '바탕체'],
+    ['Gungsuh', '궁서'],
+    ['GungsuhChe', '궁서체'],
+    ['New Gulim', '새굴림'],
     ['Baekmuk Batang', '백묵 바탕'],
     ['UnBatang', '은바탕'],
     ['UnDotum', '은돋움'],
@@ -192,31 +193,31 @@ window.IE = window.IE || {};
    * (글꼴을 새로 설치하면 새로 고침해야 보인다)
    */
   function build() {
-    var safeValues = {};
+    var korean = [];
+    var seenK = {};
+    KOREAN.forEach(function (pair) {
+      if (seenK[pair[0]]) return;
+      seenK[pair[0]] = true;
+      korean.push({ value: pair[0], label: pair[1], group: '한글' });
+    });
+
+    var latin = [];
+    var seenL = {};
+    LATIN.forEach(function (pair) {
+      if (seenL[pair[0]]) return;
+      seenL[pair[0]] = true;
+      latin.push({ value: pair[0], label: pair[1], group: '영문' });
+    });
+
     var safe = SAFE.map(function (f) {
-      safeValues[f.value] = true;
       return { value: f.value, label: f.label, group: '기본' };
     });
 
-    var local = [];
-
-    function add(pairs, group) {
-      pairs.forEach(function (pair) {
-        if (safeValues[pair[0]]) return;
-        safeValues[pair[0]] = true;
-        if (!installed(pair[0])) return;
-        local.push({ value: pair[0], label: pair[1], group: group });
-      });
-    }
-
-    add(KOREAN, '한글');
-    add(LATIN, '영문');
-
     return {
       safe: safe,
-      korean: local.filter(function (f) { return f.group === '한글'; }),
-      latin: local.filter(function (f) { return f.group === '영문'; }),
-      local: local
+      korean: korean,
+      latin: latin,
+      local: korean.concat(latin)
     };
   }
 
@@ -235,7 +236,7 @@ window.IE = window.IE || {};
     var bannerList = BANNER_FONTS.map(function (f) {
       return { value: f.value, label: f.label, group: '추천 배너' };
     });
-    var out = bannerList.concat(data.safe, data.local);
+    var out = bannerList.concat(data.korean, data.latin);
 
     if (current && !out.some(function (f) { return f.value === current; })) {
       out = [{ value: current, label: current + ' (현재)', group: '기타' }].concat(out);
@@ -243,20 +244,18 @@ window.IE = window.IE || {};
     return out;
   };
 
-  /** 목록에 넣을 수 있게 묶음으로 — 추천 배너 글꼴 / 기본 / 내 PC 한글 / 내 PC 영문 */
+  /** 목록에 넣을 수 있게 묶음으로 — 추천 배너 글꼴 / 한글 글꼴 / 영문 글꼴 */
   api.groups = function (current) {
     var data = api.all();
     var groups = [
       { label: '🔥 추천 배너·타이틀 (굵은 글꼴)', fonts: BANNER_FONTS },
-      { label: '기본 글꼴', fonts: data.safe }
+      { label: '한글 글꼴 (' + data.korean.length + '종)', fonts: data.korean },
+      { label: '영문 글꼴 (' + data.latin.length + '종)', fonts: data.latin }
     ];
-
-    if (data.korean.length) groups.push({ label: '내 PC · 한글', fonts: data.korean });
-    if (data.latin.length) groups.push({ label: '내 PC · 영문', fonts: data.latin });
 
     var allValues = {};
     BANNER_FONTS.forEach(function (f) { allValues[f.value] = true; });
-    data.safe.concat(data.local).forEach(function (f) { allValues[f.value] = true; });
+    data.korean.concat(data.latin).forEach(function (f) { allValues[f.value] = true; });
 
     if (current && !allValues[current]) {
       groups.unshift({ label: '기타', fonts: [{ value: current, label: current }] });
