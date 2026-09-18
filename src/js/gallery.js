@@ -569,7 +569,7 @@ window.IE = window.IE || {};
     return '<div class="tpl-search-box">' +
       '<label class="el-search tpl-search-label">' +
         '<svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>' +
-        '<input type="search" id="tpl-search-input" placeholder="템플릿 검색 (예: 공문서, 회의록, PPT, 사원증…)" value="' +
+        '<input type="search" id="tpl-search-input" placeholder="서식 검색 (예: 공문서, 회의록, PPT, 사원증…)" value="' +
           util.escapeHtml(searchQuery) + '">' +
         (searchQuery ? '<button type="button" class="tpl-search-clear" id="btn-tpl-search-clear" title="검색 지우기">&#10005;</button>' : '') +
       '</label>' +
@@ -706,9 +706,9 @@ window.IE = window.IE || {};
   function bodyHtml() {
     var modes = '<div class="chip-row">' +
       '<button class="chip' + (currentTab === 'builtin' ? ' is-active' : '') +
-        '" data-tpl-tab="builtin">기본 템플릿</button>' +
+        '" data-tpl-tab="builtin">기본 서식</button>' +
       '<button class="chip' + (currentTab === 'user' ? ' is-active' : '') +
-        '" data-tpl-tab="user">내 템플릿</button>' +
+        '" data-tpl-tab="user">내 서식</button>' +
     '</div>';
 
     return modes +

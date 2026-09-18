@@ -746,8 +746,8 @@ window.IE = window.IE || {};
   }
 
   var SECTIONS = {
-    templates: { title: '템플릿', html: function () { return IE.gallery.bodyHtml(); }, bind: bindTemplates },
-    elements: { title: '요소', html: elementsHtml, bind: bindElements },
+    templates: { title: '서식', html: function () { return IE.gallery.bodyHtml(); }, bind: bindTemplates },
+    elements: { title: '도형', html: elementsHtml, bind: bindElements },
     text: { title: '텍스트', html: textHtml, bind: bindText },
     photo: { title: '사진', html: photoHtml, bind: bindPhoto },
     table: { title: '표', html: tableHtml, bind: bindTable },
