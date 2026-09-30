@@ -426,13 +426,8 @@
 <!-- 서식 적용 방법 선택 모달 (새 페이지 추가 vs 현재 페이지 덮어쓰기) -->
 <div class="modal-backdrop" id="modal-apply-template" hidden style="z-index: 10001;">
   <div class="modal apply-tpl-modal" style="width: min(450px, 94vw);">
-    <header class="modal-head" style="padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <h2 style="font-size: 16px; font-weight: 700; color: var(--ink-1); margin: 0;">서식 적용 방법 선택</h2>
-        <div style="font-size: 12px; color: var(--ink-3); margin-top: 3px;">
-          선택한 서식: <b id="apply-tpl-name" style="color: var(--brand);">서식 이름</b>
-        </div>
-      </div>
+    <header class="modal-head" style="padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="font-size: 16px; font-weight: 700; color: var(--ink-1); margin: 0;">서식 적용 방법 선택</h2>
       <button class="modal-close" id="btn-apply-tpl-x" title="닫기">&#10005;</button>
     </header>
 
@@ -468,6 +463,50 @@
 
     <footer class="modal-foot" style="padding: 10px 20px; display: flex; justify-content: flex-end;">
       <button type="button" class="btn" id="btn-apply-tpl-cancel" style="min-width: 68px; font-size: 12px;">취소</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 새 문서 저장 확인 모달 (작업 중인 내용 있을 때) -->
+<div class="modal-backdrop" id="modal-confirm-new-doc" hidden style="z-index: 10001;">
+  <div class="modal apply-tpl-modal" style="width: min(450px, 94vw);">
+    <header class="modal-head" style="padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="font-size: 16px; font-weight: 700; color: var(--ink-1); margin: 0;">새 문서 시작</h2>
+      <button class="modal-close" id="btn-confirm-new-doc-x" title="닫기">&#10005;</button>
+    </header>
+
+    <div class="modal-body" style="padding: 14px 20px 16px;">
+      <p style="font-size: 12.5px; color: var(--ink-2); line-height: 1.5; margin: 0 0 14px;">
+        현재 작업 중인 내용이 있습니다.<br>
+        새 문서를 시작하기 전에 작업물을 저장하시겠습니까?
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button type="button" class="apply-tpl-card is-primary" id="btn-new-doc-save-first">
+          <div class="apply-tpl-badge">추천</div>
+          <div class="apply-tpl-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          </div>
+          <div class="apply-tpl-content">
+            <div class="apply-tpl-heading">작업 저장 후 새 문서 시작</div>
+            <div class="apply-tpl-desc">현재 작업물을 프로젝트(.iedit) 파일로 안전하게 저장하고 새 문서를 엽니다.</div>
+          </div>
+        </button>
+
+        <button type="button" class="apply-tpl-card" id="btn-new-doc-discard">
+          <div class="apply-tpl-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          </div>
+          <div class="apply-tpl-content">
+            <div class="apply-tpl-heading">저장하지 않고 새로 만들기</div>
+            <div class="apply-tpl-desc">현재 작업 중인 내용을 저장하지 않고 새 문서 규격을 선택합니다.</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <footer class="modal-foot" style="padding: 10px 20px; display: flex; justify-content: flex-end;">
+      <button type="button" class="btn" id="btn-confirm-new-doc-cancel" style="min-width: 68px; font-size: 12px;">취소</button>
     </footer>
   </div>
 </div>

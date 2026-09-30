@@ -807,8 +807,6 @@ window.IE = window.IE || {};
     if (!forceMode && api.hasContent()) {
       initApplyTemplateModal();
       pendingTemplate = template;
-      var nameEl = util.$('apply-tpl-name');
-      if (nameEl) nameEl.textContent = template.name || '선택한 서식';
       var modal = util.$('modal-apply-template');
       if (modal) modal.hidden = false;
       return false;

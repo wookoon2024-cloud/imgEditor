@@ -252,7 +252,15 @@ window.IE = window.IE || {};
     });
   }
 
-  function openNewDocModal() {
+  function openNewDocModal(force) {
+    if (!force && IE.canvas && typeof IE.canvas.hasContent === 'function' && IE.canvas.hasContent()) {
+      initConfirmNewDocModal();
+      var confirmModal = util.$('modal-confirm-new-doc');
+      if (confirmModal) {
+        confirmModal.hidden = false;
+        return;
+      }
+    }
     var modal = util.$('modal-new-doc');
     if (!modal) {
       IE.doc.newDocument(IE.state.docW, IE.state.docH, '#ffffff', []);
@@ -260,6 +268,35 @@ window.IE = window.IE || {};
       return;
     }
     modal.hidden = false;
+  }
+
+  function initConfirmNewDocModal() {
+    var modal = util.$('modal-confirm-new-doc');
+    if (!modal || modal._initDone) return;
+    modal._initDone = true;
+
+    function closeConfirmModal() {
+      modal.hidden = true;
+    }
+
+    util.on('btn-new-doc-save-first', 'click', function () {
+      closeConfirmModal();
+      if (IE.exporter && typeof IE.exporter.saveProject === 'function') {
+        IE.exporter.saveProject();
+      }
+      openNewDocModal(true);
+    });
+
+    util.on('btn-new-doc-discard', 'click', function () {
+      closeConfirmModal();
+      openNewDocModal(true);
+    });
+
+    util.on('btn-confirm-new-doc-cancel', 'click', closeConfirmModal);
+    util.on('btn-confirm-new-doc-x', 'click', closeConfirmModal);
+    util.on('modal-confirm-new-doc', 'mousedown', function (ev) {
+      if (ev.target === modal) closeConfirmModal();
+    });
   }
 
   function initNewDocModal() {
@@ -459,7 +496,7 @@ window.IE = window.IE || {};
       if (ev.key === 'Escape') {
         if (IE.imgedit && IE.imgedit.isOpen()) { IE.imgedit.close(false); ev.preventDefault(); return; }
 
-        var openModal = ['modal-table', 'modal-page', 'modal-shortcuts', 'modal-about-license', 'modal-apply-template'].filter(function (id) {
+        var openModal = ['modal-table', 'modal-page', 'modal-shortcuts', 'modal-about-license', 'modal-apply-template', 'modal-confirm-new-doc'].filter(function (id) {
           var el = util.$(id);
           return el && !el.hidden;
         })[0];
@@ -795,6 +832,7 @@ window.IE = window.IE || {};
     initAboutLicenseModal();
     initBetaNoticeModal();
     initNewDocModal();
+    initConfirmNewDocModal();
     initResize();
 
     var starter = IE.templates.byId('notice-a4') || {
