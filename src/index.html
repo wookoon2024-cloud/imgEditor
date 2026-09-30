@@ -460,7 +460,7 @@
 
 <!-- 새 문서 저장 확인 모달 (작업 중인 내용 있을 때) -->
 <div class="modal-backdrop" id="modal-confirm-new-doc" hidden style="z-index: 10001;">
-  <div class="modal apply-tpl-modal" style="width: min(450px, 94vw);">
+  <div class="modal apply-tpl-modal" style="width: min(560px, 94vw);">
     <header class="modal-head" style="padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center;">
       <h2 style="font-size: 16px; font-weight: 700; color: var(--ink-1); margin: 0;">새 문서 시작</h2>
       <button class="modal-close" id="btn-confirm-new-doc-x" title="닫기">&#10005;</button>
@@ -472,36 +472,23 @@
         새 문서를 시작하기 전에 작업물을 저장하시겠습니까?
       </p>
 
-      <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div class="apply-tpl-grid-3">
         <button type="button" class="apply-tpl-card is-primary" id="btn-new-doc-save-my-tpl">
-          <div class="apply-tpl-badge">기본 추천</div>
-          <div class="apply-tpl-icon">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          </div>
-          <div class="apply-tpl-content">
-            <div class="apply-tpl-heading">작업 저장 (내 서식) 후 새 문서 시작</div>
-            <div class="apply-tpl-desc">브라우저의 [내 서식]에 안전하게 보관하고 새 문서를 엽니다. (언제든 다시 불러오기 가능)</div>
-          </div>
+          <div class="apply-tpl-badge" style="position: static; margin-bottom: 6px;">기본 추천</div>
+          <div class="apply-tpl-heading">작업 저장<br>(내 서식)</div>
+          <div class="apply-tpl-desc">브라우저 [내 서식]에 보관 후 새 문서 시작</div>
         </button>
 
         <button type="button" class="apply-tpl-card" id="btn-new-doc-save-json">
-          <div class="apply-tpl-icon">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          </div>
-          <div class="apply-tpl-content">
-            <div class="apply-tpl-heading">작업 저장 (JSON 파일) 후 새 문서 시작</div>
-            <div class="apply-tpl-desc">현재 작업물을 JSON 파일(.json)로 PC에 다운로드하여 보관하고 새 문서를 엽니다.</div>
-          </div>
+          <div style="height: 18px; margin-bottom: 6px;"></div>
+          <div class="apply-tpl-heading">작업 저장<br>(JSON 파일)</div>
+          <div class="apply-tpl-desc">JSON 파일로 PC에 다운로드 후 새 문서 시작</div>
         </button>
 
         <button type="button" class="apply-tpl-card" id="btn-new-doc-discard">
-          <div class="apply-tpl-icon">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          </div>
-          <div class="apply-tpl-content">
-            <div class="apply-tpl-heading">저장하지 않고 새로 만들기</div>
-            <div class="apply-tpl-desc">현재 작업 중인 내용을 저장하지 않고 새 문서 규격을 선택합니다.</div>
-          </div>
+          <div style="height: 18px; margin-bottom: 6px;"></div>
+          <div class="apply-tpl-heading">저장하지 않고<br>새로 만들기</div>
+          <div class="apply-tpl-desc">현재 작업 중인 내용을 저장하지 않고 시작</div>
         </button>
       </div>
     </div>
