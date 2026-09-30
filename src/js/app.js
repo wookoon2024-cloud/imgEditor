@@ -459,7 +459,7 @@ window.IE = window.IE || {};
       if (ev.key === 'Escape') {
         if (IE.imgedit && IE.imgedit.isOpen()) { IE.imgedit.close(false); ev.preventDefault(); return; }
 
-        var openModal = ['modal-table', 'modal-page', 'modal-shortcuts', 'modal-about-license'].filter(function (id) {
+        var openModal = ['modal-table', 'modal-page', 'modal-shortcuts', 'modal-about-license', 'modal-apply-template'].filter(function (id) {
           var el = util.$(id);
           return el && !el.hidden;
         })[0];

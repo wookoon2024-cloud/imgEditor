@@ -746,30 +746,105 @@ window.IE = window.IE || {};
     notifyStatus();
   };
 
-  api.applyTemplate = function (template) {
-    // 여러 장짜리 덱 — 문서 전체를 새로 만든다
-    if (IE.doc && template.pages && template.pages.length) {
-      if (IE.doc.count() > 1) {
-        var ok = window.confirm(
-          '지금 문서(' + IE.doc.count() + '페이지)를 접고 「' + template.name + '」 ' +
-          template.pages.length + '장으로 새로 시작할까요?'
-        );
-        if (!ok) return false;
-      }
+  /** 작업 캔버스에 내용(가이드선 제외한 실제 요소 또는 2페이지 이상)이 있는지 확인 */
+  api.hasContent = function () {
+    var canvas = IE.state.canvas;
+    if (!canvas) return false;
+    if (IE.doc && IE.doc.count() > 1) return true;
+    var userObjects = canvas.getObjects().filter(function (o) {
+      return !o.isGuide;
+    });
+    return userObjects.length > 0;
+  };
 
-      IE.state.docName = template.id;
-      IE.doc.newDocumentFromTemplate(template);
-      if (IE.pages && typeof IE.pages.setVisible === 'function') {
-        IE.pages.setVisible(true);
+  var pendingTemplate = null;
+
+  function closeApplyTemplateModal() {
+    var modal = util.$('modal-apply-template');
+    if (modal) modal.hidden = true;
+    pendingTemplate = null;
+  }
+
+  function initApplyTemplateModal() {
+    var modal = util.$('modal-apply-template');
+    if (!modal || modal._initDone) return;
+    modal._initDone = true;
+
+    util.on('btn-apply-tpl-newpage', 'click', function () {
+      if (pendingTemplate) {
+        var tpl = pendingTemplate;
+        closeApplyTemplateModal();
+        api.applyTemplate(tpl, 'newpage');
       }
-      util.toast('템플릿 「' + template.name + '」 ' + template.pages.length + '장을 불러왔습니다.');
-      return true;
+    });
+
+    util.on('btn-apply-tpl-overwrite', 'click', function () {
+      if (pendingTemplate) {
+        var tpl = pendingTemplate;
+        closeApplyTemplateModal();
+        api.applyTemplate(tpl, 'overwrite');
+      }
+    });
+
+    util.on('btn-apply-tpl-cancel', 'click', closeApplyTemplateModal);
+    util.on('btn-apply-tpl-x', 'click', closeApplyTemplateModal);
+    util.on('modal-apply-template', 'mousedown', function (ev) {
+      if (ev.target === modal) closeApplyTemplateModal();
+    });
+  }
+
+  api.closeApplyTemplateModal = closeApplyTemplateModal;
+
+  /**
+   * 서식 적용
+   * @param {Object} template 서식 데이터
+   * @param {String} [forceMode] 'newpage' | 'overwrite'
+   */
+  api.applyTemplate = function (template, forceMode) {
+    if (!template) return false;
+
+    // 작업 중인 내용이 있고 강제 모드가 지정되지 않았으면 선택 모달 표시
+    if (!forceMode && api.hasContent()) {
+      initApplyTemplateModal();
+      pendingTemplate = template;
+      var nameEl = util.$('apply-tpl-name');
+      if (nameEl) nameEl.textContent = template.name || '선택한 서식';
+      var modal = util.$('modal-apply-template');
+      if (modal) modal.hidden = false;
+      return false;
     }
 
     IE.state.docName = template.id;
 
+    // 1) 새 페이지로 추가
+    if (forceMode === 'newpage') {
+      if (IE.doc && template.pages && template.pages.length) {
+        IE.doc.appendDeckPages(template);
+        util.toast('서식 「' + template.name + '」 ' + template.pages.length + '장을 새 페이지로 추가했습니다.');
+        return true;
+      }
+      if (IE.doc) {
+        IE.doc.addPageFromTemplate(
+          template.width, template.height, template.background, template.objects, template.name
+        );
+        util.toast('서식 「' + template.name + '」 을(를) 새 페이지로 추가했습니다.');
+        return true;
+      }
+    }
+
+    // 2) 덮어쓰기 (또는 빈 캔버스에서 바로 적용)
+    // 여러 장짜리 덱
+    if (IE.doc && template.pages && template.pages.length) {
+      IE.doc.newDocumentFromTemplate(template);
+      if (IE.pages && typeof IE.pages.setVisible === 'function') {
+        IE.pages.setVisible(true);
+      }
+      util.toast('서식 「' + template.name + '」 ' + template.pages.length + '장을 불러왔습니다.');
+      return true;
+    }
+
+    // 단일 페이지 서식
     if (IE.doc) {
-      // 여러 페이지 문서에서는 페이지 전체를 날리지 않고 현재 페이지만 교체한다
       if (IE.doc.count() > 1) {
         IE.doc.applyTemplateToCurrentPage(
           template.width, template.height, template.background, template.objects
@@ -783,7 +858,7 @@ window.IE = window.IE || {};
       api.createDocument(template.width, template.height, template.background, template.objects);
     }
 
-    util.toast('템플릿 「' + template.name + '」 을(를) 불러왔습니다.');
+    util.toast('서식 「' + template.name + '」 을(를) 불러왔습니다.');
     return true;
   };
 

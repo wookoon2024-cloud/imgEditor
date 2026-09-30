@@ -10,5 +10,5 @@ scripts/*.err
 *.png
 *.webp
 src/js/templates.backup.js
-dist/ImgEditor.zip
+*.zip
 scripts/generate_ai_animals.py

@@ -550,6 +550,129 @@ window.IE = window.IE || {};
     if (IE.app) IE.app.updateStatus();
   };
 
+  /**
+   * 새 페이지를 추가하고 거기에 템플릿 내용을 채운다.
+   * 기존 작업물을 보존하면서 새 페이지로 서식을 불러올 때 사용.
+   */
+  api.addPageFromTemplate = function (width, height, background, objects, name) {
+    ensure();
+    api.sync();
+
+    var w = width || IE.state.docW || 1240;
+    var h = height || IE.state.docH || 1754;
+    var bg = background || '#ffffff';
+
+    var page = makePage(w, h, bg);
+    var at = IE.state.pageIndex + 1;
+    IE.state.pages.splice(at, 0, page);
+    renumber();
+
+    IE.state.pageIndex = at;
+    IE.state.docW = w;
+    IE.state.docH = h;
+
+    var canvas = IE.state.canvas;
+    var history = IE.state.history;
+    history.locked = true;
+
+    canvas.clear();
+    canvas.backgroundColor = bg;
+    canvas.setDimensions({ width: w, height: h });
+    canvas.setZoom(1);
+
+    canvas.renderOnAddRemove = false;
+    (objects || []).forEach(function (def) {
+      var obj = IE.canvas.makeObject(def);
+      if (obj) canvas.add(obj);
+    });
+    canvas.renderOnAddRemove = true;
+
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+    if (IE.guides) IE.guides.clear();
+
+    history.locked = false;
+    history.snapshot();
+
+    page.json = canvas.toJSON(util.EXTRA_PROPS);
+    page.thumb = null;
+
+    IE.canvas.zoomToFit();
+    if (IE.panels) IE.panels.refresh();
+    if (IE.app) IE.app.updateStatus();
+    if (IE.pages && typeof IE.pages.setVisible === 'function' && IE.state.pages.length > 1) {
+      IE.pages.setVisible(true);
+    }
+    return page;
+  };
+
+  /**
+   * 여러 장짜리 서식(덱)의 모든 페이지를 현재 문서 뒤에 추가한다.
+   */
+  api.appendDeckPages = function (template) {
+    ensure();
+    api.sync();
+
+    var canvas = IE.state.canvas;
+    var history = IE.state.history;
+    var defs = template.pages || [];
+    if (!defs.length) return;
+
+    var insertAt = IE.state.pageIndex + 1;
+    var newPages = defs.map(function (def) {
+      var page = makePage(
+        def.width || template.width,
+        def.height || template.height,
+        def.background || template.background
+      );
+      return page;
+    });
+
+    var args = [insertAt, 0].concat(newPages);
+    Array.prototype.splice.apply(IE.state.pages, args);
+    renumber();
+
+    history.locked = true;
+
+    newPages.forEach(function (page, i) {
+      var def = defs[i];
+      canvas.clear();
+      canvas.backgroundColor = page.background || '#ffffff';
+      canvas.setDimensions({ width: page.width, height: page.height });
+      canvas.setZoom(1);
+
+      canvas.renderOnAddRemove = false;
+      (def.objects || []).forEach(function (item) {
+        var obj = IE.canvas.makeObject(item);
+        if (obj) canvas.add(obj);
+      });
+      canvas.renderOnAddRemove = true;
+
+      canvas.discardActiveObject();
+      canvas.renderAll();
+
+      page.json = canvas.toJSON(util.EXTRA_PROPS);
+      page.thumb = null;
+    });
+
+    IE.state.pageIndex = insertAt;
+    var firstNew = IE.state.pages[insertAt];
+    IE.state.docW = firstNew.width;
+    IE.state.docH = firstNew.height;
+
+    api.apply(firstNew, function () {
+      history.locked = false;
+      history.reset ? null : null;
+      history.snapshot();
+      if (IE.canvas) IE.canvas.zoomToFit();
+      if (IE.panels) IE.panels.refresh();
+      if (IE.app) IE.app.updateStatus();
+      if (IE.pages && typeof IE.pages.setVisible === 'function' && IE.state.pages.length > 1) {
+        IE.pages.setVisible(true);
+      }
+    });
+  };
+
   /** 되돌리기 / 프로젝트 저장용 전체 문서 직렬화 */
   api.serialize = function () {
     api.sync();
