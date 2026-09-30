@@ -426,7 +426,7 @@
 
 <!-- 서식 적용 방법 선택 모달 (새 페이지 추가 vs 현재 페이지 덮어쓰기) -->
 <div class="modal-backdrop" id="modal-apply-template" hidden style="z-index: 10001;">
-  <div class="modal apply-tpl-modal" style="width: min(450px, 94vw);">
+  <div class="modal apply-tpl-modal" style="width: min(480px, 94vw);">
     <header class="modal-head" style="padding: 16px 20px 14px; display: flex; justify-content: space-between; align-items: center;">
       <h2 style="font-size: 16px; font-weight: 700; color: var(--ink-1); margin: 0;">서식 적용 방법 선택</h2>
       <button class="modal-close" id="btn-apply-tpl-x" title="닫기">&#10005;</button>
@@ -438,26 +438,16 @@
         새 서식을 어떻게 불러올까요?
       </p>
 
-      <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div class="apply-tpl-grid">
         <button type="button" class="apply-tpl-card is-primary" id="btn-apply-tpl-newpage">
           <div class="apply-tpl-badge">추천</div>
-          <div class="apply-tpl-icon">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          </div>
-          <div class="apply-tpl-content">
-            <div class="apply-tpl-heading">새 페이지로 추가</div>
-            <div class="apply-tpl-desc">현재 작업물을 안전하게 유지하고, 다음 페이지에 서식을 불러옵니다.</div>
-          </div>
+          <div class="apply-tpl-heading">새 페이지로 추가</div>
+          <div class="apply-tpl-desc">현재 작업물을 유지하고, 다음 페이지에 서식을 불러옵니다.</div>
         </button>
 
         <button type="button" class="apply-tpl-card" id="btn-apply-tpl-overwrite">
-          <div class="apply-tpl-icon">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-          </div>
-          <div class="apply-tpl-content">
-            <div class="apply-tpl-heading">현재 페이지 덮어쓰기</div>
-            <div class="apply-tpl-desc">현재 페이지의 내용을 지우고 이 서식으로 교체합니다.</div>
-          </div>
+          <div class="apply-tpl-heading">현재 페이지 덮어쓰기</div>
+          <div class="apply-tpl-desc">현재 페이지의 내용을 지우고 이 서식으로 교체합니다.</div>
         </button>
       </div>
     </div>

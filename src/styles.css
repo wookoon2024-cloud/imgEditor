@@ -4155,6 +4155,11 @@ kbd {
 }
 
 /* ============================================================ 서식 적용 방법 선택 모달 */
+.apply-tpl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 .apply-tpl-card {
   position: relative;
   display: flex;
@@ -4169,6 +4174,13 @@ kbd {
   cursor: pointer;
   transition: all 0.15s ease;
   font-family: inherit;
+}
+.apply-tpl-grid .apply-tpl-card {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 15px 14px;
+  gap: 6px;
+  min-height: 108px;
 }
 .apply-tpl-card:hover {
   border-color: var(--brand);
