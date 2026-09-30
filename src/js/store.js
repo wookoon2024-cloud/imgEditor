@@ -517,5 +517,54 @@ window.IE = window.IE || {};
     });
   };
 
+  /** 추천 서식 이름 생성 */
+  api.suggestedName = function () {
+    var template = (IE.templates && typeof IE.templates.byId === 'function')
+      ? IE.templates.byId(IE.state.docName)
+      : null;
+    if (template && template.name) return template.name + ' 복사본';
+    return '내 서식 ' + util.timestamp().slice(0, 8);
+  };
+
+  /** 현재 문서를 '내 서식'에 저장 (기본 저장 방식) */
+  api.saveCurrentToMyTemplate = function (customName, promptUser) {
+    if (IE.doc) IE.doc.sync();
+    var pages = IE.doc ? IE.doc.count() : 1;
+    var name = customName;
+
+    if (promptUser || !name) {
+      var defaultName = name || api.suggestedName();
+      var input = window.prompt(
+        pages > 1
+          ? '내 서식으로 저장할 이름을 입력하세요. (현재 문서 ' + pages + '장 포함)'
+          : '내 서식으로 저장할 이름을 입력하세요.',
+        defaultName
+      );
+      if (input === null) return false;
+      name = input.trim() || defaultName;
+    }
+
+    var template = api.fromCurrentDocument(name, 'user', pages > 1);
+    var result = api.save(template, { overwrite: false });
+
+    if (result.ok) {
+      util.toast('「' + name + '」 을(를) [내 서식]에 저장했습니다.' + (pages > 1 ? ' (' + pages + '장)' : ''));
+      if (IE.gallery && typeof IE.gallery.setTab === 'function') {
+        IE.gallery.setTab('user');
+      }
+      if (IE.panel && typeof IE.panel.refresh === 'function') {
+        IE.panel.refresh();
+      }
+      return true;
+    } else if (result.reason === 'unavailable') {
+      util.toast('브라우저 보관함을 사용할 수 없어 JSON 파일로 저장합니다.');
+      if (IE.exporter && typeof IE.exporter.saveProject === 'function') {
+        IE.exporter.saveProject();
+      }
+      return false;
+    }
+    return false;
+  };
+
   IE.store = api;
 })(window.IE);

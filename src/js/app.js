@@ -279,11 +279,21 @@ window.IE = window.IE || {};
       modal.hidden = true;
     }
 
-    util.on('btn-new-doc-save-first', 'click', function () {
-      closeConfirmModal();
+    util.on('btn-new-doc-save-my-tpl', 'click', function () {
+      var saved = (IE.store && typeof IE.store.saveCurrentToMyTemplate === 'function')
+        ? IE.store.saveCurrentToMyTemplate(null, true)
+        : false;
+      if (saved) {
+        closeConfirmModal();
+        openNewDocModal(true);
+      }
+    });
+
+    util.on('btn-new-doc-save-json', 'click', function () {
       if (IE.exporter && typeof IE.exporter.saveProject === 'function') {
         IE.exporter.saveProject();
       }
+      closeConfirmModal();
       openNewDocModal(true);
     });
 
@@ -354,13 +364,25 @@ window.IE = window.IE || {};
       input.click();
       return;
     }
-    if (action === 'save') {
-      IE.exporter.saveProject();
+    if (action === 'save' || action === 'save-my-template') {
+      if (IE.store && typeof IE.store.saveCurrentToMyTemplate === 'function') {
+        IE.store.saveCurrentToMyTemplate(null, true);
+      } else if (IE.exporter && typeof IE.exporter.saveProject === 'function') {
+        IE.exporter.saveProject();
+      }
       return;
     }
-    if (action === 'save-template') {
+    if (action === 'save-json') {
+      if (IE.exporter && typeof IE.exporter.saveProject === 'function') {
+        IE.exporter.saveProject();
+      }
+      return;
+    }
+    if (action === 'save-template' || action === 'open-my-templates') {
       IE.panel.open('templates');
-      IE.gallery.setTab('user');
+      if (IE.gallery && typeof IE.gallery.setTab === 'function') {
+        IE.gallery.setTab('user');
+      }
       IE.panel.refresh();
       return;
     }
@@ -603,7 +625,11 @@ window.IE = window.IE || {};
         }
         if (key === 's') {
           ev.preventDefault();
-          IE.exporter.saveProject();
+          if (ev.shiftKey) {
+            runFileAction('save-json');
+          } else {
+            runFileAction('save-my-template');
+          }
           return;
         }
       }

@@ -22,10 +22,11 @@
     <button class="tb-btn" id="btn-file-menu">파일 <span class="caret">&#9662;</span></button>
     <div class="menu-pop" id="file-menu" hidden>
       <button type="button" data-file="new"><span>새 문서</span><kbd>-</kbd></button>
-      <button type="button" data-file="open"><span>작업 열기</span><kbd>Ctrl+O</kbd></button>
-      <button type="button" data-file="save"><span>작업 저장</span><kbd>Ctrl+S</kbd></button>
+      <button type="button" data-file="open"><span>작업 열기 (JSON)</span><kbd>Ctrl+O</kbd></button>
+      <button type="button" data-file="save-my-template"><span>작업 저장 (내 서식)</span><kbd>Ctrl+S</kbd></button>
+      <button type="button" data-file="save-json"><span>작업 저장 (JSON)</span><kbd>Ctrl+Shift+S</kbd></button>
       <div class="menu-sep"></div>
-      <button type="button" data-file="save-template"><span>현재 페이지를 템플릿으로 저장</span></button>
+      <button type="button" data-file="open-my-templates"><span>내 서식 보관함 열기</span></button>
       <button type="button" data-file="page-settings"><span>페이지 설정</span></button>
       <div class="menu-sep"></div>
       <button type="button" data-file="shortcuts"><span>단축키</span><kbd>?</kbd></button>
@@ -482,14 +483,24 @@
       </p>
 
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button type="button" class="apply-tpl-card is-primary" id="btn-new-doc-save-first">
-          <div class="apply-tpl-badge">추천</div>
+        <button type="button" class="apply-tpl-card is-primary" id="btn-new-doc-save-my-tpl">
+          <div class="apply-tpl-badge">기본 추천</div>
           <div class="apply-tpl-icon">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           </div>
           <div class="apply-tpl-content">
-            <div class="apply-tpl-heading">작업 저장 후 새 문서 시작</div>
-            <div class="apply-tpl-desc">현재 작업물을 프로젝트(.iedit) 파일로 안전하게 저장하고 새 문서를 엽니다.</div>
+            <div class="apply-tpl-heading">작업 저장 (내 서식) 후 새 문서 시작</div>
+            <div class="apply-tpl-desc">브라우저의 [내 서식]에 안전하게 보관하고 새 문서를 엽니다. (언제든 다시 불러오기 가능)</div>
+          </div>
+        </button>
+
+        <button type="button" class="apply-tpl-card" id="btn-new-doc-save-json">
+          <div class="apply-tpl-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="apply-tpl-content">
+            <div class="apply-tpl-heading">작업 저장 (JSON 파일) 후 새 문서 시작</div>
+            <div class="apply-tpl-desc">현재 작업물을 JSON 파일(.json)로 PC에 다운로드하여 보관하고 새 문서를 엽니다.</div>
           </div>
         </button>
 
@@ -890,7 +901,8 @@
           <div class="shortcut-row"><span>복제</span><kbd>Ctrl D</kbd></div>
           <div class="shortcut-row"><span>모든 객체 선택</span><kbd>Ctrl A</kbd></div>
           <div class="shortcut-row"><span>선택 삭제</span><kbd>Delete</kbd></div>
-          <div class="shortcut-row"><span>작업 저장</span><kbd>Ctrl S</kbd></div>
+          <div class="shortcut-row"><span>작업 저장 (내 서식)</span><kbd>Ctrl S</kbd></div>
+          <div class="shortcut-row"><span>작업 저장 (JSON)</span><kbd>Ctrl Shift S</kbd></div>
         </div>
         <div class="shortcut-col">
           <h3>이동 · 보기</h3>
